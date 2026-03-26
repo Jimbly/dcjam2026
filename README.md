@@ -15,11 +15,6 @@ No license is provided for any game code or assets.  Copyright (c) 2026 Jimb Ess
 
 GLOV.js is MIT licensed.
 
-
-
-
-
-
 Credits
 =======
 
