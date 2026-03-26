@@ -1,14 +1,16 @@
-Step 1: Install Node.js v22.12.0 from https://nodejs.org/en/download - make sure to select v22.12.0 from the drop-down before downloading.  If you already have Node.js installed (it's a common for web dev tools), and it's a newer version, let me know.
+#### Step 1: Install Node.js v22.12.0 from https://nodejs.org/en/download
+* make sure to select v22.12.0 from the drop-down before downloading.  If you already have Node.js installed (it's a common for web dev tools), and it's a newer version, let me know.
 
-Step 2: install SmartSVN - https://www.smartsvn.com/
-Run Smart SVN choose "open an existing repository" or something like that (first option on the prompt), put in a URL of `svn://www.dashingstrike.com/other/dcjam2026`.
-Choose a new empty folder to download to ("dcjam2026" is a good name =), it should finish after a few seconds.
+#### Step 2: install SmartSVN - https://www.smartsvn.com/
+* Run Smart SVN choose "open an existing repository" or something like that (first option on the prompt), put in a URL of `svn://www.dashingstrike.com/other/dcjam2026`.
+* Choose a new empty folder to download to ("dcjam2026" is a good name =), it should finish after a few seconds.
 
-Step 3: In Finder, right click on the folder it just made, and choose Services -> New Terminal At Folder
-Run: `npm i` in the terminal
-This is a one-time install of the engine.  It should finish with some warnings which are safe to ignore.
+#### Step 3: In Finder, right click on the folder it just made, and choose Services -> New Terminal At Folder
+* Run: `npm i` in the terminal
+* This is a one-time install of the engine.  It should finish with some warnings which are safe to ignore.
 
-Step 4: Run `npm start` to start the game engine, it should automatically open a browser window after a minute or two of processing.  Leave this terminal window running (it's hosting the web page that is the game, etc).
+#### Step 4: Run `npm start` to start the game engine
+* It should automatically open a browser window after a minute or two of processing.  Leave this terminal window running (it's hosting the web page that is the game, etc).
 
 To make changes, all changes should get automatically applied when you change files on disk, so go to `src/client/sounds`, try changing rollover.mp3 (can be a .wav, .ogg, or .mp3, as long as it's named `rollover`, just delete the old file if you're changing file formats), and you should immediately be able to hear the difference =).
 
