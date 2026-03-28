@@ -1,7 +1,6 @@
 TODO
 ====
 
-animate cards in/out
 update enemy healthbar gfx
 make test encounter floor
 

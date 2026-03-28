@@ -174,22 +174,29 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
     shuffleArray(dummy_rand, data.draw_pile);
   }
 
-  reshuffle(for_burn: boolean): void {
+  reshufflePrep(): void {
     let { data } = this;
-    let { discard_pile, draw_pile, deck } = data;
+    let { discard_pile, deck } = data;
+    data.combat_phase = 'reshuffle';
+    shuffleArray(dummy_rand, discard_pile);
+    if (discard_pile.length > 2) {
+      // 5 tries to make the first two cards different, for more interesting burn choices
+      for (let ii = 0; ii < 5 && deck[discard_pile[0]].card_id === deck[discard_pile[1]].card_id; ++ii) {
+        let idx = floor(random() * (discard_pile.length - 2));
+        let t = discard_pile[1];
+        discard_pile[1] = discard_pile[idx];
+        discard_pile[idx] = t;
+      }
+    }
+  }
+
+  reshuffle(): void {
+    let { data } = this;
+    let { discard_pile, draw_pile } = data;
     while (discard_pile.length) {
       draw_pile.push(discard_pile.pop()!);
     }
     shuffleArray(dummy_rand, draw_pile);
-    if (for_burn && draw_pile.length > 2) {
-      // 5 tries to make the first two cards different, for more interesting burn choices
-      for (let ii = 0; ii < 5 && deck[draw_pile[0]].card_id === deck[draw_pile[1]].card_id; ++ii) {
-        let idx = floor(random() * (draw_pile.length - 2));
-        let t = draw_pile[1];
-        draw_pile[1] = draw_pile[idx];
-        draw_pile[idx] = t;
-      }
-    }
   }
 
   monsterMoveGet(): CardDef {

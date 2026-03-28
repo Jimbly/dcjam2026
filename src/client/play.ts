@@ -658,11 +658,11 @@ function drawCard(param: {
 function doReshuffle(): void {
   let me = myEnt();
   let { data } = me;
-  let { draw_pile, hand, deck } = data;
+  let { discard_pile, hand, deck } = data;
   assert(!hand.length);
-  if (draw_pile.length < 2) {
+  if (discard_pile.length < 2) {
     // not enough to burn one, kill player
-    draw_pile.length = 0;
+    discard_pile.length = 0;
     return;
   }
 
@@ -690,7 +690,7 @@ function doReshuffle(): void {
       '\n\n[c=note]Note: burnt cards are returned to your deck at the end of the encounter (floor).[/c]' +
       '\n\n[c=note]Warning: if you have no cards left, you die![/c]' +
       `${(data.incoming_damage ?
-        `\n\nNote: you still have [c=red]${data.incoming_damage} damage[/c] to resolve.` : '')}`,
+        `\n\nNote: you still have [c=red]${data.incoming_damage} damage[/c] to resolve after the reshuffle.` : '')}`,
   }).h + 8;
 
   let rect = {
@@ -710,7 +710,7 @@ function doReshuffle(): void {
   rect.y = blend('shuffle0y', y - (spot_ret.focused ? 4 : 0), 100);
   drawCard({
     ...rect,
-    card: deck[draw_pile[0]],
+    card: deck[discard_pile[0]],
   });
   if (spot_ret.focused) {
     autoAtlas('ui', 'x').draw({
@@ -730,7 +730,7 @@ function doReshuffle(): void {
   rect.y = blend('shuffle1y', y - (spot_ret.focused ? 4 : 0), 100);
   drawCard({
     ...rect,
-    card: deck[draw_pile[1]],
+    card: deck[discard_pile[1]],
   });
   if (spot_ret.focused) {
     autoAtlas('ui', 'x').draw({
@@ -740,9 +740,9 @@ function doReshuffle(): void {
   }
 
   if (burn_card !== -1) {
-    // let burnt = draw_pile[burn_card];
-    draw_pile.splice(burn_card, 1);
-    me.reshuffle(false);
+    // let burnt = discard_pile[burn_card];
+    discard_pile.splice(burn_card, 1);
+    me.reshuffle();
     data.combat_phase = 'redraw';
     if (data.incoming_damage) {
       let amt = data.incoming_damage;
@@ -881,9 +881,8 @@ function doHand(): void {
         me.startPlayerPhase();
       } else {
         // need to reshuffle and choose to burn a card
-        data.combat_phase = 'reshuffle';
+        me.reshufflePrep();
         combat_state.countdown = 0;
-        me.reshuffle(true);
       }
     } else {
       me.startPlayerPhase();
@@ -914,6 +913,13 @@ function doHand(): void {
       w: CARD_W - CARD_OVERLAP,
       h: CARD_H,
     };
+    if (!ii) {
+      click_rect.w += CARD_OVERLAP/2;
+      click_rect.x -= CARD_OVERLAP/2;
+    }
+    if (ii === hand.length - 1) {
+      click_rect.w += CARD_OVERLAP/2;
+    }
     let spot_ret = spot({
       def: SPOT_DEFAULT_BUTTON,
       hotkey: KEYS['1'] + hotkey,
@@ -1028,7 +1034,7 @@ function doHand(): void {
   if (is_reshuffle) {
     z = Z.MODAL;
   }
-  let pile = is_reshuffle ? [] : draw_pile;
+  let pile = draw_pile;
   drawBox({
     x, y, z,
     w, h,
@@ -1046,7 +1052,7 @@ function doHand(): void {
     text: `Draw Pile\n(${pile.length})`
   });
 
-  pile = is_reshuffle ? draw_pile.slice(2) : discard_pile;
+  pile = is_reshuffle ? discard_pile.slice(2) : discard_pile;
   if (pile.length) {
     x = DISCARD_PILE_X;
     drawBox({
