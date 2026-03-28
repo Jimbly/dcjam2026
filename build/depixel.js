@@ -1,6 +1,8 @@
+const assert = require('assert');
 const path = require('path');
 const { scaleImage: depixelScale } = require('depixel');
 const gb = require('glov-build');
+const micromatch = require('micromatch');
 const alphafix = require('./alphafix.js');
 const asyncHashed = require('./asynchashed.js');
 const autoatlas = require('./autoatlas_build.js');
@@ -15,11 +17,12 @@ const {
   tilingExpand,
 } = require('./tiling');
 
-const scale = 8;
-const depixel_input = [
-  'demo/*.png',
-  'utumno/*.png',
-];
+const scale_globs = {
+  'ui/*.png': 8,
+  'test/*.png': 8,
+  'main/*.png': 24,
+};
+const depixel_input = Object.keys(scale_globs);
 
 const targets = {
   out: path.join(__dirname, '../src/client/atlases-autogen'),
@@ -48,10 +51,11 @@ gb.task({
     // auto rules:
     //   if alpha on all 4 sides, do both alpha (will break with UI frames)
     //   otherwise, if alpha on either vert side, do vert_clamp; same for horiz
-    //   otherwise, repeat
+    //   otherwise, wrap
     rules: [
       '**/*chest*:balpha',
       '**/*wall*:hwrap,vclamp',
+      '**/*solid*:hwrap,vclamp',
       '**/*door*:hwrap,vclamp',
       '**/*stairs*:hwrap,vclamp',
       '**/*arch*:hwrap,vclamp',
@@ -74,7 +78,7 @@ gb.task(asyncHashed(8, {
   name: 'depixel-proc',
   input: ['depixel-alphafix:**'],
   type: gb.SINGLE,
-  version: [depixelScale, scale],
+  version: [depixelScale, scale_globs],
   async: gb.ASYNC_FORK,
   func: function (job, done) {
     let file = job.getFile();
@@ -93,6 +97,13 @@ gb.task(asyncHashed(8, {
       }
       return void done();
     }
+    let scale = -1;
+    for (let key in scale_globs) {
+      if (micromatch(file.relative, key)) {
+        scale = scale_globs[key];
+      }
+    }
+    assert(scale !== -1);
     let scale1 = scale * 2;
     let intermed = depixelScale(img, {
       height: img.height * scale1,

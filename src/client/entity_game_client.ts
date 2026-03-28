@@ -5,6 +5,7 @@ import { ClientEntityManagerInterface } from 'glov/client/entity_manager_client'
 import {
   ActionDataAssignments,
 } from 'glov/common/entity_base_common';
+import { shuffleArray } from 'glov/common/rand_alea';
 import { TraitFactory } from 'glov/common/trait_factory';
 import {
   DataObject,
@@ -14,6 +15,7 @@ import { clone } from 'glov/common/util';
 import type { ROVec2, ROVec3 } from 'glov/common/vmath';
 import { EntityCrawlerDataCommon, entSamePos } from '../common/crawler_entity_common';
 import type { JSVec3 } from '../common/crawler_state';
+import { CardID, HAND_SIZE } from './cards';
 import {
   crawlerEntClientDefaultDraw2D,
   crawlerEntClientDefaultOnDelete,
@@ -26,7 +28,7 @@ import {
   Floater,
 } from './crawler_entity_client';
 
-const { random } = Math;
+const { floor, random } = Math;
 
 type Entity = EntityClient;
 
@@ -54,8 +56,18 @@ export type EntityDataClient = {
   floor: number;
   stats: StatsData;
   // Player:
+  deck: Partial<Record<CardID, number>>;
+  draw_pile: CardID[];
+  discard_pile: CardID[];
+  hand: (CardID | null)[];
   events_done?: Partial<Record<string, boolean>>;
 } & EntityCrawlerDataCommon;
+
+const dummy_rand = {
+  range(r: number) {
+    return floor(random() * r);
+  }
+};
 
 
 export class EntityClient extends EntityBaseClient implements EntityCrawlerClient {
@@ -96,9 +108,50 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
     while (data.pos.length < 3) {
       data.pos.push(0);
     }
+    if (this.type_id === 'player') {
+      if (!data.deck) {
+        data.deck = {
+          attack1: 6,
+          block1: 4,
+        };
+        this.populateDrawPileFromDeck();
+        this.drawHand();
+      }
+    }
     this.floaters = [];
     this.aiResetMoveTime(true);
   }
+
+  populateDrawPileFromDeck(): void {
+    let { data } = this;
+    data.draw_pile = [];
+    data.discard_pile = [];
+    data.hand = [];
+    let key: keyof typeof data.deck;
+    for (key in data.deck) {
+      let count = data.deck[key]!;
+      for (let ii = 0; ii < count; ++ii) {
+        data.draw_pile.push(key);
+      }
+    }
+    shuffleArray(dummy_rand, data.draw_pile);
+  }
+
+  drawHand(): void {
+    let { data } = this;
+    while (data.hand.length) {
+      data.discard_pile.push(data.hand.pop()!);
+    }
+    while (data.hand.length < HAND_SIZE) {
+      this.drawCard();
+    }
+  }
+
+  drawCard(): void {
+    assert(this.data.draw_pile.length); // need to take HP and reshuffle
+    this.data.hand.push(this.data.draw_pile.pop()!);
+  }
+
   static AI_UPDATE_FIELD = 'seq_ai_update';
   applyAIUpdate(
     action_id: string,

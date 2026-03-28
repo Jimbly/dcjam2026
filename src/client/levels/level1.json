@@ -2082,7 +2082,7 @@
       "id": "open",
       "walls": [
         "open",
-        "demo_walldetail2",
+        "door",
         "open",
         "open"
       ]
@@ -2216,10 +2216,19 @@
     {
       "id": "solid",
       "walls": [
-        "open",
+        "solid",
         "open",
         "open",
         "solid"
+      ]
+    },
+    {
+      "id": "open",
+      "walls": [
+        "solid",
+        "solid",
+        "solid",
+        "door"
       ]
     },
     {
@@ -2227,16 +2236,7 @@
       "walls": [
         "open",
         "open",
-        "open",
-        "solid"
-      ]
-    },
-    {
-      "id": "solid",
-      "walls": [
-        "open",
-        "open",
-        "open",
+        "solid",
         "solid"
       ]
     },
@@ -2383,7 +2383,7 @@
     }
   ],
   "state": {},
-  "vstyle": "demo",
+  "vstyle": "main",
   "seed": "32845502",
   "props": {},
   "paths": {}

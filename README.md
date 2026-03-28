@@ -18,4 +18,5 @@ GLOV.js is MIT licensed.
 Credits
 =======
 
+* Palette - https://lospec.com/palette-list/lost-century
 * Placeholder footstep sounds by Alex Hamadey - https://alexhamadey.itch.io/

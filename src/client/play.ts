@@ -1,6 +1,6 @@
 import assert from 'assert';
 import { autoResetSkippedFrames } from 'glov/client/auto_reset';
-import { autoAtlasSwap } from 'glov/client/autoatlas';
+import { autoAtlas, autoAtlasSwap } from 'glov/client/autoatlas';
 import { cmd_parse } from 'glov/client/cmds';
 import * as engine from 'glov/client/engine';
 import { ClientEntityManagerInterface } from 'glov/client/entity_manager_client';
@@ -25,6 +25,7 @@ import {
   settingsRegister,
   settingsSet,
 } from 'glov/client/settings';
+import { spot, SPOT_DEFAULT_BUTTON } from 'glov/client/spot';
 import {
   Sprite,
   spriteCreate,
@@ -73,6 +74,7 @@ import {
 } from './ai';
 import { blend } from './blend';
 // import './client_cmds';
+import { CardEffect, CardID, CARDS, HAND_SIZE } from './cards';
 import {
   buildModeActive,
   crawlerBuildModeUI,
@@ -139,6 +141,7 @@ import {
   gameEntityTraitsClientStartup,
 } from './entity_game_client';
 import {
+  FONT_HEIGHT,
   game_height,
   game_width,
   MOVE_BUTTON_H,
@@ -157,6 +160,7 @@ import {
   statusPush,
   statusTick,
 } from './status';
+import { style_label } from './styles';
 import { uiActionClear, uiActionCurrent, uiActionTick } from './uiaction';
 import { pauseMenuActive, pauseMenuOpen } from './uiaction_pause_menu';
 
@@ -172,7 +176,7 @@ declare module 'glov/client/settings' {
 
 // const ATTACK_WINDUP_TIME = 1000;
 const MINIMAP_RADIUS = 3;
-const MINIMAP_X = VIEWPORT_X0 + render_width + 2;
+const MINIMAP_X = game_width - 100; // DCJAM VIEWPORT_X0 + render_width + 2;
 const MINIMAP_Y = 3;
 const MINIMAP_W = 5+7*(MINIMAP_RADIUS*2 + 1);
 const MINIMAP_H = MINIMAP_W;
@@ -182,8 +186,9 @@ const FULLMAP_STEP_SIZE = MINIMAP_STEP_SIZE;
 const FULLMAP_TILE_SIZE = FULLMAP_STEP_SIZE * 7/6;
 const COMPASS_X = MINIMAP_X;
 const COMPASS_Y = MINIMAP_Y + MINIMAP_H;
-const DO_COMPASS = true;
-const DO_MOVEMENT_BUTTONS = true;
+const DO_COMPASS = false;
+const DO_MOVEMENT_BUTTONS = false;
+const DO_MINIMAP = false;
 
 const DIALOG_RECT = {
   x: VIEWPORT_X0 + 8,
@@ -306,10 +311,10 @@ export function drawHealthBar(
   }
 }
 
-const HP_BAR_W = 60;
+const HP_BAR_W = 72;
 const HP_BAR_H = 12;
-const HP_X = VIEWPORT_X0 + floor((render_width - HP_BAR_W)/2);
-const HP_Y = VIEWPORT_Y0 + render_height - HP_BAR_H - 8;
+const HP_X = 15;
+const HP_Y = 241;
 let color_temp = vec4();
 type IncomingDamage = {
   start: number;
@@ -512,6 +517,101 @@ function doEngagedEnemy(): void {
   }
 }
 
+const CARD_W = 64;
+const CARD_H = 85;
+const CARD_PAD = 4;
+function drawCard(param: {
+  card_id: CardID;
+  x: number;
+  y: number;
+  z: number;
+}): void {
+  let { card_id, x, y, z } = param;
+  let card_def = CARDS[card_id]!;
+  drawBox({
+    x, y, z,
+    w: CARD_W,
+    h: CARD_H,
+  }, autoAtlas('ui', 'card'));
+  y += CARD_PAD;
+  font.draw({
+    style: style_label,
+    x: x + CARD_PAD, y, z, w: CARD_W - CARD_PAD * 2,
+    align: ALIGN.HCENTERFIT,
+    text: card_def.name,
+  });
+  y += FONT_HEIGHT + CARD_PAD;
+  let key: CardEffect;
+  for (key in card_def.effect) {
+    let value = card_def.effect[key]!;
+    font.draw({
+      style: style_label,
+      x: x + CARD_PAD, y, z, w: CARD_W - CARD_PAD * 2,
+      align: ALIGN.HCENTERFIT,
+      text: `${value} ${key}`,
+    });
+    y += FONT_HEIGHT;
+  }
+}
+
+const CARD_OVERLAP = 20;
+const CARDS_W = HAND_SIZE * (CARD_W - CARD_OVERLAP) + CARD_OVERLAP;
+const CARDS_X = VIEWPORT_X0 + floor((render_width - CARDS_W) / 2);
+const CARDS_Y = 203;
+const CARDS_Y_SEL = VIEWPORT_Y0 + render_height - CARD_H;
+function doHand(): void {
+  let me = myEnt();
+  let { data } = me;
+  let { hand } = data;
+
+  let x = CARDS_X;
+  let y = CARDS_Y;
+  let z = Z.UI;
+
+  let play_card = -1;
+  for (let ii = 0; ii < hand.length; ++ii) {
+    let card = hand[ii];
+    if (!card) {
+      continue;
+    }
+    let rect = {
+      x, y, z,
+      w: CARD_W,
+      h: CARD_H,
+    };
+    let click_rect = {
+      x: x + CARD_OVERLAP/2,
+      y: CARDS_Y_SEL,
+      w: CARD_W - CARD_OVERLAP,
+      h: CARD_H,
+    };
+    let spot_ret = spot({
+      def: SPOT_DEFAULT_BUTTON,
+      ...click_rect,
+    });
+    if (spot_ret.focused) {
+      rect.y = CARDS_Y_SEL;
+      rect.z += 10;
+    }
+    if (spot_ret.ret) {
+      play_card = ii;
+    }
+    drawCard({
+      ...rect,
+      x: blend(`cardx${ii}`, rect.x, 200),
+      y: blend(`cardy${ii}`, rect.y, 200),
+      card_id: card,
+    });
+    x += CARD_W - CARD_OVERLAP;
+    z++;
+  }
+  if (play_card !== -1) {
+    hand[play_card] = null;
+    // TODO: do effect
+  }
+}
+
+
 function moveBlocked(): boolean {
   return false;
 }
@@ -630,10 +730,12 @@ function playCrawl(): void {
 
   let down = {
     menu: 0,
+    inv: 0,
   };
   type ValidKeys = keyof typeof down;
   let up_edge: Record<ValidKeys, number> = {
     menu: 0,
+    inv: 0,
   };
 
   let dt = getScaledFrameDt();
@@ -660,7 +762,7 @@ function playCrawl(): void {
   const build_mode = buildModeActive();
   let locked_dialog = dialogMoveLocked();
   const overlay_menu_up = uiActionCurrent()?.is_overlay_menu || is_dead || false;
-  let minimap_display_h = build_mode ? MOVE_BUTTON_W : MINIMAP_H;
+  let minimap_display_h = build_mode ? MOVE_BUTTON_H : DO_MINIMAP ? MINIMAP_H : 0;
   let show_compass = !build_mode && DO_COMPASS;
   let compass_h = show_compass ? 11 : 0;
 
@@ -747,8 +849,8 @@ function playCrawl(): void {
 
 
   // Escape / open/close menu button - *before* pauseMenu()
-  button_x0 = 317;
-  button_y0 = 3;
+  button_x0 = 399;
+  button_y0 = build_mode ? MINIMAP_Y : 13;
   let menu_up = frame_map_view || build_mode || overlay_menu_up;
   let menu_keys = [KEYS.ESC];
   let menu_pads = [PAD.START];
@@ -757,12 +859,12 @@ function playCrawl(): void {
   }
   crawlerButton(0, 0, menu_up ? 10 : 6,
     'menu', menu_keys, menu_pads, pauseMenuActive());
-  // if (!build_mode) {
-  //   crawlerButton(0, 1, 7, 'inv', [KEYS.I], [PAD.Y], inventory_up);
-  //   if (up_edge.inv) {
-  //     inventory_up = !inventory_up;
-  //   }
-  // }
+  if (!build_mode) {
+    crawlerButton(0, 1, 7, 'inv', [KEYS.I], [PAD.Y], false /*inventory_up*/);
+    if (up_edge.inv) {
+      // TODO
+    }
+  }
 
   uiActionTick();
 
@@ -772,6 +874,7 @@ function playCrawl(): void {
       // Do game UI/stats here
       drawStatsOverViewport();
       doEngagedEnemy();
+      doHand();
       // crawlerButton(2, 0, inventory_frame, 'inventory', [KEYS.I], []);
     }
     // Do modal UIs here
@@ -891,23 +994,25 @@ function playCrawl(): void {
       button_disabled: overlay_menu_up,
     });
   } else {
-    crawlerMapViewDraw({
-      game_state,
-      x: MINIMAP_X,
-      y: MINIMAP_Y,
-      w: MINIMAP_W,
-      h: minimap_display_h,
-      step_size: MINIMAP_STEP_SIZE,
-      tile_size: MINIMAP_TILE_SIZE,
-      compass_x: COMPASS_X,
-      compass_y: COMPASS_Y,
-      compass_w: 0,
-      compass_h,
-      z: Z.MAP,
-      level_gen_test: false,
-      script_api,
-      button_disabled: overlay_menu_up,
-    });
+    if (minimap_display_h) {
+      crawlerMapViewDraw({
+        game_state,
+        x: MINIMAP_X,
+        y: MINIMAP_Y,
+        w: MINIMAP_W,
+        h: minimap_display_h,
+        step_size: MINIMAP_STEP_SIZE,
+        tile_size: MINIMAP_TILE_SIZE,
+        compass_x: COMPASS_X,
+        compass_y: COMPASS_Y,
+        compass_w: 0,
+        compass_h,
+        z: Z.MAP,
+        level_gen_test: false,
+        script_api,
+        button_disabled: overlay_menu_up,
+      });
+    }
   }
 
   statusTick(dialog_viewport);
@@ -1046,7 +1151,7 @@ settingsRegister({
   },
   depixel: {
     is_toggle: true,
-    default_value: 0,
+    default_value: 1,
     type: cmd_parse.TYPE_INT,
     range: [0, 1],
     on_change: function (is_startup: boolean): void {
@@ -1069,8 +1174,8 @@ cmd_parse.register({
 function applyAtlasSwaps(): void {
   let suffix = settings.depixel ? '-depixel' : '';
   [
-    'demo',
-    'utumno',
+    'main',
+    'ui',
   ].forEach(function (base_name) {
     autoAtlasSwap(base_name, `${base_name}${suffix}`);
   });
@@ -1225,5 +1330,7 @@ export function playStartup(): void {
     // style_map_name: fontStyle(...)
     compass_border_w: 6,
   });
+
+  autoAtlas('main', 'def'); // preload
   applyAtlasSwaps();
 }

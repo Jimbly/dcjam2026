@@ -30,6 +30,7 @@ const { floor } = Math;
 const ATLASES = [
   'demo',
   'utumno',
+  'main', // DCJAM
 ];
 
 let inited = false;
@@ -153,6 +154,7 @@ function textureWizardFindUnused(): void {
 
 const PAD = 4;
 let selected = 0;
+let last_selected_key = '';
 const MODES = ['wall', 'door', 'floor'/*, 'detail'*/, 'ent'] as const;
 let selected_mode: typeof MODES[number] = '' as 'wall';
 let target_name = '';
@@ -181,6 +183,15 @@ export function crawlerTextureWizard(): void {
   const font = uiGetFont();
   const button_height = uiButtonHeight();
   const button_width = uiButtonWidth();
+  function reset(): void {
+    target_name = '';
+    flags = {};
+    if (selected_mode === 'wall') {
+      flags.solid = true;
+    } else if (selected_mode === 'ent') {
+      flags.enemy = true;
+    }
+  }
   for (let ii = 0; ii < unused.length && y + button_height < viewport.y + viewport.h - PAD; ++ii) {
     let key = unused[ii];
     if (button({
@@ -193,7 +204,6 @@ export function crawlerTextureWizard(): void {
     })) {
       selected = ii;
       target_name = '';
-      flags = {};
     }
     y += button_height;
   }
@@ -225,15 +235,10 @@ export function crawlerTextureWizard(): void {
         y, z, w: sub_w,
         text: mode,
         disabled: selected_mode === mode,
-      }) || !selected_mode) {
+      }) || !selected_mode || last_selected_key !== selected_key) {
+        last_selected_key = selected_key;
         selected_mode = mode;
-        target_name = '';
-        flags = {};
-        if (selected_mode === 'wall') {
-          flags.solid = true;
-        } else if (selected_mode === 'ent') {
-          flags.enemy = true;
-        }
+        reset();
       }
     });
     y += button_height + PAD;
