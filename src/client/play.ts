@@ -573,20 +573,22 @@ function drawEnemyStats(ent: Entity): void {
   }
   y += uiTextHeight();
 
-  let next_move = ent.monsterMoveGet();
-  let key: CardEffect;
-  let msg = [];
-  for (key in next_move.effect) {
-    let value = next_move.effect[key]!;
-    msg.push(EFFECT_TEMPLATE[key].replace('{N}', `${value}`).replace(' ', ''));
+  if (ent.isAlive()) {
+    let next_move = ent.monsterMoveGet();
+    let key: CardEffect;
+    let msg = [];
+    for (key in next_move.effect) {
+      let value = next_move.effect[key]!;
+      msg.push(EFFECT_TEMPLATE[key].replace('{N}', `${value}`).replace(' ', ''));
+    }
+    markdownAuto({
+      font_style: style_text,
+      x: ENEMY_HP_BAR_X, y, z: Z.UI, w: ENEMY_HP_BAR_W,
+      align: ALIGN.HCENTERFIT,
+      text: `(${next_move.name}: ${msg.join(' ')} )`,
+    });
+    y += FONT_HEIGHT;
   }
-  markdownAuto({
-    font_style: style_text,
-    x: ENEMY_HP_BAR_X, y, z: Z.UI, w: ENEMY_HP_BAR_W,
-    align: ALIGN.HCENTERFIT,
-    text: `(${next_move.name}: ${msg.join(' ')} )`,
-  });
-  y += FONT_HEIGHT;
 
   // probably not the right place to do this
   if (hp <= 0) {
@@ -823,6 +825,8 @@ function showCardList(title: string, x: number, y: number, pile: number[]): void
 const DRAW_PILE_X = 12;
 const DRAW_PILE_H = 26;
 const DRAW_PILE_Y = game_height - 12 - DRAW_PILE_H;
+const DRAW_PILE_W = 48;
+const DISCARD_PILE_X = game_width - 12 - DRAW_PILE_W;
 
 const CARD_OVERLAP = 20;
 const CARDS_W = HAND_SIZE * (CARD_W - CARD_OVERLAP) + CARD_OVERLAP;
@@ -987,8 +991,36 @@ function doHand(): void {
     crawlerTurnBasedScheduleStep(250, 'attack');
   }
 
+  // blend positions of cards in draw pile / discard pile
+  for (let ii = 0; ii < draw_pile.length; ++ii) {
+    let uid = draw_pile[ii];
+    let xx = blend(`cardx${uid}`, DRAW_PILE_X);
+    let yy = blend(`cardy${uid}`, DRAW_PILE_Y);
+    if (xx !== DRAW_PILE_X) {
+      drawCard({
+        card: deck[uid],
+        x: xx,
+        y: yy,
+        z,
+      });
+    }
+  }
+  for (let ii = 0; ii < discard_pile.length; ++ii) {
+    let uid = discard_pile[ii];
+    let xx = blend(`cardx${uid}`, DISCARD_PILE_X);
+    let yy = blend(`cardy${uid}`, DRAW_PILE_Y);
+    if (xx !== DISCARD_PILE_X) {
+      drawCard({
+        card: deck[uid],
+        x: xx,
+        y: yy,
+        z,
+      });
+    }
+  }
+
   let h = 26;
-  let w = 48;
+  let w = DRAW_PILE_W;
   x = DRAW_PILE_X;
   let y0 = DRAW_PILE_Y;
   y = y0;
@@ -1016,7 +1048,7 @@ function doHand(): void {
 
   pile = is_reshuffle ? draw_pile.slice(2) : discard_pile;
   if (pile.length) {
-    x = game_width - 12 - w;
+    x = DISCARD_PILE_X;
     drawBox({
       x, y, z,
       w, h,
@@ -1041,11 +1073,25 @@ function doHand(): void {
 
   x = DRAW_PILE_X;
   y = DRAW_PILE_Y - 16;
-  for (let ii = 0; ii < data.block; ++ii) {
-    autoAtlas('ui', 'block').draw({
-      x, y, w: 14, h: 14, z: Z.UI - 2,
-    });
-    x += 14 + 2;
+  if (data.block) {
+    if (data.block <= 5) {
+      for (let ii = 0; ii < data.block; ++ii) {
+        autoAtlas('ui', 'block').draw({
+          x, y, w: 14, h: 14, z: Z.UI - 2,
+        });
+        x += 14 + 2;
+      }
+    } else {
+      autoAtlas('ui', 'block').draw({
+        x, y, w: 14, h: 14, z: Z.UI - 2,
+      });
+      font.draw({
+        style: style_text,
+        x, y, w: 14, h: 14, z: Z.UI - 1.5,
+        align: ALIGN.HVCENTERFIT,
+        text: `${data.block}`,
+      });
+    }
   }
 
 }

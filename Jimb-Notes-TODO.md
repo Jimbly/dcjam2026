@@ -3,9 +3,11 @@ TODO
 
 animate cards in/out
 update enemy healthbar gfx
+make test encounter floor
+
+monsters should be able to swap positions with dead monsters
 Use appropriate font
 add border
-monsters should be able to swap positions with dead monsters
 
 
 Notes / Brainstorming

@@ -217,7 +217,7 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
 
   drawCard(): void {
     assert(this.data.draw_pile.length); // need to take HP and reshuffle
-    this.data.hand.push(this.data.draw_pile.pop()!);
+    this.data.hand.unshift(this.data.draw_pile.pop()!);
   }
 
   startPlayerPhase(): void {
