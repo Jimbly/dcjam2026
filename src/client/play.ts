@@ -2,6 +2,7 @@ import assert from 'assert';
 import { autoResetSkippedFrames } from 'glov/client/auto_reset';
 import { autoAtlas, autoAtlasSwap } from 'glov/client/autoatlas';
 import { cmd_parse } from 'glov/client/cmds';
+import { dynGeomForward } from 'glov/client/dyn_geom';
 import * as engine from 'glov/client/engine';
 import { ClientEntityManagerInterface } from 'glov/client/entity_manager_client';
 import {
@@ -56,6 +57,8 @@ import { unreachable } from 'glov/common/verify';
 import {
   JSVec2,
   JSVec3,
+  ROVec3,
+  v3addScale,
   v3iAddScale,
   v3iNormalize,
   v3iScale,
@@ -67,6 +70,7 @@ import {
   vec4,
 } from 'glov/common/vmath';
 import { CRAWLER_IS_ONLINE, CRAWLER_TURN_BASED } from '../common/crawler_config';
+import { entManhattanDistance } from '../common/crawler_entity_common';
 import {
   CrawlerLevel,
   crawlerLoadData,
@@ -138,6 +142,7 @@ import {
 } from './crawler_play';
 import {
   crawlerRenderViewportSet,
+  DIM,
   renderSet3DOffset,
   renderSetScreenShake,
   renderViewportShear,
@@ -524,10 +529,35 @@ function calcAttackCameraOffs(): Vec3 {
   return attack_camera_offs;
 }
 
+function drawBlock(x: number, y: number, block: number): void {
+  if (!block) {
+    return;
+  }
+  if (block <= 5) {
+    for (let ii = 0; ii < block; ++ii) {
+      autoAtlas('ui', 'block').draw({
+        x, y, w: 14, h: 14, z: Z.UI - 2,
+      });
+      x += 14 + 2;
+    }
+  } else {
+    autoAtlas('ui', 'block').draw({
+      x, y, w: 14, h: 14, z: Z.UI - 2,
+    });
+    font.draw({
+      style: style_text,
+      x, y, w: 14, h: 14, z: Z.UI - 1.5,
+      align: ALIGN.HVCENTERFIT,
+      text: `${block}`,
+    });
+  }
+}
+
+
 const ENEMY_HP_BAR_W = render_width / 4;
 const ENEMY_HP_BAR_X = VIEWPORT_X0 + (render_width - ENEMY_HP_BAR_W)/2;
 const ENEMY_HP_BAR_Y = VIEWPORT_Y0 + 8;
-const ENEMY_HP_BAR_H = HP_BAR_H * 0.75;
+const ENEMY_HP_BAR_H = 12;
 function drawEnemyStats(ent: Entity): void {
   let stats = ent.data.stats;
   if (!stats) {
@@ -539,18 +569,7 @@ function drawEnemyStats(ent: Entity): void {
   let show_text = true;
   drawHealthBar(ENEMY_HP_BAR_X, ENEMY_HP_BAR_Y, Z.UI, ENEMY_HP_BAR_W, bar_h,
     hp ? blend(`enemyhp${ent.id}`, hp) : 0, hp_max, show_text);
-  if (ent.data.block) {
-    let xx = ENEMY_HP_BAR_X + ENEMY_HP_BAR_W + 2;
-    for (let ii = 0; ii < ent.data.block; ++ii) {
-      autoAtlas('ui', 'block').draw({
-        x: xx,
-        y: ENEMY_HP_BAR_Y + floor((bar_h - 14) / 2),
-        w: 14,
-        h: 14,
-      });
-      xx += 14;
-    }
-  }
+  drawBlock(ENEMY_HP_BAR_X + ENEMY_HP_BAR_W + 2, ENEMY_HP_BAR_Y + floor((bar_h - 14) / 2), ent.data.block);
   let label_msg = ent.display_name;
   if (hp < 0) {
     label_msg = `Dying ${label_msg}`;
@@ -598,12 +617,80 @@ function drawEnemyStats(ent: Entity): void {
   }
 }
 
+const BAR_WORLD_PX = DIM * 0.5/ENEMY_HP_BAR_W;
+let temp_pos = vec3();
+function drawInWorldHealthbar(
+  this: Entity,
+  param: {
+    pos: ROVec3;
+  },
+): void {
+  let ent = this;
+  if (ent.draw_cb_frame !== engine.getFrameIndex()) {
+    return;
+  }
+  let hp = ent.getData('stats.hp', 0);
+  let hp_max = ent.getData('stats.hp_max', 1);
+  if (!hp_max || hp >= hp_max) {
+    return;
+  }
+  let { pos } = param;
+  let z = pos[2] + DIM * 0.95;
+  v3addScale(temp_pos, pos, dynGeomForward(), -0.01);
+
+  autoAtlas('ui', 'bar-frame-3d').draw3D({
+    pos: [temp_pos[0], temp_pos[1], z],
+    offs: [-ENEMY_HP_BAR_W/2 * BAR_WORLD_PX, 0],
+    size: [ENEMY_HP_BAR_W * BAR_WORLD_PX, ENEMY_HP_BAR_H * BAR_WORLD_PX],
+  });
+
+  if (hp) {
+    v3addScale(temp_pos, pos, dynGeomForward(), -0.02);
+    let w = max(hp / hp_max, 2/ENEMY_HP_BAR_W);
+    autoAtlas('ui', 'bar-frame-3d-fill').draw3D({
+      pos: [temp_pos[0], temp_pos[1], z],
+      offs: [(-ENEMY_HP_BAR_W/2 + 2) * BAR_WORLD_PX, BAR_WORLD_PX * 2],
+      size: [(ENEMY_HP_BAR_W - 4) * w * BAR_WORLD_PX, (ENEMY_HP_BAR_H - 4) * BAR_WORLD_PX],
+    });
+  }
+}
+
+const INFRONT_ANIMATING_THRESHOLD = 0.75;
+function doHealthbars(): void {
+  let game_state = crawlerGameState();
+  let level = game_state.level;
+  if (!level) {
+    return;
+  }
+  let my_ent = myEnt();
+  let { floor_id } = game_state;
+  let my_pos = my_ent.getData<JSVec3>('pos')!;
+  let entity_manager = entityManager();
+  let ent_in_front = crawlerController().controllerIsAnimating(INFRONT_ANIMATING_THRESHOLD) ? -1 : crawlerEntInFront();
+  let ents = entity_manager.entitiesFind((ent) => {
+    if (ent.data.floor !== floor_id || !(ent.isEnemy() || ent.isPlayer()) ||
+      !ent.isAlive() || ent.id === ent_in_front
+    ) {
+      return false;
+    }
+    if (entManhattanDistance(ent, my_pos) <= 5) {
+      return true;
+    }
+    return false;
+  }, true);
+  for (let ii = 0; ii < ents.length; ++ii) {
+    let ent = ents[ii];
+    ent.draw_cb = drawInWorldHealthbar;
+    ent.draw_cb_frame = engine.getFrameIndex();
+  }
+}
+
 function doEngagedEnemy(): void {
   let game_state = crawlerGameState();
   let level = game_state.level;
   if (
     !level ||
-    crawlerController().controllerIsAnimating(0.75) ||
+    crawlerController().controllerIsAnimating(INFRONT_ANIMATING_THRESHOLD) ||
     controller.transitioning_floor
   ) {
     return;
@@ -1079,27 +1166,7 @@ function doHand(): void {
 
   x = DRAW_PILE_X;
   y = DRAW_PILE_Y - 16;
-  if (data.block) {
-    if (data.block <= 5) {
-      for (let ii = 0; ii < data.block; ++ii) {
-        autoAtlas('ui', 'block').draw({
-          x, y, w: 14, h: 14, z: Z.UI - 2,
-        });
-        x += 14 + 2;
-      }
-    } else {
-      autoAtlas('ui', 'block').draw({
-        x, y, w: 14, h: 14, z: Z.UI - 2,
-      });
-      font.draw({
-        style: style_text,
-        x, y, w: 14, h: 14, z: Z.UI - 1.5,
-        align: ALIGN.HVCENTERFIT,
-        text: `${data.block}`,
-      });
-    }
-  }
-
+  drawBlock(x, y, data.block);
 }
 
 
@@ -1391,6 +1458,7 @@ function playCrawl(): void {
       // Do game UI/stats here
       drawStatsOverViewport();
       doEngagedEnemy();
+      doHealthbars();
       doHand();
       // crawlerButton(2, 0, inventory_frame, 'inventory', [KEYS.I], []);
     }
@@ -1809,27 +1877,11 @@ export function playStartup(): void {
     disabled: button_sprites_notext.disabled,
   };
 
-  let bar_param = {
-    filter_min: gl.NEAREST,
-    filter_mag: gl.NEAREST,
-    ws: [2, 4, 2],
-    hs: [2, 4, 2],
-  };
-  let healthbar_bg = spriteCreate({
-    name: 'crawler_healthbar_bg',
-    ...bar_param,
-  });
   bar_sprites = {
     healthbar: {
-      bg: healthbar_bg,
-      hp: spriteCreate({
-        name: 'crawler_healthbar_hp',
-        ...bar_param,
-      }),
-      empty: spriteCreate({
-        name: 'crawler_healthbar_empty',
-        ...bar_param,
-      }),
+      min_width: 6,
+      bg: autoAtlas('ui', 'bar-frame'),
+      hp: autoAtlas('ui', 'bar-fill-red'),
     },
   };
 

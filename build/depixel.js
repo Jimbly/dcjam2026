@@ -66,6 +66,7 @@ gb.task({
       '**/*brick_dark*:hwrap,vclamp',
       '**/*lair*:hwrap,vclamp',
       'ui/block.png:balpha',
+      'ui/bar-frame*:balpha',
     ],
   }),
 });

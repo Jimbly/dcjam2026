@@ -1,7 +1,6 @@
 TODO
 ====
 
-update enemy healthbar gfx
 make test encounter floor
 
 monsters should be able to swap positions with dead monsters
