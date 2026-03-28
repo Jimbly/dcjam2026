@@ -1546,7 +1546,7 @@ let mat_temp1 = mat4();
 function applyShear(): void {
   let mat_view = engine.mat_view;
   mat4Identity(mat_temp1);
-  let offs_from_faced_wall = (1 - pos_offs[1]) * HDIM;
+  let offs_from_faced_wall = (1 - pos_offs[1]) * HDIM * 0.4; // DCJAM
   mat4Translate(mat_temp1, mat_temp1, [0, viewport_shear*offs_from_faced_wall, 0]);
   mat4Mul(mat_view, mat_temp1, mat_view);
   mat4Mul(mat_view, [

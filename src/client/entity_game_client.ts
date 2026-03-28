@@ -188,7 +188,11 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
 
   onCreate(is_initial: boolean): number {
     if (!this.isAlive() && this.triggerAnimation) {
-      this.triggerAnimation('death');
+      if (!this.data.stats.hp) {
+        this.triggerAnimation('uncon');
+      } else {
+        this.triggerAnimation('death');
+      }
     }
     return is_initial ? 0 : 250;
   }

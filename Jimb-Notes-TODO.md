@@ -1,3 +1,17 @@
+TODO
+====
+
+Deal damage to them, trigger turn when using a card
+Show card count left in draw pile, click to redraw hand
+HP damage to reshuffle
+animate cards in/out
+
+Use appropriate font
+
+
+
+Notes / Brainstorming
+=====================
 
 Combat and cards and exploration:
 * Option 1: cards always visible, can maybe use/discard between combats (but not redraw until combat starts), some cards might be useful while exploring?  Then, can have combat that involves moving in the world, multiple enemies, fleeing, etc

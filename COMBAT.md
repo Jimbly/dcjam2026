@@ -25,3 +25,28 @@ Upon "loss":
 
 Trinkets?
   Maybe: 1-2 super items per dungeon (found, not earned?)
+
+
+Alternative (to gear-based?):
+  Cards are HP
+  You play a card (now down to 4 cards)
+  Enemy attacks cause you to discard 1-4 random cards (or, rarely, burn a card)
+  Draw back up to 5, unless draw pile is empty
+  If both hand and draw pile is empty, reshuffle (and then apply any remaining incoming damage)
+  Reshuffling causes you to burn a card (pick 1 of 2, or discard both and pick again)
+
+  Between encounters, you choose which cards are in your deck from your available cards
+    Probably: need exactly the right number
+  Gaining new cards:
+    If only 1-2 per floor, when you gain a new card, it goes right in your deck
+    Healing Fountains could give you a few ephemeral weak cards just to delay death (weird that this is _much_ more effective earlier in the level, though!) - or, just un-burn cards
+    Could still be gear based - gear adds 2-3 cards to your pool; just slightly weird you can only equip new gear between floors
+      Not-gear-based makes card upgrading more straightforward
+
+  The math:
+    Assume deck of 10 cards, we discard a total of 55 cards
+    Assume we average 3 damage each card
+    Assume enemy attacks do 2 damage each (3 cards consumed per turn)
+    We do a total of 55 damage per floor
+    So, 5 enemies around 10 hp each
+  In practice, will have turns where we don't want to play any of our cards

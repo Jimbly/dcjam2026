@@ -21,6 +21,7 @@ const scale_globs = {
   'ui/*.png': 8,
   'test/*.png': 8,
   'main/*.png': 24,
+  'enemies/*.png': 8,
 };
 const depixel_input = Object.keys(scale_globs);
 
@@ -99,7 +100,7 @@ gb.task(asyncHashed(8, {
     }
     let scale = -1;
     for (let key in scale_globs) {
-      if (micromatch(file.relative, key)) {
+      if (micromatch(file.relative, key).length) {
         scale = scale_globs[key];
       }
     }

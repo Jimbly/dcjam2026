@@ -17,14 +17,14 @@ export const CARDS_RAW = {
     name: 'Dagger',
     range: 'melee',
     effect: {
-      damage: 1,
+      damage: 3,
     },
   },
   'block1': {
     name: 'Shield',
     range: 'self',
     effect: {
-      block: 1,
+      block: 2,
     },
   },
 } as const satisfies TSMap<CardDef>;

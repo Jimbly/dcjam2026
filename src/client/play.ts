@@ -65,6 +65,9 @@ import {
   CrawlerLevel,
   crawlerLoadData,
   dirMod,
+  DirType,
+  DX,
+  DY,
 } from '../common/crawler_state';
 import {
   aiDoFloor,
@@ -116,7 +119,6 @@ import {
   crawlerSaveGame,
   crawlerScriptAPI,
   crawlerTurnBasedMovePreStart,
-  crawlerTurnBasedScheduleStep,
   getScaledFrameDt,
   TurnBasedStepReason,
 } from './crawler_play';
@@ -490,10 +492,23 @@ function drawEnemyStats(ent: Entity): void {
   let show_text = true;
   drawHealthBar(ENEMY_HP_BAR_X, ENEMY_HP_BAR_Y, Z.UI, ENEMY_HP_BAR_W, bar_h,
     hp ? blend(`enemyhp${ent.id}`, hp) : 0, hp_max, show_text);
-  if (ent.display_name) {
+  let label_msg = ent.display_name;
+  if (hp < 0) {
+    label_msg = `Dying ${label_msg}`;
+  } else if (!hp) {
+    label_msg = `Unconscious ${label_msg}`;
+  }
+  if (label_msg) {
     font.drawSizedAligned(style_text, ENEMY_HP_BAR_X, ENEMY_HP_BAR_Y + bar_h, Z.UI,
       uiTextHeight(), ALIGN.HVCENTERFIT,
-      ENEMY_HP_BAR_W, bar_h, ent.display_name);
+      ENEMY_HP_BAR_W, bar_h, label_msg);
+  }
+
+  // probably not the right place to do this
+  if (hp <= 0) {
+    ent.blocks_player = false;
+  } else {
+    ent.blocks_player = true; // but not on healing level
   }
 }
 
@@ -561,14 +576,28 @@ const CARDS_Y = 203;
 const CARDS_Y_SEL = VIEWPORT_Y0 + render_height - CARD_H;
 function doHand(): void {
   let me = myEnt();
+  if (!me.isAlive()) {
+    return;
+  }
   let { data } = me;
   let { hand } = data;
+
+  let entities = entityManager().entities;
+  let ent_in_front = crawlerEntInFront();
+  let target_ent: Entity | null = null;
+  if (ent_in_front) {
+    target_ent = entities[ent_in_front]!;
+    if (!target_ent || !target_ent.isEnemy()) {
+      target_ent = null;
+    }
+  }
 
   let x = CARDS_X;
   let y = CARDS_Y;
   let z = Z.UI;
 
   let play_card = -1;
+  let hotkey = 0;
   for (let ii = 0; ii < hand.length; ++ii) {
     let card = hand[ii];
     if (!card) {
@@ -587,10 +616,15 @@ function doHand(): void {
     };
     let spot_ret = spot({
       def: SPOT_DEFAULT_BUTTON,
+      hotkey: KEYS['1'] + hotkey,
       ...click_rect,
     });
+    let target_y = rect.y;
     if (spot_ret.focused) {
-      rect.y = CARDS_Y_SEL;
+      target_y = CARDS_Y_SEL;
+    }
+    let eff_y = blend(`cardy${ii}`, target_y, 200);
+    if (eff_y < (CARDS_Y_SEL + CARDS_Y)/2) {
       rect.z += 10;
     }
     if (spot_ret.ret) {
@@ -599,15 +633,34 @@ function doHand(): void {
     drawCard({
       ...rect,
       x: blend(`cardx${ii}`, rect.x, 200),
-      y: blend(`cardy${ii}`, rect.y, 200),
+      y: eff_y,
       card_id: card,
     });
     x += CARD_W - CARD_OVERLAP;
     z++;
+    hotkey++;
   }
   if (play_card !== -1) {
+    let card_id = hand[play_card];
     hand[play_card] = null;
-    // TODO: do effect
+    // do effect / play card
+    assert(card_id);
+    let card_def = CARDS[card_id]!;
+    let key: CardEffect;
+    for (key in card_def.effect) {
+      let value = card_def.effect[key]!;
+      if (key === 'damage') {
+        let dir = data.pos[2] as DirType;
+        attackSurgeAdd(DX[dir], DY[dir], target_ent ? 0.5 : 0.25);
+        if (target_ent) {
+          let stats = target_ent.data.stats;
+          stats.hp -= value;
+          if (stats.hp <= 0) {
+            target_ent.triggerAnimation!('death');
+          }
+        }
+      }
+    }
   }
 }
 
@@ -701,10 +754,10 @@ function bumpEntityCallback(ent_id: EntityID): void {
   let me = myEnt();
   let all_entities = entityManager().entities;
   let target_ent = all_entities[ent_id]!;
-  if (target_ent && target_ent.isAlive() && target_ent.isEnemy() && me.isAlive()) {
-    addFloater(ent_id, 'POW!', '');
-    attackSurgeAdd(target_ent.data.pos[0] - me.data.pos[0], target_ent.data.pos[1] - me.data.pos[1], 1);
-    crawlerTurnBasedScheduleStep(250, 'attack');
+  if (target_ent && me.isAlive()) {
+    //addFloater(ent_id, 'POW!', '');
+    attackSurgeAdd(target_ent.data.pos[0] - me.data.pos[0], target_ent.data.pos[1] - me.data.pos[1], 0.1);
+    //crawlerTurnBasedScheduleStep(250, 'attack');
   }
 }
 
@@ -1176,6 +1229,7 @@ function applyAtlasSwaps(): void {
   [
     'main',
     'ui',
+    'enemies',
   ].forEach(function (base_name) {
     autoAtlasSwap(base_name, `${base_name}${suffix}`);
   });

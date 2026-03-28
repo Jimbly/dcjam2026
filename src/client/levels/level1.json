@@ -2351,25 +2351,10 @@
   ],
   "initial_entities": [
     {
-      "type": "demo_shopkeeper",
+      "type": "enemy0",
       "pos": [
-        5,
-        12
-      ]
-    },
-    {
-      "type": "demo_wander",
-      "pos": [
-        7,
-        9,
-        2
-      ]
-    },
-    {
-      "type": "demo_shopkeeper",
-      "pos": [
-        1,
-        10,
+        0,
+        13,
         3
       ]
     },
@@ -2377,8 +2362,8 @@
       "type": "enemy0",
       "pos": [
         1,
-        9,
-        0
+        12,
+        2
       ]
     }
   ],

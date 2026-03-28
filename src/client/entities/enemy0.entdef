@@ -1,29 +1,34 @@
 ---
 properties:
-  display_name: Crystal Wing
+  display_name: Slime
 traits:
+- id: hunter
 - id: enemy
 - id: stats_default
   hp: 10
 - id: drawable
-  biasL: [-0.25, 0.3]
-  biasF: [0, -0.25]
-  biasR: [-0.25, 0.5]
+  # biasL: [-0.25, 0.3]
+  # biasF: [0, -0.25]
+  # biasR: [-0.25, 0.5]
 - id: drawable_sprite
   anim_data:
     idle:
-      frames: [crystalwing]
-      times: 10000
+      frames: [slime-idle0, slime-idle1, slime-idle2, slime-idle3, slime-idle4, slime-idle5]
+      times: 200
+    death:
+      frames: [slime-death0, slime-death1, slime-death2, slime-death3, slime-death4, slime-death5, slime-death6, slime-death7, slime-death8, slime-death9]
+      times: 120
+      loop: false
+    uncon:
+      frames: [slime-uncon2, slime-uncon1, slime-uncon0, slime-uncon1]
+      times: 300
   sprite_data:
-    atlas: utumno
+    atlas: enemies
     filter_min: LINEAR_MIPMAP_LINEAR
     filter_mag: LINEAR
-    origin: [0.5, 0.9]
+    origin: [0.5, 1]
   scale: 0.75
-  simple_anim:
-    - period: 5000
-      # scale: [1, 1.15]
-      # easing: 2
-      offs:
-        - [0, -0.15]
-        - [0, 0]
+  # simple_anim:
+  #   - period: 5000
+  #     scale: [1, 0.8]
+  #     easing: 2

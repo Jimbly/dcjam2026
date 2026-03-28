@@ -304,9 +304,15 @@ export function dynGeomQueueSprite(sprite, params) {
   doublesided = doublesided || false;
 
   let { origin } = sprite;
+  // let aspect = sprite.uidata.aspect?.[0] || 1;
   let [w, h] = size;
   v3addScale(pos0, pos, my_right, -origin[0] * w + offs[0]);
   v3addScale(pos0, pos0, my_down, -origin[1] * h + offs[1]);
+  // if (aspect > 1 && origin[1]) {
+  //   v3addScale(pos0, pos0, my_down, origin[1] * (1 - 1 / aspect) * h);
+  // } else if (aspect < 1 && origin[0]) {
+  //   v3addScale(pos0, pos0, my_right, origin[0] * (1 - aspect) * w);
+  // }
 
   // TODO: rot?
   elem.allocQuad(doublesided);

@@ -85,6 +85,8 @@ import {
 import { pathFind } from '../common/pathfind';
 import { buildModeActive } from './crawler_build_mode';
 import {
+  crawlerEntitiesAt,
+  crawlerEntityManager,
   entityBlocks,
   EntityCrawlerClient,
 } from './crawler_entity_client';
@@ -1401,8 +1403,11 @@ export class CrawlerController {
     this.path_to = [target_x, target_y];
   }
 
-  getEntInFront(): EntityID | null {
+  getEntInFront(include_non_blockers: boolean): EntityID | null {
     if (this.player_controller.isMoving() && false) {
+      return null;
+    }
+    if (buildModeActive()) {
       return null;
     }
     const { game_state, last_dest_pos, last_dest_rot, script_api } = this;
@@ -1412,7 +1417,15 @@ export class CrawlerController {
     script_api.setPos(last_dest_pos);
     if (!level.wallsBlock(last_dest_pos, last_dest_rot, script_api)) {
       v2add(temp_pos, last_dest_pos, DXY[last_dest_rot]);
-      return !buildModeActive() && entityBlocks(game_state.floor_id, temp_pos, false) || null;
+      if (include_non_blockers) {
+        let ent_list = crawlerEntitiesAt(crawlerEntityManager(), temp_pos, game_state.floor_id, false);
+        if (!ent_list.length) {
+          return null;
+        }
+        return ent_list[0].id;
+      } else {
+        return entityBlocks(game_state.floor_id, temp_pos, false) || null;
+      }
     } else {
       return null;
     }
