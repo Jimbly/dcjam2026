@@ -19,15 +19,29 @@ export const EFFECT_TEMPLATE: Record<CardEffect, string> = {
 };
 
 export const CARDS_RAW = {
-  'attack1': {
-    name: 'Dagger',
+  'attack2': {
+    name: 'Jab',
+    range: 'melee',
+    effect: {
+      damage: 2,
+    },
+  },
+  'attack3': {
+    name: 'Slash',
     range: 'melee',
     effect: {
       damage: 3,
     },
   },
-  'block1': {
-    name: 'Shield',
+  'attack4': {
+    name: 'Strike',
+    range: 'melee',
+    effect: {
+      damage: 4,
+    },
+  },
+  'block2': {
+    name: 'Dodge',
     range: 'self',
     effect: {
       block: 2,

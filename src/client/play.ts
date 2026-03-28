@@ -8,7 +8,6 @@ import { ClientEntityManagerInterface } from 'glov/client/entity_manager_client'
 import {
   ALIGN,
   Font,
-  fontStyle,
   fontStyleAlpha,
   fontStyleColored,
 } from 'glov/client/font';
@@ -187,7 +186,7 @@ import {
   statusPush,
   statusTick,
 } from './status';
-import { style_label } from './styles';
+import { style_damage, style_hotkey, style_label, style_text } from './styles';
 import { uiActionClear, uiActionCurrent, uiActionTick } from './uiaction';
 import { pauseMenuActive, pauseMenuOpen } from './uiaction_pause_menu';
 
@@ -243,13 +242,6 @@ type BarSprite = {
 let bar_sprites: {
   healthbar: BarSprite;
 };
-
-const style_text = fontStyle(null, {
-  color: 0xFFFFFFff,
-  outline_width: 4,
-  outline_color: 0x000000ff,
-});
-const style_damage = style_text;
 
 export function myEnt(): Entity {
   return crawlerMyEnt() as Entity;
@@ -590,7 +582,7 @@ function drawEnemyStats(ent: Entity): void {
       text: label_msg
     });
   }
-  y += uiTextHeight();
+  y += uiTextHeight() + 2;
 
   if (ent.isAlive()) {
     let next_move = ent.monsterMoveGet();
@@ -710,11 +702,12 @@ const CARD_H = 85;
 const CARD_PAD = 4;
 function drawCard(param: {
   card: Card;
+  hotkey?: string;
   x: number;
   y: number;
   z: number;
 }): void {
-  let { card, x, y, z } = param;
+  let { card, hotkey, x, y, z } = param;
   let card_def = CARDS[card.card_id]!;
   drawBox({
     x, y, z,
@@ -722,9 +715,16 @@ function drawCard(param: {
     h: CARD_H,
   }, autoAtlas('ui', 'card'));
   y += CARD_PAD;
+  if (hotkey) {
+    font.draw({
+      style: style_hotkey,
+      x: x + CARD_PAD, y, z: z + 0.1,
+      text: hotkey,
+    });
+  }
   font.draw({
     style: style_label,
-    x: x + CARD_PAD, y, z, w: CARD_W - CARD_PAD * 2,
+    x: x + CARD_PAD, y, z: z + 0.1, w: CARD_W - CARD_PAD * 2,
     align: ALIGN.HCENTERFIT,
     text: card_def.name,
   });
@@ -734,7 +734,9 @@ function drawCard(param: {
     let value = card_def.effect[key]!;
     markdownAuto({
       font_style: style_label,
-      x: x + CARD_PAD, y, z, w: CARD_W - CARD_PAD * 2,
+      text_height: FONT_HEIGHT,
+      line_height: 14,
+      x: x + CARD_PAD, y, z: z + 0.1, w: CARD_W - CARD_PAD * 2,
       align: ALIGN.HCENTERFIT,
       text: EFFECT_TEMPLATE[key].replace('{N}', `${value}`),
     });
@@ -797,6 +799,7 @@ function doReshuffle(): void {
   rect.y = blend('shuffle0y', y - (spot_ret.focused ? 4 : 0), 100);
   drawCard({
     ...rect,
+    hotkey: '1',
     card: deck[discard_pile[0]],
   });
   if (spot_ret.focused) {
@@ -817,6 +820,7 @@ function doReshuffle(): void {
   rect.y = blend('shuffle1y', y - (spot_ret.focused ? 4 : 0), 100);
   drawCard({
     ...rect,
+    hotkey: '2',
     card: deck[discard_pile[1]],
   });
   if (spot_ret.focused) {
@@ -1007,11 +1011,12 @@ function doHand(): void {
     if (ii === hand.length - 1) {
       click_rect.w += CARD_OVERLAP/2;
     }
+    let disabled = data.combat_phase !== 'player';
     let spot_ret = spot({
       def: SPOT_DEFAULT_BUTTON,
       hotkey: KEYS['1'] + hotkey,
       ...click_rect,
-      disabled: data.combat_phase !== 'player',
+      disabled,
       disabled_focusable: false,
     });
     let target_y = rect.y;
@@ -1027,6 +1032,7 @@ function doHand(): void {
     }
     drawCard({
       ...rect,
+      hotkey: disabled ? undefined : String.fromCharCode('1'.charCodeAt(0) + ii),
       x: blend(`cardx${uid}`, rect.x, 200),
       y: eff_y,
       card,

@@ -15,7 +15,7 @@ import { clone } from 'glov/common/util';
 import type { ROVec2, ROVec3 } from 'glov/common/vmath';
 import { EntityCrawlerDataCommon, entSamePos } from '../common/crawler_entity_common';
 import type { JSVec3 } from '../common/crawler_state';
-import { Card, CardDef, HAND_SIZE } from './cards';
+import { Card, CardDef, CardID, HAND_SIZE } from './cards';
 import {
   crawlerEntClientDefaultDraw2D,
   crawlerEntClientDefaultOnDelete,
@@ -125,19 +125,21 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
     if (this.type_id === 'player') {
       if (!data.deck) {
         data.deck = {};
-        for (let ii = 0; ii < 6; ++ii) {
+        const pushCard = (card_id: CardID): void => {
           let uid = this.cardAllocUID();
           data.deck[uid] = {
-            card_id: 'attack1',
+            card_id,
             uid,
           };
-        }
+        };
+        pushCard('attack2');
+        pushCard('attack2');
+        pushCard('attack3');
+        pushCard('attack3');
+        pushCard('attack4');
+        pushCard('attack4');
         for (let ii = 0; ii < 4; ++ii) {
-          let uid = this.cardAllocUID();
-          data.deck[uid] = {
-            card_id: 'block1',
-            uid,
-          };
+          pushCard('block2');
         }
         this.populateDrawPileFromDeck();
         this.drawHand();
