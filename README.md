@@ -1,7 +1,7 @@
-DCJam2025 - Themes: TBD
+DCJam2026 - Themes: Cleaning up the hero's mess, :dragon: Dragons, Retrofuturism, Elemental Rock-Paper-Scissors
 ============================
 
-Dungeon Crawler Jam 2025 Entry by Jimbly and Team - "Title TBD"
+Dungeon Crawler Jam 2026 Entry by Jimbly and Team - "Title TBD"
 
 
 * Play here: [dashingstrike.com/LudumDare/DCJ2026/](http://www.dashingstrike.com/LudumDare/DCJ2026/)

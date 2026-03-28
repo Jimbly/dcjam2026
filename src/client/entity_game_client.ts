@@ -29,7 +29,7 @@ import {
 } from './crawler_entity_client';
 import { randInt } from './play';
 
-const { floor, random } = Math;
+const { floor, min, random } = Math;
 
 type Entity = EntityClient;
 
@@ -68,6 +68,7 @@ export type EntityDataClient = {
   // Player:
   combat_phase: CombatPhase;
   incoming_damage: number;
+  block: number;
   deck: Record<number, Card>; // uid -> card
   draw_pile: number[]; // array of uids
   discard_pile: number[]; // array of uids
@@ -138,6 +139,7 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
         }
         this.populateDrawPileFromDeck();
         this.drawHand();
+        data.block = 0;
       }
       if (!data.combat_phase) {
         data.combat_phase = 'player';
@@ -203,9 +205,19 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
     this.data.hand.push(this.data.draw_pile.pop()!);
   }
 
-  takeDamage(amt: number): void {
+  startPlayerPhase(): void {
+    let { data } = this;
+    data.block = data.block ? data.block - 1 : 0;
+    data.combat_phase = 'player';
+  }
+
+  takeDamage(amt: number): number {
     let { data } = this;
     let { hand, discard_pile, draw_pile } = data;
+    let blocked = 0;
+    blocked = min(data.block || 0, amt);
+    data.block -= blocked;
+    amt -= blocked;
     while (amt && (hand.length || draw_pile.length)) {
       --amt;
       let uid;
@@ -221,6 +233,7 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
     if (amt) {
       data.incoming_damage = amt;
     }
+    return blocked;
   }
 
   static AI_UPDATE_FIELD = 'seq_ai_update';

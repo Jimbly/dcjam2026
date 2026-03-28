@@ -1,12 +1,13 @@
 TODO
 ====
 
-add block effect for hero and monsters
 telegraph monster intent
+add block effect for monsters
 animate cards in/out
 update enemy healthbar gfx
 Use appropriate font
 add border
+monsters should be able to swap positions with dead monsters
 
 
 Notes / Brainstorming

@@ -21,7 +21,7 @@ import {
   padButtonUpEdge,
 } from 'glov/client/input';
 import { markdownAuto } from 'glov/client/markdown';
-import { markdownSetColorStyle } from 'glov/client/markdown_renderables';
+import { markdownImageRegisterAutoAtlas, markdownSetColorStyle } from 'glov/client/markdown_renderables';
 import { ClientChannelWorker, netSubs } from 'glov/client/net';
 import * as settings from 'glov/client/settings';
 import {
@@ -52,6 +52,7 @@ import {
   TSMap,
 } from 'glov/common/types';
 import { clamp, easeIn, easeOut, ridx } from 'glov/common/util';
+import { unreachable } from 'glov/common/verify';
 import {
   JSVec2,
   JSVec3,
@@ -87,6 +88,7 @@ import {
   CardDef,
   CardEffect,
   CARDS,
+  EFFECT_TEMPLATE,
   HAND_SIZE,
 } from './cards';
 import {
@@ -391,7 +393,7 @@ function drawStatsOverViewport(): void {
     let floater = incoming_damage[ii];
     const { from } = floater;
     let elapsed = engine.frame_timestamp - floater.start;
-    const FLOATER_TIME = 750; // not including fade
+    const FLOATER_TIME = 1250; // not including fade
     const FLOATER_FADE = 250;
     const BLINK_TIME = 250;
     let alpha = 1;
@@ -452,11 +454,17 @@ function drawStatsOverViewport(): void {
     let floaty = easeOut(elapsed / (FLOATER_TIME + FLOATER_FADE), 2) * 10;
     let posx = VIEWPORT_X0 + (floater.pos[0] + 0.5) * DAMAGE_GRID_CELL_W;
     let posy = VIEWPORT_Y0 + render_height - (floater.pos[1] + 0.5) * DAMAGE_HEIGHT;
-    font.drawSizedAligned(fontStyleAlpha(style_damage, alpha),
-      posx - 400,
-      posy + floaty, Z.FLOATERS,
-      DAMAGE_HEIGHT * float, ALIGN.HVCENTER | ALIGN.HWRAP,
-      800, 0, floater.msg);
+    markdownAuto({
+      font_style: fontStyleAlpha(style_damage, alpha),
+      x: posx - 400,
+      y: posy + floaty - 400,
+      z: Z.FLOATERS,
+      text_height: DAMAGE_HEIGHT * float,
+      align: ALIGN.HVCENTER | ALIGN.HWRAP,
+      w: 800,
+      h: 800,
+      text: floater.msg,
+    });
   }
   if (blink < 1) {
     let v = easeOut(blink, 2);
@@ -598,11 +606,11 @@ function drawCard(param: {
   let key: CardEffect;
   for (key in card_def.effect) {
     let value = card_def.effect[key]!;
-    font.draw({
-      style: style_label,
+    markdownAuto({
+      font_style: style_label,
       x: x + CARD_PAD, y, z, w: CARD_W - CARD_PAD * 2,
       align: ALIGN.HCENTERFIT,
-      text: `${value} ${key}`,
+      text: EFFECT_TEMPLATE[key].replace('{N}', `${value}`),
     });
     y += FONT_HEIGHT;
   }
@@ -775,6 +783,10 @@ function showCardList(title: string, x: number, y: number, pile: number[]): void
   });
 }
 
+const DRAW_PILE_X = 12;
+const DRAW_PILE_H = 26;
+const DRAW_PILE_Y = game_height - 12 - DRAW_PILE_H;
+
 const CARD_OVERLAP = 20;
 const CARDS_W = HAND_SIZE * (CARD_W - CARD_OVERLAP) + CARD_OVERLAP;
 const CARDS_X = VIEWPORT_X0 + floor((render_width - CARDS_W) / 2);
@@ -818,14 +830,14 @@ function doHand(): void {
         if (!combat_state.countdown) {
           me.drawCard();
           if (hand.length === HAND_SIZE) {
-            data.combat_phase = 'player';
+            me.startPlayerPhase();
           } else {
             combat_state.countdown = 250;
           }
         }
       } else if (hand.length) {
         // have at least some cards left in hand
-        data.combat_phase = 'player';
+        me.startPlayerPhase();
       } else {
         // need to reshuffle and choose to burn a card
         data.combat_phase = 'reshuffle';
@@ -833,7 +845,7 @@ function doHand(): void {
         me.reshuffle(true);
       }
     } else {
-      data.combat_phase = 'player';
+      me.startPlayerPhase();
     }
   }
 
@@ -916,6 +928,12 @@ function doHand(): void {
           // eslint-disable-next-line @typescript-eslint/no-use-before-define
           addFloater(target_ent.id, `${value}`);
         }
+      } else if (key === 'block') {
+        data.block = (data.block || 0) + value;
+      } else if (key === 'heal') {
+        // TODO
+      } else {
+        unreachable(key);
       }
     }
     data.combat_phase = 'enemy';
@@ -924,8 +942,8 @@ function doHand(): void {
 
   let h = 26;
   let w = 48;
-  x = 12;
-  let y0 = game_height - 12 - h;
+  x = DRAW_PILE_X;
+  let y0 = DRAW_PILE_Y;
   y = y0;
   let is_reshuffle = data.combat_phase === 'reshuffle';
   if (is_reshuffle) {
@@ -973,6 +991,16 @@ function doHand(): void {
   if (data.combat_phase === 'reshuffle') {
     menuUp();
   }
+
+  x = DRAW_PILE_X;
+  y = DRAW_PILE_Y - 16;
+  for (let ii = 0; ii < data.block; ++ii) {
+    autoAtlas('ui', 'block').draw({
+      x, y, w: 14, h: 14, z: Z.UI - 2,
+    });
+    x += 14 + 2;
+  }
+
 }
 
 
@@ -1021,16 +1049,25 @@ export function attackPlayer(source: Entity, target: Entity, attack: CardDef): v
   for (key in effect) {
     let value = effect[key]!;
     if (key === 'damage') {
-      incoming_damage.push({
-        start: engine.frame_timestamp,
-        msg: `-${value}`,
-        from: rot,
-      });
 
       let dss = (source as unknown as EntityDrawableSprite).drawable_sprite_state;
       dss.surge_at = engine.frame_timestamp;
       dss.surge_time = 250;
-      myEnt().takeDamage(value);
+      let blocked = myEnt().takeDamage(value);
+      let unblocked = value - blocked;
+      let msg = [];
+      if (unblocked) {
+        msg.push(`-${unblocked}[img=cardicon]`);
+      }
+      if (blocked) {
+        msg.push(`-${blocked}[img=block]`);
+      }
+
+      incoming_damage.push({
+        start: engine.frame_timestamp,
+        msg: msg.join(' '),
+        from: rot,
+      });
     }
   }
 }
@@ -1713,4 +1750,5 @@ export function playStartup(): void {
 
   markdownSetColorStyle('note', fontStyleColored(null, palette_font[PAL_GREY[2]]));
   markdownSetColorStyle('red', fontStyleColored(null, palette_font[PAL_RED - 1]));
+  markdownImageRegisterAutoAtlas('ui');
 }

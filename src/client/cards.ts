@@ -12,6 +12,12 @@ export type CardDef = {
   effect: Partial<Record<CardEffect, number>>;
 };
 
+export const EFFECT_TEMPLATE: Record<CardEffect, string> = {
+  damage: '{N} [img=attack]',
+  heal: '{N} [img=heal]',
+  block: '{N} [img=block]',
+};
+
 export const CARDS_RAW = {
   'attack1': {
     name: 'Dagger',
