@@ -665,10 +665,11 @@ export function crawlerRenderEntities(ent_set: SplitSet): void {
         if (is_in_front && !crawlerController().controllerIsAnimating() && floater.msg) {
           let { x, y, w, h } = crawlerRenderViewportGet();
           let float = easeOut(elapsed / (FLOATER_TIME + FLOATER_FADE), 2) * 20;
+          let text_height = uiTextHeight() * 2;
           font.drawSizedAlignedWrapped(fontStyleAlpha(style_text, alpha),
             x,
             y + h/2 - float, Z.FLOATERS, 0,
-            uiTextHeight(), ALIGN.HCENTER|ALIGN.VBOTTOM,
+            text_height, ALIGN.HCENTER|ALIGN.VBOTTOM,
             w, 0, floater.msg);
         }
       }

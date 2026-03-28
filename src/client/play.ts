@@ -28,7 +28,7 @@ import {
   settingsRegister,
   settingsSet,
 } from 'glov/client/settings';
-import { spot, SPOT_DEFAULT_BUTTON } from 'glov/client/spot';
+import { spot, SPOT_DEFAULT_BUTTON, SPOT_DEFAULT_LABEL } from 'glov/client/spot';
 import {
   Sprite,
   spriteCreate,
@@ -40,6 +40,7 @@ import {
   drawRect2,
   menuUp,
   modalDialog,
+  panel,
   playUISound,
   uiButtonWidth,
   uiGetFont,
@@ -83,6 +84,7 @@ import { blend } from './blend';
 // import './client_cmds';
 import {
   Card,
+  CardDef,
   CardEffect,
   CARDS,
   HAND_SIZE,
@@ -168,6 +170,7 @@ import { chatUI } from './main';
 import { tickMusic } from './music';
 import {
   PAL_GREY,
+  PAL_RED,
   PAL_WHITE,
   palette_font,
 } from './palette';
@@ -249,7 +252,7 @@ export function myEntOptional(): Entity | undefined {
   return crawlerMyEntOptional() as Entity | undefined;
 }
 
-function randInt(range: number): number {
+export function randInt(range: number): number {
   return floor(random() * range);
 }
 
@@ -288,7 +291,8 @@ function aiStep(reason: TurnBasedStepReason): void {
       distance_limit: 9,
       payload,
     });
-    myEnt().data.combat_phase = 'redraw';
+    let { data } = myEnt();
+    data.combat_phase = 'redraw';
     combat_state.countdown = 0;
   }
 }
@@ -609,9 +613,6 @@ function doReshuffle(): void {
   let { data } = me;
   let { draw_pile, hand, deck } = data;
   assert(!hand.length);
-  if (autoResetSkippedFrames('reshuffle')) {
-    me.reshuffle();
-  }
   if (draw_pile.length < 2) {
     // not enough to burn one, kill player
     draw_pile.length = 0;
@@ -638,9 +639,11 @@ function doReshuffle(): void {
     font_style: fontStyleColored(null, palette_font[PAL_WHITE]),
     align: ALIGN.HCENTER|ALIGN.HWRAP,
     text: 'Your draw pile is exhausted, you must BURN 1 card in order to reshuffle.' +
-    '\n\nChoose 1 of these two cards to BURN.' +
-    '\n\n[c=note]Note: burnt cards are returned to your deck at the end of the encounter (floor).[/c]' +
-    '\n\n[c=note]Warning: if you have no cards left, you die![/c]',
+      '\n\nChoose one of these cards to BURN.' +
+      '\n\n[c=note]Note: burnt cards are returned to your deck at the end of the encounter (floor).[/c]' +
+      '\n\n[c=note]Warning: if you have no cards left, you die![/c]' +
+      `${(data.incoming_damage ?
+        `\n\nNote: you still have [c=red]${data.incoming_damage} damage[/c] to resolve.` : '')}`,
   }).h + 8;
 
   let rect = {
@@ -651,6 +654,7 @@ function doReshuffle(): void {
   let spot_ret = spot({
     ...rect,
     def: SPOT_DEFAULT_BUTTON,
+    hotkey: KEYS['1']
   });
   let burn_card = -1;
   if (spot_ret.ret) {
@@ -671,6 +675,7 @@ function doReshuffle(): void {
   spot_ret = spot({
     ...rect,
     def: SPOT_DEFAULT_BUTTON,
+    hotkey: KEYS['2']
   });
   if (spot_ret.ret) {
     burn_card = 1;
@@ -690,10 +695,84 @@ function doReshuffle(): void {
   if (burn_card !== -1) {
     // let burnt = draw_pile[burn_card];
     draw_pile.splice(burn_card, 1);
+    me.reshuffle(false);
     data.combat_phase = 'redraw';
+    if (data.incoming_damage) {
+      let amt = data.incoming_damage;
+      data.incoming_damage = 0;
+      me.takeDamage(amt);
+    }
   }
+}
 
-  menuUp();
+function sameCard(a: Card, b: Card): boolean {
+  return a.card_id === b.card_id;
+}
+
+const PANEL_PAD = 6;
+function showCardList(title: string, x: number, y: number, pile: number[]): void {
+  let me = myEnt();
+  let { data } = me;
+  let { deck } = data;
+
+  let list = pile.slice(0);
+  list.sort(function (a, b) {
+    let ca = deck[a];
+    let cb = deck[b];
+    if (!sameCard(ca, cb)) {
+      return ca.card_id < cb.card_id ? -1 : 1;
+    }
+    return ca.uid - cb.uid;
+  });
+
+  let z = Z.TOOLTIP;
+
+  const w = 80;
+  if (x < game_width / 2) {
+    x += PANEL_PAD;
+  } else {
+    x = game_width - 12 - w + PANEL_PAD;
+  }
+  y -= PANEL_PAD;
+  let ystart = y;
+  for (let ii = list.length - 1; ii >= 0; --ii) {
+    let uid = list[ii];
+    let card = deck[uid];
+    let count = 1;
+    while (ii > 0 && sameCard(card, deck[list[ii - 1]])) {
+      --ii;
+      ++count;
+    }
+    y -= FONT_HEIGHT;
+    font.draw({
+      style: style_label,
+      x, y, z,
+      text: `${CARDS[card.card_id]!.name}${count > 1 ? ` (x${count})` : ''}`,
+    });
+  }
+  if (!list.length) {
+    y -= FONT_HEIGHT;
+    font.draw({
+      style: style_label,
+      x, y, z,
+      w: w - PANEL_PAD * 2,
+      align: ALIGN.HCENTER,
+      text: '(empty)',
+    });
+  }
+  y -= FONT_HEIGHT + 4;
+  font.draw({
+    style: style_label,
+    x, y, z,
+    w: w - PANEL_PAD * 2,
+    align: ALIGN.HCENTER,
+    text: title,
+  });
+  panel({
+    x: x - PANEL_PAD, y: y - PANEL_PAD, z: z - 0.1,
+    w,
+    h: ystart - y + PANEL_PAD * 2,
+  });
 }
 
 const CARD_OVERLAP = 20;
@@ -751,6 +830,7 @@ function doHand(): void {
         // need to reshuffle and choose to burn a card
         data.combat_phase = 'reshuffle';
         combat_state.countdown = 0;
+        me.reshuffle(true);
       }
     } else {
       data.combat_phase = 'player';
@@ -828,9 +908,13 @@ function doHand(): void {
         if (target_ent && target_ent.isAlive()) {
           let stats = target_ent.data.stats;
           stats.hp -= value;
-          if (stats.hp <= 0) {
+          if (stats.hp < 0) {
             target_ent.triggerAnimation!('death');
+          } else if (!stats.hp) {
+            target_ent.triggerAnimation!('uncon');
           }
+          // eslint-disable-next-line @typescript-eslint/no-use-before-define
+          addFloater(target_ent.id, `${value}`);
         }
       }
     }
@@ -841,30 +925,53 @@ function doHand(): void {
   let h = 26;
   let w = 48;
   x = 12;
-  y = game_height - 12 - h;
+  let y0 = game_height - 12 - h;
+  y = y0;
+  let is_reshuffle = data.combat_phase === 'reshuffle';
+  if (is_reshuffle) {
+    z = Z.MODAL;
+  }
+  let pile = is_reshuffle ? [] : draw_pile;
   drawBox({
     x, y, z,
     w, h,
-  }, autoAtlas('ui', draw_pile.length ? 'card' : 'card-empty'));
+  }, autoAtlas('ui', pile.length ? 'card' : 'card-empty'));
+  if (spot({
+    def: SPOT_DEFAULT_LABEL,
+    x, y, w, h,
+  }).focused) {
+    showCardList('Draw Pile', x, y0, pile);
+  }
   font.draw({
     style: style_label,
     x, y, z: z + 1, w, h,
     align: ALIGN.HVCENTER | ALIGN.HWRAP,
-    text: `Draw Pile\n(${draw_pile.length})`
+    text: `Draw Pile\n(${pile.length})`
   });
 
-  if (discard_pile.length) {
+  pile = is_reshuffle ? draw_pile.slice(2) : discard_pile;
+  if (pile.length) {
     x = game_width - 12 - w;
     drawBox({
       x, y, z,
       w, h,
-    }, autoAtlas('ui', discard_pile.length ? 'card' : 'card-empty'));
+    }, autoAtlas('ui', pile.length ? 'card' : 'card-empty'));
+    if (spot({
+      def: SPOT_DEFAULT_LABEL,
+      x, y, w, h,
+    }).focused) {
+      showCardList('Discard Pile', x, y0, pile);
+    }
     font.draw({
       style: style_label,
       x, y, z: z + 1, w, h,
       align: ALIGN.HVCENTER | ALIGN.HWRAP,
-      text: `Discards\n(${discard_pile.length})`
+      text: `Discards\n(${pile.length})`
     });
+  }
+
+  if (data.combat_phase === 'reshuffle') {
+    menuUp();
   }
 }
 
@@ -902,21 +1009,30 @@ export function autosave(): void {
   statusPush('Auto-saved.');
 }
 
-export function attackPlayer(source: Entity, target: Entity, message: string): void {
+export function attackPlayer(source: Entity, target: Entity, attack: CardDef): void {
   assert.equal(myEnt(), target);
   let dx = source.data.pos[0] - target.data.pos[0];
   let dy = source.data.pos[1] - target.data.pos[1];
   let abs_angle = round(1 - atan2(dx, dy) / (PI/2));
   let rot = dirMod(-abs_angle + crawlerController().getEffRot() + 8);
-  incoming_damage.push({
-    start: engine.frame_timestamp,
-    msg: message,
-    from: rot,
-  });
 
-  let dss = (source as unknown as EntityDrawableSprite).drawable_sprite_state;
-  dss.surge_at = engine.frame_timestamp;
-  dss.surge_time = 250;
+  let { effect } = attack;
+  let key: CardEffect;
+  for (key in effect) {
+    let value = effect[key]!;
+    if (key === 'damage') {
+      incoming_damage.push({
+        start: engine.frame_timestamp,
+        msg: `-${value}`,
+        from: rot,
+      });
+
+      let dss = (source as unknown as EntityDrawableSprite).drawable_sprite_state;
+      dss.surge_at = engine.frame_timestamp;
+      dss.surge_time = 250;
+      myEnt().takeDamage(value);
+    }
+  }
 }
 
 function moveBlockDead(): boolean {
@@ -1596,4 +1712,5 @@ export function playStartup(): void {
   applyAtlasSwaps();
 
   markdownSetColorStyle('note', fontStyleColored(null, palette_font[PAL_GREY[2]]));
+  markdownSetColorStyle('red', fontStyleColored(null, palette_font[PAL_RED - 1]));
 }

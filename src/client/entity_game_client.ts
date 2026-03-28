@@ -15,7 +15,7 @@ import { clone } from 'glov/common/util';
 import type { ROVec2, ROVec3 } from 'glov/common/vmath';
 import { EntityCrawlerDataCommon, entSamePos } from '../common/crawler_entity_common';
 import type { JSVec3 } from '../common/crawler_state';
-import { Card, HAND_SIZE } from './cards';
+import { Card, CardDef, HAND_SIZE } from './cards';
 import {
   crawlerEntClientDefaultDraw2D,
   crawlerEntClientDefaultOnDelete,
@@ -27,10 +27,18 @@ import {
   entityPosManager,
   Floater,
 } from './crawler_entity_client';
+import { randInt } from './play';
 
 const { floor, random } = Math;
 
 type Entity = EntityClient;
+
+export type EnemyOpts = {
+  moves: CardDef[];
+};
+export type EntityEnemy = Entity & {
+  enemy_opts: EnemyOpts;
+};
 
 export function entitiesAt(cem: ClientEntityManagerInterface<Entity>,
   pos: [number, number] | ROVec2,
@@ -59,6 +67,7 @@ export type EntityDataClient = {
   stats: StatsData;
   // Player:
   combat_phase: CombatPhase;
+  incoming_damage: number;
   deck: Record<number, Card>; // uid -> card
   draw_pile: number[]; // array of uids
   discard_pile: number[]; // array of uids
@@ -132,6 +141,7 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
       }
       if (!data.combat_phase) {
         data.combat_phase = 'player';
+        data.incoming_damage = 0;
       }
     }
     this.floaters = [];
@@ -160,14 +170,14 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
     shuffleArray(dummy_rand, data.draw_pile);
   }
 
-  reshuffle(): void {
+  reshuffle(for_burn: boolean): void {
     let { data } = this;
     let { discard_pile, draw_pile, deck } = data;
     while (discard_pile.length) {
       draw_pile.push(discard_pile.pop()!);
     }
     shuffleArray(dummy_rand, draw_pile);
-    if (draw_pile.length > 2) {
+    if (for_burn && draw_pile.length > 2) {
       // 5 tries to make the first two cards different, for more interesting burn choices
       for (let ii = 0; ii < 5 && deck[draw_pile[0]].card_id === deck[draw_pile[1]].card_id; ++ii) {
         let idx = floor(random() * (draw_pile.length - 2));
@@ -191,6 +201,26 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
   drawCard(): void {
     assert(this.data.draw_pile.length); // need to take HP and reshuffle
     this.data.hand.push(this.data.draw_pile.pop()!);
+  }
+
+  takeDamage(amt: number): void {
+    let { data } = this;
+    let { hand, discard_pile, draw_pile } = data;
+    while (amt && (hand.length || draw_pile.length)) {
+      --amt;
+      let uid;
+      if (hand.length) {
+        let idx = randInt(hand.length);
+        uid = hand[idx];
+        hand.splice(idx, 1);
+      } else {
+        uid = draw_pile.pop()!;
+      }
+      discard_pile.push(uid);
+    }
+    if (amt) {
+      data.incoming_damage = amt;
+    }
   }
 
   static AI_UPDATE_FIELD = 'seq_ai_update';
@@ -262,7 +292,16 @@ export function gameEntityTraitsClientStartup(
       return undefined;
     }
   });
-  ent_factory.extendTrait('enemy', {
+  ent_factory.extendTrait<EnemyOpts>('enemy', {
+    default_opts: {
+      moves: [{
+        name: 'attack',
+        range: 'melee',
+        effect: {
+          damage: 3,
+        },
+      }],
+    },
     properties: {
       blocks_player: true,
     },

@@ -1,12 +1,12 @@
 TODO
 ====
 
-deal damage to us by discarding cards
-  - possibly interrupted by reshuffling
+add block effect for hero and monsters
+telegraph monster intent
 animate cards in/out
-
+update enemy healthbar gfx
 Use appropriate font
-
+add border
 
 
 Notes / Brainstorming
