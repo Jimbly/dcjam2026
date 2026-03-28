@@ -1,8 +1,6 @@
 TODO
 ====
 
-telegraph monster intent
-add block effect for monsters
 animate cards in/out
 update enemy healthbar gfx
 Use appropriate font

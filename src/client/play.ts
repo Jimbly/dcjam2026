@@ -539,17 +539,54 @@ function drawEnemyStats(ent: Entity): void {
   let show_text = true;
   drawHealthBar(ENEMY_HP_BAR_X, ENEMY_HP_BAR_Y, Z.UI, ENEMY_HP_BAR_W, bar_h,
     hp ? blend(`enemyhp${ent.id}`, hp) : 0, hp_max, show_text);
+  if (ent.data.block) {
+    let xx = ENEMY_HP_BAR_X + ENEMY_HP_BAR_W + 2;
+    for (let ii = 0; ii < ent.data.block; ++ii) {
+      autoAtlas('ui', 'block').draw({
+        x: xx,
+        y: ENEMY_HP_BAR_Y + floor((bar_h - 14) / 2),
+        w: 14,
+        h: 14,
+      });
+      xx += 14;
+    }
+  }
   let label_msg = ent.display_name;
   if (hp < 0) {
     label_msg = `Dying ${label_msg}`;
   } else if (!hp) {
     label_msg = `Unconscious ${label_msg}`;
   }
+  let y = ENEMY_HP_BAR_Y + bar_h;
   if (label_msg) {
-    font.drawSizedAligned(style_text, ENEMY_HP_BAR_X, ENEMY_HP_BAR_Y + bar_h, Z.UI,
-      uiTextHeight(), ALIGN.HVCENTERFIT,
-      ENEMY_HP_BAR_W, bar_h, label_msg);
+    markdownAuto({
+      font_style: style_text,
+      x: ENEMY_HP_BAR_X,
+      y,
+      z: Z.UI,
+      text_height: uiTextHeight(),
+      align: ALIGN.HVCENTERFIT,
+      w: ENEMY_HP_BAR_W,
+      h: bar_h,
+      text: label_msg
+    });
   }
+  y += uiTextHeight();
+
+  let next_move = ent.monsterMoveGet();
+  let key: CardEffect;
+  let msg = [];
+  for (key in next_move.effect) {
+    let value = next_move.effect[key]!;
+    msg.push(EFFECT_TEMPLATE[key].replace('{N}', `${value}`).replace(' ', ''));
+  }
+  markdownAuto({
+    font_style: style_text,
+    x: ENEMY_HP_BAR_X, y, z: Z.UI, w: ENEMY_HP_BAR_W,
+    align: ALIGN.HCENTERFIT,
+    text: `(${next_move.name}: ${msg.join(' ')} )`,
+  });
+  y += FONT_HEIGHT;
 
   // probably not the right place to do this
   if (hp <= 0) {
@@ -919,19 +956,29 @@ function doHand(): void {
         attackSurgeAdd(DX[dir], DY[dir], target_ent ? 0.5 : 0.25);
         if (target_ent && target_ent.isAlive()) {
           let stats = target_ent.data.stats;
-          stats.hp -= value;
+          let msg = [];
+          if (target_ent.data.block) {
+            let blocked = min(target_ent.data.block, value);
+            msg.push(`-${blocked}[img=block]`);
+            value -= blocked;
+            target_ent.data.block -= blocked;
+          }
+          if (value) {
+            stats.hp -= value;
+            msg.push(`-${value}[img=heal]`);
+          }
           if (stats.hp < 0) {
             target_ent.triggerAnimation!('death');
           } else if (!stats.hp) {
             target_ent.triggerAnimation!('uncon');
           }
           // eslint-disable-next-line @typescript-eslint/no-use-before-define
-          addFloater(target_ent.id, `${value}`);
+          addFloater(target_ent.id, msg.join(' '));
         }
       } else if (key === 'block') {
         data.block = (data.block || 0) + value;
       } else if (key === 'heal') {
-        // TODO
+        assert(false); // TODO
       } else {
         unreachable(key);
       }
@@ -1056,11 +1103,11 @@ export function attackPlayer(source: Entity, target: Entity, attack: CardDef): v
       let blocked = myEnt().takeDamage(value);
       let unblocked = value - blocked;
       let msg = [];
-      if (unblocked) {
-        msg.push(`-${unblocked}[img=cardicon]`);
-      }
       if (blocked) {
         msg.push(`-${blocked}[img=block]`);
+      }
+      if (unblocked) {
+        msg.push(`-${unblocked}[img=cardicon]`);
       }
 
       incoming_damage.push({
@@ -1068,6 +1115,12 @@ export function attackPlayer(source: Entity, target: Entity, attack: CardDef): v
         msg: msg.join(' '),
         from: rot,
       });
+    } else if (key === 'block') {
+      source.data.block = (source.data.block || 0) + value;
+    } else if (key === 'heal') {
+      assert(false); // TODO
+    } else {
+      unreachable(key);
     }
   }
 }

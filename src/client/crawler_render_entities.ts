@@ -12,6 +12,7 @@ import {
   fontStyle,
   fontStyleAlpha,
 } from 'glov/client/font';
+import { markdownAuto } from 'glov/client/markdown';
 import {
   qRotateZ,
   quat,
@@ -666,11 +667,17 @@ export function crawlerRenderEntities(ent_set: SplitSet): void {
           let { x, y, w, h } = crawlerRenderViewportGet();
           let float = easeOut(elapsed / (FLOATER_TIME + FLOATER_FADE), 2) * 20;
           let text_height = uiTextHeight() * 2;
-          font.drawSizedAlignedWrapped(fontStyleAlpha(style_text, alpha),
+          markdownAuto({
+            font,
+            font_style: fontStyleAlpha(style_text, alpha),
             x,
-            y + h/2 - float, Z.FLOATERS, 0,
-            text_height, ALIGN.HCENTER|ALIGN.VBOTTOM,
-            w, 0, floater.msg);
+            y: y + h/2 - float - 400,
+            z: Z.FLOATERS,
+            w, h: 400,
+            text_height,
+            align: ALIGN.HCENTER|ALIGN.VBOTTOM,
+            text: floater.msg
+          });
         }
       }
       if (blink < 1) {

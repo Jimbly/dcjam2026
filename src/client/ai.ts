@@ -29,7 +29,7 @@ import {
 } from '../common/crawler_state';
 import { crawlerEntFactory } from './crawler_entity_client';
 import { TurnBasedStepReason } from './crawler_play';
-import { EntityClient, EntityEnemy } from './entity_game_client';
+import { EntityClient } from './entity_game_client';
 import { attackPlayer, myEnt } from './play';
 import { statusSet } from './status';
 
@@ -493,10 +493,9 @@ function aiDoEnemy(
 
   // enemy attack logic goes here
   if (random() < 0.01 || CRAWLER_TURN_BASED) {
-    let enemy = ent as EntityEnemy;
-    let moves = enemy.enemy_opts.moves;
-    let move = moves[floor(random() * moves.length)];
+    let move = ent.monsterMoveGet();
     attackPlayer(ent, target_ent, move);
+    ent.monsterMovePick();
   }
 
   profilerStopFunc();

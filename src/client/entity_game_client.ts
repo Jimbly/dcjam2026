@@ -74,6 +74,8 @@ export type EntityDataClient = {
   discard_pile: number[]; // array of uids
   hand: number[]; // array of uids
   events_done?: Partial<Record<string, boolean>>;
+  // Monster:
+  next_move: number;
 } & EntityCrawlerDataCommon;
 
 const dummy_rand = {
@@ -190,6 +192,19 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
     }
   }
 
+  monsterMoveGet(): CardDef {
+    let opts = (this as unknown as EntityEnemy).enemy_opts;
+    let { data } = this;
+    if (data.next_move === undefined) {
+      this.monsterMovePick();
+    }
+    return opts.moves[data.next_move];
+  }
+  monsterMovePick(): void {
+    let opts = (this as unknown as EntityEnemy).enemy_opts;
+    this.data.next_move = randInt(opts.moves.length);
+  }
+
   drawHand(): void {
     let { data } = this;
     while (data.hand.length) {
@@ -207,7 +222,8 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
 
   startPlayerPhase(): void {
     let { data } = this;
-    data.block = data.block ? data.block - 1 : 0;
+    // Reduce block each turn?
+    // data.block = data.block ? data.block - 1 : 0;
     data.combat_phase = 'player';
   }
 
@@ -308,10 +324,16 @@ export function gameEntityTraitsClientStartup(
   ent_factory.extendTrait<EnemyOpts>('enemy', {
     default_opts: {
       moves: [{
-        name: 'attack',
+        name: 'Splat',
         range: 'melee',
         effect: {
           damage: 3,
+        },
+      }, {
+        name: 'Defend',
+        range: 'self',
+        effect: {
+          block: 2,
         },
       }],
     },
