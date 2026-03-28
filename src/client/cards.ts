@@ -32,3 +32,8 @@ export const CARDS_RAW = {
 export const CARDS = CARDS_RAW as TSMap<CardDef>;
 
 export type CardID = keyof typeof CARDS;
+
+export type Card = {
+  card_id: CardID;
+  uid: number;
+};

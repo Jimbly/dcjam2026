@@ -1,9 +1,8 @@
 TODO
 ====
 
-Deal damage to them, trigger turn when using a card
-Show card count left in draw pile, click to redraw hand
-HP damage to reshuffle
+deal damage to us by discarding cards
+  - possibly interrupted by reshuffling
 animate cards in/out
 
 Use appropriate font

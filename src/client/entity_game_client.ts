@@ -15,7 +15,7 @@ import { clone } from 'glov/common/util';
 import type { ROVec2, ROVec3 } from 'glov/common/vmath';
 import { EntityCrawlerDataCommon, entSamePos } from '../common/crawler_entity_common';
 import type { JSVec3 } from '../common/crawler_state';
-import { CardID, HAND_SIZE } from './cards';
+import { Card, HAND_SIZE } from './cards';
 import {
   crawlerEntClientDefaultDraw2D,
   crawlerEntClientDefaultOnDelete,
@@ -49,6 +49,8 @@ export type StatsData = {
   hp_max: number;
 };
 
+export type CombatPhase = 'player' | 'enemy' | 'redraw' | 'reshuffle';
+
 export type EntityDataClient = {
   type: string;
   pos: JSVec3;
@@ -56,10 +58,11 @@ export type EntityDataClient = {
   floor: number;
   stats: StatsData;
   // Player:
-  deck: Partial<Record<CardID, number>>;
-  draw_pile: CardID[];
-  discard_pile: CardID[];
-  hand: (CardID | null)[];
+  combat_phase: CombatPhase;
+  deck: Record<number, Card>; // uid -> card
+  draw_pile: number[]; // array of uids
+  discard_pile: number[]; // array of uids
+  hand: number[]; // array of uids
   events_done?: Partial<Record<string, boolean>>;
 } & EntityCrawlerDataCommon;
 
@@ -68,7 +71,6 @@ const dummy_rand = {
     return floor(random() * r);
   }
 };
-
 
 export class EntityClient extends EntityBaseClient implements EntityCrawlerClient {
   declare entity_manager: ClientEntityManagerInterface<Entity>;
@@ -110,31 +112,70 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
     }
     if (this.type_id === 'player') {
       if (!data.deck) {
-        data.deck = {
-          attack1: 6,
-          block1: 4,
-        };
+        data.deck = {};
+        for (let ii = 0; ii < 6; ++ii) {
+          let uid = this.cardAllocUID();
+          data.deck[uid] = {
+            card_id: 'attack1',
+            uid,
+          };
+        }
+        for (let ii = 0; ii < 4; ++ii) {
+          let uid = this.cardAllocUID();
+          data.deck[uid] = {
+            card_id: 'block1',
+            uid,
+          };
+        }
         this.populateDrawPileFromDeck();
         this.drawHand();
+      }
+      if (!data.combat_phase) {
+        data.combat_phase = 'player';
       }
     }
     this.floaters = [];
     this.aiResetMoveTime(true);
   }
 
+  cardAllocUID(): number {
+    let highest = 0;
+    for (let key in this.data.deck) {
+      let v = Number(key);
+      if (v > highest) {
+        highest = v;
+      }
+    }
+    return highest + 1;
+  }
   populateDrawPileFromDeck(): void {
     let { data } = this;
     data.draw_pile = [];
     data.discard_pile = [];
     data.hand = [];
-    let key: keyof typeof data.deck;
-    for (key in data.deck) {
-      let count = data.deck[key]!;
-      for (let ii = 0; ii < count; ++ii) {
-        data.draw_pile.push(key);
-      }
+    for (let uid_str in data.deck) {
+      let uid = Number(uid_str);
+      data.draw_pile.push(uid);
     }
     shuffleArray(dummy_rand, data.draw_pile);
+  }
+
+  reshuffle(): void {
+    let { data } = this;
+    let { discard_pile, draw_pile, deck } = data;
+    while (discard_pile.length) {
+      draw_pile.push(discard_pile.pop()!);
+    }
+    shuffleArray(dummy_rand, draw_pile);
+    if (draw_pile.length > 2) {
+      // 5 tries to make the first two cards different, for more interesting burn choices
+      for (let ii = 0; ii < 5 && deck[draw_pile[0]].card_id === deck[draw_pile[1]].card_id; ++ii) {
+        let idx = floor(random() * (draw_pile.length - 2));
+        let t = draw_pile[1];
+        draw_pile[1] = draw_pile[idx];
+        draw_pile[idx] = t;
+      }
+    }
   }
 
   drawHand(): void {
@@ -176,6 +217,9 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
   }
 
   isAlive(): boolean {
+    if (this.isPlayer()) {
+      return Boolean(this.data.hand.length || this.data.discard_pile.length || this.data.draw_pile.length);
+    }
     return this.data.stats ? this.getData('stats.hp', 0) > 0 : true;
   }
 

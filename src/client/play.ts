@@ -9,6 +9,7 @@ import {
   Font,
   fontStyle,
   fontStyleAlpha,
+  fontStyleColored,
 } from 'glov/client/font';
 import * as input from 'glov/client/input';
 import {
@@ -19,6 +20,8 @@ import {
   PAD,
   padButtonUpEdge,
 } from 'glov/client/input';
+import { markdownAuto } from 'glov/client/markdown';
+import { markdownSetColorStyle } from 'glov/client/markdown_renderables';
 import { ClientChannelWorker, netSubs } from 'glov/client/net';
 import * as settings from 'glov/client/settings';
 import {
@@ -35,6 +38,7 @@ import {
   buttonText,
   drawBox,
   drawRect2,
+  menuUp,
   modalDialog,
   playUISound,
   uiButtonWidth,
@@ -77,7 +81,12 @@ import {
 } from './ai';
 import { blend } from './blend';
 // import './client_cmds';
-import { CardEffect, CardID, CARDS, HAND_SIZE } from './cards';
+import {
+  Card,
+  CardEffect,
+  CARDS,
+  HAND_SIZE,
+} from './cards';
 import {
   buildModeActive,
   crawlerBuildModeUI,
@@ -119,6 +128,7 @@ import {
   crawlerSaveGame,
   crawlerScriptAPI,
   crawlerTurnBasedMovePreStart,
+  crawlerTurnBasedScheduleStep,
   getScaledFrameDt,
   TurnBasedStepReason,
 } from './crawler_play';
@@ -156,6 +166,11 @@ import {
 import { levelGenTest } from './level_gen_test';
 import { chatUI } from './main';
 import { tickMusic } from './music';
+import {
+  PAL_GREY,
+  PAL_WHITE,
+  palette_font,
+} from './palette';
 import { renderAppStartup } from './render_app';
 import { SOUND_DATA } from './sound_data';
 import {
@@ -167,7 +182,7 @@ import { uiActionClear, uiActionCurrent, uiActionTick } from './uiaction';
 import { pauseMenuActive, pauseMenuOpen } from './uiaction_pause_menu';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const { atan2, floor, max, min, random, round, PI } = Math;
+const { atan2, floor, max, min, random, round, sqrt, PI } = Math;
 
 declare module 'glov/client/settings' {
   export let ai_pause: 0 | 1; // TODO: move to ai.ts
@@ -238,6 +253,22 @@ function randInt(range: number): number {
   return floor(random() * range);
 }
 
+type CombatState = {
+  countdown: number;
+};
+let combat_state: CombatState;
+
+function combatStateReset(): void {
+  combat_state = {
+    countdown: 0,
+  };
+}
+
+function combatMoveBlock(): boolean {
+  let me = myEnt();
+  return me.data.combat_phase === 'redraw' || me.data.combat_phase === 'reshuffle';
+}
+
 function aiStep(reason: TurnBasedStepReason): void {
   // playUISound('button_click');
   let game_state = crawlerGameState();
@@ -257,6 +288,8 @@ function aiStep(reason: TurnBasedStepReason): void {
       distance_limit: 9,
       payload,
     });
+    myEnt().data.combat_phase = 'redraw';
+    combat_state.countdown = 0;
   }
 }
 
@@ -338,9 +371,11 @@ let screen_shake = 0;
 function drawStatsOverViewport(): void {
   let my_ent = myEnt();
   assert(my_ent.isMe());
-  let { hp, hp_max } = my_ent.data.stats;
-  drawHealthBar(HP_X, HP_Y, my_ent.isAlive() ? Z.UI : Z.CONTROLLER_FADE - 3,
-    HP_BAR_W, HP_BAR_H, blend('myhp', hp), hp_max, true);
+  if (0) {
+    let { hp, hp_max } = my_ent.data.stats;
+    drawHealthBar(HP_X, HP_Y, my_ent.isAlive() ? Z.UI : Z.CONTROLLER_FADE - 3,
+      HP_BAR_W, HP_BAR_H, blend('myhp', hp), hp_max, true);
+  }
 
   // Draw damage "floaters" on us, but on the UI layer
   if (autoResetSkippedFrames('incoming_damage')) {
@@ -536,13 +571,13 @@ const CARD_W = 64;
 const CARD_H = 85;
 const CARD_PAD = 4;
 function drawCard(param: {
-  card_id: CardID;
+  card: Card;
   x: number;
   y: number;
   z: number;
 }): void {
-  let { card_id, x, y, z } = param;
-  let card_def = CARDS[card_id]!;
+  let { card, x, y, z } = param;
+  let card_def = CARDS[card.card_id]!;
   drawBox({
     x, y, z,
     w: CARD_W,
@@ -569,6 +604,98 @@ function drawCard(param: {
   }
 }
 
+function doReshuffle(): void {
+  let me = myEnt();
+  let { data } = me;
+  let { draw_pile, hand, deck } = data;
+  assert(!hand.length);
+  if (autoResetSkippedFrames('reshuffle')) {
+    me.reshuffle();
+  }
+  if (draw_pile.length < 2) {
+    // not enough to burn one, kill player
+    draw_pile.length = 0;
+    return;
+  }
+
+  const BORDER_PAD = 8;
+  let x = BORDER_PAD;
+  let y = BORDER_PAD + FONT_HEIGHT;
+  let z = Z.MODAL;
+  let w = game_width - BORDER_PAD * 2;
+
+  font.draw({
+    color: palette_font[0],
+    x, y, w, z,
+    size: FONT_HEIGHT * 2,
+    align: ALIGN.HCENTER,
+    text: 'RESHUFFLE',
+  });
+  y += FONT_HEIGHT * 2 + 8;
+  y += markdownAuto({
+    x, y, w, z,
+    text_height: FONT_HEIGHT,
+    font_style: fontStyleColored(null, palette_font[PAL_WHITE]),
+    align: ALIGN.HCENTER|ALIGN.HWRAP,
+    text: 'Your draw pile is exhausted, you must BURN 1 card in order to reshuffle.' +
+    '\n\nChoose 1 of these two cards to BURN.' +
+    '\n\n[c=note]Note: burnt cards are returned to your deck at the end of the encounter (floor).[/c]' +
+    '\n\n[c=note]Warning: if you have no cards left, you die![/c]',
+  }).h + 8;
+
+  let rect = {
+    x: x + floor((w - CARD_W *2 - BORDER_PAD) / 2),
+    y, z,
+    w: CARD_W, h: CARD_H,
+  };
+  let spot_ret = spot({
+    ...rect,
+    def: SPOT_DEFAULT_BUTTON,
+  });
+  let burn_card = -1;
+  if (spot_ret.ret) {
+    burn_card = 0;
+  }
+  rect.y = blend('shuffle0y', y - (spot_ret.focused ? 4 : 0), 100);
+  drawCard({
+    ...rect,
+    card: deck[draw_pile[0]],
+  });
+  if (spot_ret.focused) {
+    autoAtlas('ui', 'x').draw({
+      ...rect,
+      z: rect.z + 0.1,
+    });
+  }
+  rect.x += CARD_W + BORDER_PAD;
+  spot_ret = spot({
+    ...rect,
+    def: SPOT_DEFAULT_BUTTON,
+  });
+  if (spot_ret.ret) {
+    burn_card = 1;
+  }
+  rect.y = blend('shuffle1y', y - (spot_ret.focused ? 4 : 0), 100);
+  drawCard({
+    ...rect,
+    card: deck[draw_pile[1]],
+  });
+  if (spot_ret.focused) {
+    autoAtlas('ui', 'x').draw({
+      ...rect,
+      z: rect.z + 0.1,
+    });
+  }
+
+  if (burn_card !== -1) {
+    // let burnt = draw_pile[burn_card];
+    draw_pile.splice(burn_card, 1);
+    data.combat_phase = 'redraw';
+  }
+
+  menuUp();
+}
+
 const CARD_OVERLAP = 20;
 const CARDS_W = HAND_SIZE * (CARD_W - CARD_OVERLAP) + CARD_OVERLAP;
 const CARDS_X = VIEWPORT_X0 + floor((render_width - CARDS_W) / 2);
@@ -580,7 +707,20 @@ function doHand(): void {
     return;
   }
   let { data } = me;
-  let { hand } = data;
+  let { hand, draw_pile, discard_pile, deck } = data;
+
+  if (combat_state.countdown) {
+    combat_state.countdown = max(0, combat_state.countdown - engine.getFrameDt());
+  }
+
+  if (engine.DEBUG) {
+    font.draw({
+      x: 0, y: game_height, z: Z.MODAL + 10,
+      size: uiTextHeight() * 0.5,
+      align: ALIGN.VBOTTOM,
+      text: `phase: ${data.combat_phase}`,
+    });
+  }
 
   let entities = entityManager().entities;
   let ent_in_front = crawlerEntInFront();
@@ -592,6 +732,35 @@ function doHand(): void {
     }
   }
 
+  if (data.combat_phase === 'redraw') {
+    if (hand.length < HAND_SIZE) {
+      // draw a card
+      if (draw_pile.length) {
+        if (!combat_state.countdown) {
+          me.drawCard();
+          if (hand.length === HAND_SIZE) {
+            data.combat_phase = 'player';
+          } else {
+            combat_state.countdown = 250;
+          }
+        }
+      } else if (hand.length) {
+        // have at least some cards left in hand
+        data.combat_phase = 'player';
+      } else {
+        // need to reshuffle and choose to burn a card
+        data.combat_phase = 'reshuffle';
+        combat_state.countdown = 0;
+      }
+    } else {
+      data.combat_phase = 'player';
+    }
+  }
+
+  if (data.combat_phase === 'reshuffle') {
+    doReshuffle();
+  }
+
   let x = CARDS_X;
   let y = CARDS_Y;
   let z = Z.UI;
@@ -599,10 +768,8 @@ function doHand(): void {
   let play_card = -1;
   let hotkey = 0;
   for (let ii = 0; ii < hand.length; ++ii) {
-    let card = hand[ii];
-    if (!card) {
-      continue;
-    }
+    let card = deck[hand[ii]];
+    let { uid } = card;
     let rect = {
       x, y, z,
       w: CARD_W,
@@ -618,12 +785,14 @@ function doHand(): void {
       def: SPOT_DEFAULT_BUTTON,
       hotkey: KEYS['1'] + hotkey,
       ...click_rect,
+      disabled: data.combat_phase !== 'player',
+      disabled_focusable: false,
     });
     let target_y = rect.y;
     if (spot_ret.focused) {
       target_y = CARDS_Y_SEL;
     }
-    let eff_y = blend(`cardy${ii}`, target_y, 200);
+    let eff_y = blend(`cardy${uid}`, target_y, 200);
     if (eff_y < (CARDS_Y_SEL + CARDS_Y)/2) {
       rect.z += 10;
     }
@@ -632,27 +801,31 @@ function doHand(): void {
     }
     drawCard({
       ...rect,
-      x: blend(`cardx${ii}`, rect.x, 200),
+      x: blend(`cardx${uid}`, rect.x, 200),
       y: eff_y,
-      card_id: card,
+      card,
     });
     x += CARD_W - CARD_OVERLAP;
     z++;
     hotkey++;
   }
   if (play_card !== -1) {
-    let card_id = hand[play_card];
-    hand[play_card] = null;
+    let uid = hand[play_card];
+    let card = deck[uid];
+    let { card_id } = card;
+    hand.splice(play_card, 1);
+    discard_pile.push(uid);
     // do effect / play card
     assert(card_id);
-    let card_def = CARDS[card_id]!;
+    let card_def = CARDS[card_id];
+    assert(card_def);
     let key: CardEffect;
     for (key in card_def.effect) {
       let value = card_def.effect[key]!;
       if (key === 'damage') {
         let dir = data.pos[2] as DirType;
         attackSurgeAdd(DX[dir], DY[dir], target_ent ? 0.5 : 0.25);
-        if (target_ent) {
+        if (target_ent && target_ent.isAlive()) {
           let stats = target_ent.data.stats;
           stats.hp -= value;
           if (stats.hp <= 0) {
@@ -661,6 +834,37 @@ function doHand(): void {
         }
       }
     }
+    data.combat_phase = 'enemy';
+    crawlerTurnBasedScheduleStep(250, 'attack');
+  }
+
+  let h = 26;
+  let w = 48;
+  x = 12;
+  y = game_height - 12 - h;
+  drawBox({
+    x, y, z,
+    w, h,
+  }, autoAtlas('ui', draw_pile.length ? 'card' : 'card-empty'));
+  font.draw({
+    style: style_label,
+    x, y, z: z + 1, w, h,
+    align: ALIGN.HVCENTER | ALIGN.HWRAP,
+    text: `Draw Pile\n(${draw_pile.length})`
+  });
+
+  if (discard_pile.length) {
+    x = game_width - 12 - w;
+    drawBox({
+      x, y, z,
+      w, h,
+    }, autoAtlas('ui', discard_pile.length ? 'card' : 'card-empty'));
+    font.draw({
+      style: style_label,
+      x, y, z: z + 1, w, h,
+      align: ALIGN.HVCENTER | ALIGN.HWRAP,
+      text: `Discards\n(${discard_pile.length})`
+    });
   }
 }
 
@@ -735,6 +939,8 @@ function moveBlockDead(): boolean {
     text: 'Respawn',
   })) {
     myEnt().data.stats.hp = myEnt().data.stats.hp_max;
+    myEnt().populateDrawPileFromDeck();
+    combatStateReset();
     controller.goToFloor(0, 'stairs_in', 'respawn');
   }
 
@@ -961,13 +1167,13 @@ function playCrawl(): void {
     no_visible_ui: frame_map_view || build_mode || !DO_MOVEMENT_BUTTONS,
     button_w: MOVE_BUTTON_W,
     button_sprites: useNoText() ? button_sprites_notext : button_sprites,
-    disable_move: moveBlocked() || overlay_menu_up,
+    disable_move: moveBlocked() || overlay_menu_up || combatMoveBlock(),
     disable_player_impulse: Boolean(locked_dialog),
     show_buttons: !locked_dialog,
     do_debug_move: engine.defines.LEVEL_GEN || build_mode,
     show_debug: settings.show_fps ? { x: VIEWPORT_X0, y: VIEWPORT_Y0 + (build_mode ? 3 : 0) } : null,
     show_hotkeys: false,
-    but_allow_rotate: false,
+    but_allow_rotate: true,
   });
   profilerStop();
 
@@ -1237,6 +1443,7 @@ function applyAtlasSwaps(): void {
 
 function initLevel(cem: ClientEntityManagerInterface<Entity>, floor_id: number, level: CrawlerLevel): void {
   dialogReset();
+  combatStateReset();
 }
 
 export function playStartup(): void {
@@ -1387,4 +1594,6 @@ export function playStartup(): void {
 
   autoAtlas('main', 'def'); // preload
   applyAtlasSwaps();
+
+  markdownSetColorStyle('note', fontStyleColored(null, palette_font[PAL_GREY[2]]));
 }

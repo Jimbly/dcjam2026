@@ -357,6 +357,13 @@ function autoAtlasReload(filename: string): void {
     return;
   }
   atlas.doInit();
+  if (atlas_swaps[filename]) {
+    // also try reloading the target?  didn't seem to help
+    let other = atlases[atlas_swaps[filename]!];
+    if (other) {
+      other.doInit();
+    }
+  }
 }
 
 export function autoAtlasTextureOpts(atlas_name: string, opts: TextureOptions): void {
