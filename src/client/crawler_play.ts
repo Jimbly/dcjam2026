@@ -139,6 +139,7 @@ import {
 } from './crawler_script_api_client';
 import { dialogReset } from './dialog_system';
 import { entityManager } from './entity_game_client';
+import { healMode } from './play';
 
 const { PI, max, floor, round } = Math;
 
@@ -819,7 +820,13 @@ let engaged_pos: string | null = null;
 function crawlerRepeatHasher(pos: ROVec2): string | null {
   let ents = entitiesAdjacentTo(game_state, entityManager(), game_state.floor_id, pos, crawlerScriptAPI());
   ents = ents.filter(function (ent) {
-    return ent.isEnemy() && ent.isAlive();
+    if (ent.isEnemy() && ent.isAlive()) {
+      if (ent.data.recovered && healMode()) {
+        return false;
+      }
+      return true;
+    }
+    return false;
   });
   let ent_ids = ents.map(function (ent) {
     return ent.id;

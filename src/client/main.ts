@@ -42,7 +42,7 @@ import { textureDefaultFilters } from 'glov/client/textures';
 import { uiSetPanelColor } from 'glov/client/ui';
 import * as ui from 'glov/client/ui';
 import { getURLBase } from 'glov/client/urlhash';
-import { v4copy, vec4 } from 'glov/common/vmath';
+import { v4copy } from 'glov/common/vmath';
 // import './client_cmds.js'; // for side effects
 import { crawlerBuildModeStartup } from './crawler_build_mode';
 import { drawableSpriteLoadNear } from './crawler_entity_client';
@@ -52,6 +52,7 @@ import {
 } from './crawler_play.js';
 import { crawlerRenderSetLODBiasRange } from './crawler_render';
 import { FONT_HEIGHT, game_height, game_width } from './globals';
+import { PAL_BLACK_PURE, palette } from './palette';
 import { playStartup } from './play';
 import { SOUND_DATA } from './sound_data';
 import { titleInit, titleStartup } from './title';
@@ -78,7 +79,7 @@ crawlerOnPixelyChange(function (new_value: number): void {
   engine.setFonts(fonts[new_value] || fonts[2]);
 });
 
-const clear_color = vec4(0, 0, 0, 1);
+const clear_color = palette[PAL_BLACK_PURE];
 
 export let chat_ui: ChatUI;
 
@@ -219,7 +220,7 @@ export function main(): void {
     antialias,
     znear: 11,
     zfar: 2000,
-    do_borders: false,
+    do_borders: true,
     show_fps: false,
     ui_sprites: {
       ...spriteSetGet('pixely'),
@@ -301,6 +302,9 @@ export function main(): void {
     button_height: 11,
     cell_props: [
     ],
+    level_props: [
+      'element',
+    ]
   });
   playStartup();
   engine.setState(titleInit);

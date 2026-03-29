@@ -574,7 +574,7 @@ function drawBlock(x: number, y: number, block: number): void {
   }
 }
 
-function healMode(): boolean {
+export function healMode(): boolean {
   return myEnt().data.heal_mode;
 }
 
@@ -835,7 +835,8 @@ function drawCard(param: {
   if (hotkey) {
     font.draw({
       style: style_hotkey,
-      x: x + CARD_PAD, y, z,
+      x, y: y0 - FONT_HEIGHT - 2, z, w: CARD_W,
+      align: ALIGN.HCENTER,
       text: hotkey,
     });
   }
@@ -853,7 +854,8 @@ function drawCard(param: {
     let vis = EFFECT_TEMPLATE[key];
     let { img } = vis;
     if (key === 'damage' && healMode()) {
-      img = 'heal';
+      let element = myEnt().data.element;
+      img = `element-${element || 'null'}`;
     }
     let alpha = no_target && EFFECT_NEEDS_TARGET[key] ? 0.5 : 1;
     let prefix = vis.prefix ? `${value} ` : '';
@@ -891,7 +893,8 @@ function drawCard(param: {
     let vis = EFFECT_TEMPLATE[key];
     let { img } = vis;
     if (key === 'damage' && !healMode()) {
-      img = 'heal';
+      let element = myEnt().data.element;
+      img = `element-${element || 'null'}`;
     }
     let alpha = 0.5;
     let prefix = vis.prefix ? `${value} ` : '';
@@ -1334,7 +1337,7 @@ function doHand(): void {
         card: deck[uid],
         x: xx,
         y: yy,
-        z,
+        z: z + 10,
         no_target: false,
       });
     }
@@ -1348,7 +1351,7 @@ function doHand(): void {
         card: deck[uid],
         x: xx,
         y: yy,
-        z,
+        z: z - 10,
         no_target: false,
       });
     }
@@ -1410,7 +1413,6 @@ function doHand(): void {
   y = DRAW_PILE_Y - 16;
   drawBlock(x, y, data.block);
 }
-
 
 function moveBlocked(): boolean {
   return false;
@@ -1588,6 +1590,75 @@ function drawBorders(): void {
     z: Z.BORDERS - 0.1,
     color: palette[PAL_BLACK_PURE],
   });
+
+  drawRect2({
+    x: game_width - 6, y: 6,
+    w: 6,
+    h: game_height - 12,
+    z: Z.BORDERS - 0.1,
+    color: palette[PAL_BLACK_PURE],
+  });
+}
+
+function drawHud(): void {
+  let x = RIGHT_BAR_X;
+  let y = 12 + MOVE_BUTTON_H * 2 + 8;
+  let z = Z.UI;
+
+  let counts = {
+    aggro: 0,
+    dead: 0,
+    yield: 0,
+    recov: 0,
+  };
+
+  let entities = entityManager().entities;
+  let floor_id = crawlerGameState().floor_id;
+  let heal_mode = healMode();
+  for (let ent_id_str in entities) {
+    let ent = entities[ent_id_str]!;
+    if (ent.data.floor === floor_id && ent.isEnemy()) {
+      let { hp } = ent.data.stats;
+      if (hp < 0) {
+        counts.dead++;
+      } else {
+        let { recovered } = ent.data;
+        if (recovered) {
+          counts.recov++;
+        } else if (hp === 0) {
+          counts.yield++;
+        } else if (heal_mode) {
+          counts.yield++;
+        } else {
+          counts.aggro++;
+        }
+      }
+    }
+  }
+
+  ([
+    'aggro',
+    'yield',
+    'dead',
+    'recov',
+  ] as const).forEach(function (img) {
+    if (img === 'recov' && !heal_mode) {
+      return;
+    }
+    autoAtlas('ui', `counter-${img}`).draw({
+      x, y, z,
+      w: 12,
+      h: 12,
+    });
+    font.draw({
+      style: style_text,
+      x: x + 12 + 2,
+      y, z, h: 12,
+      align: ALIGN.VCENTER,
+      text: `${counts[img]}`,
+    });
+    y += 12;
+  });
 }
 
 const MOVE_BUTTONS_X0 = MINIMAP_X;
@@ -1755,6 +1826,7 @@ function playCrawl(): void {
     if (!build_mode) {
       // Do game UI/stats here
       drawStatsOverViewport();
+      drawHud();
       doEngagedEnemy();
       doHealthbars();
       doHand();

@@ -1,0 +1,7 @@
+---
+tile_res: 12
+tiles:
+  counter-aggro: [0, 0]
+  counter-dead: [3, 0]
+  counter-yield: [4, 0]
+  counter-recov: [6, 0]

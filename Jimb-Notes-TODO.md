@@ -1,26 +1,26 @@
 TODO
 ====
 
-test encounter floor
-  first try: 5 slimes left me with 5 cards, but close
-  second try: 4 slimes nearly killed me, so, let's do 4
-
-figure out how healing's going to work
-  upon defeating the boss, all of the bottom halves of cards change to the new element (start as Null/"?" element)
-    bottom halves are all "do X elemental damage/healing + burn self" - burn 1-2 cards on each dying foe to heal them to >0hp
-    uncon foes you just talk to for a reward - change "uncon" to "yield" at 1 HP instead (or, just _display_ 1 more HP)
-      have them say "I yield!"
-  make test double-level of:
+healing
+  add second floor, with boss
+  upon defeating the boss
+    flip cards over and change element
+    add "burn self" as card effect with icon, not special case
+  add intro and boss "cutscenes"
+  test entire flow of:
     fight floor
     boss floor
     heal on fight floor
   assuming that funish, add XP and GP (coins and gems?) and add loot choices/shop between floors
 
+test encounter floor results
+  first try: 5 slimes left me with 5 cards, but close
+  second try: 4 slimes nearly killed me, so, let's do 4
+
 Use appropriate esc/deck button
 Use appropriate font
 Hooks and placeholders for audio
 Upon death, reset floor, try again, deduct a life
-Show number of living / uncon / dead monsters on floor
 
 maybe: try choosing which cards to discard (and redrawing constantly)
   this makes combat slower, but does it make it more fun / strategic / (discoverable)?
@@ -28,6 +28,7 @@ maybe: try choosing which cards to discard (and redrawing constantly)
 block tick down if we are standing still, executing block, and a monster is walking towards us
   so, ticks down if at the end of our turn, before the monster moves, we have no adjacent enemy? logic changes if enemies have ranged attacks though
 if we move through a door, and there's a monster there that's never seen us, it shouldn't get a move, it should just come alert (or, rather "coming alert" is a move?)
+warn upon using an attack with no target (pops upward, warnings shows up, hit hotkey or click again to actually use, esc cancels)
 
 try depixel scale up by 4, then do 2 bilinear filters down to get 16xMSAA
 
@@ -47,6 +48,24 @@ Level sizes
   Dungeon #3: 5 floors@6 - 30 - with a deck size of 14, need to get at least 16 yields!
 
 stretch: bosses / (later dungeons?) are multi-element and you can switch between elements during the fight (once every 4 actions or something)
+
+stretch: undo (to beginning of previous turn)
+
+Card abilities
+==============
+push/pull
+"heal" by moving from discard to draw
+pierce
+remove armor
+buff next attack
+poison
+clear debuffs (self)
+
+Elemental Plan
+==============
+Earth - dirt/trees/nature/lightning
+Ice - ice/water
+Fire - fire/hell
 
 Notes / Brainstorming
 =====================

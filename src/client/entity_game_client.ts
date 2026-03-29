@@ -83,6 +83,7 @@ export type EntityDataClient = {
   discard_pile: number[]; // array of uids
   hand: number[]; // array of uids
   events_done?: Partial<Record<string, boolean>>;
+  element: string;
   // Monster:
   next_move: number;
   alert: boolean;
@@ -159,6 +160,7 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
       if (!data.combat_phase) {
         data.combat_phase = 'player';
         data.incoming_damage = 0;
+        data.element = '';
       }
     }
     this.floaters = [];

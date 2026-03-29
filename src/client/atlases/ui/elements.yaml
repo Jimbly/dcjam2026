@@ -1,0 +1,6 @@
+---
+tile_res: 14
+tiles:
+  element-earth: [0, 0]
+  element-fire: [1, 0]
+  element-water: [2, 0]
