@@ -8,8 +8,7 @@ make test encounter floor
   5 slimes left me with 5 cards, but close
   second try: 4 slimes nearly killed me
 
-hunter is triggering wander to go through a door
-  but, we're doing hunter but not wander, so it's never executing!
+figure out how healing's going to work
 
 Use appropriate font
 Hooks and placeholders for audio

@@ -29,4 +29,10 @@ export const SOUND_DATA = {
     file: 'footstep/footstep4',
     volume: 0.5,
   }],
+
+  // Games sounds to be implemented
+  hunter_alert: {
+    file: 'msg_in',
+    volume: 1,
+  },
 } satisfies Partial<Record<string, UISoundID | string | string[] | UISoundID[]>>;

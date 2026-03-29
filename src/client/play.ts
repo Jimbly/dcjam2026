@@ -626,7 +626,7 @@ function drawInWorldHealthbar(
   }
   let hp = ent.getData('stats.hp', 0);
   let hp_max = ent.getData('stats.hp_max', 1);
-  if (!hp_max || hp >= hp_max) {
+  if (!hp_max/* || hp >= hp_max*/) {
     return;
   }
   let { pos } = param;
@@ -664,7 +664,7 @@ function doHealthbars(): void {
   let ent_in_front = crawlerController().controllerIsAnimating(INFRONT_ANIMATING_THRESHOLD) ? -1 : crawlerEntInFront();
   let ents = entity_manager.entitiesFind((ent) => {
     if (ent.data.floor !== floor_id || !(ent.isEnemy() || ent.isPlayer()) ||
-      !ent.isAlive() || ent.id === ent_in_front
+      !ent.isAlive() || ent.id === ent_in_front || !ent.data.alert
     ) {
       return false;
     }

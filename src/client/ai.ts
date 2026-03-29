@@ -30,7 +30,7 @@ import {
 import { crawlerEntFactory } from './crawler_entity_client';
 import { TurnBasedStepReason } from './crawler_play';
 import { EntityClient } from './entity_game_client';
-import { attackPlayer, myEnt } from './play';
+import { attackPlayer, myEnt, playSoundFromEnt } from './play';
 import { statusSet } from './status';
 
 const { abs, floor, random } = Math;
@@ -292,7 +292,10 @@ export function aiTraitsClientStartup(): void {
         let distance = v2dist(player_pos, pos);
         // let volume = lerp(min(distance/5, 1), 1, 0.25);
         let can_see = false;
-        const { radius, see_through_walls } = this.hunter_opts;
+        let { radius, see_through_walls } = this.hunter_opts;
+        if (this.data.alert) {
+          see_through_walls = true;
+        }
         if (distance <= radius) {
 
           // can see?
@@ -304,7 +307,10 @@ export function aiTraitsClientStartup(): void {
                 if (debugDefineIsSet('HUNTER')) {
                   statusSet(`edbg${this.id}`, `${this.id}: New target: ${player_pos}`).counter = 500;
                 }
-                // playUISound('hunter_seen', volume);
+                if (!this.data.alert) {
+                  this.data.alert = true;
+                  playSoundFromEnt(this, 'hunter_alert');
+                }
               }
             } else if (v2dist(this.hunter_state.target_pos, player_pos)) {
               if (debugDefineIsSet('HUNTER')) {

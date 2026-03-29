@@ -76,6 +76,7 @@ export type EntityDataClient = {
   events_done?: Partial<Record<string, boolean>>;
   // Monster:
   next_move: number;
+  alert: boolean;
 } & EntityCrawlerDataCommon;
 
 const dummy_rand = {
