@@ -1,13 +1,20 @@
 TODO
 ====
 
-make test encounter floor
-  5 slimes left me with 5 cards, but close
-
 monsters should be able to swap positions with dead monsters
-Use appropriate font
 add border
 
+make test encounter floor
+  5 slimes left me with 5 cards, but close
+  second try: 4 slimes nearly killed me
+
+hunter is triggering wander to go through a door
+  but, we're doing hunter but not wander, so it's never executing!
+
+Use appropriate font
+
+block tick down if we are standing still, executing block, and a monster is walking towards us
+  so, ticks down if at the end of our turn, before the monster moves, we have no adjacent enemy? logic changes if enemies have ranged attacks though
 if we move through a door, and there's a monster there that's never seen us, it shouldn't get a move, it should just come alert (or, rather "coming alert" is a move?)
 
 
