@@ -1,19 +1,50 @@
 TODO
 ====
 
-make test encounter floor
-  5 slimes left me with 5 cards, but close
-  second try: 4 slimes nearly killed me
+test encounter floor
+  first try: 5 slimes left me with 5 cards, but close
+  second try: 4 slimes nearly killed me, so, let's do 4
 
 figure out how healing's going to work
+  upon defeating the boss, all of the bottom halves of cards change to the new element (start as Null/"?" element)
+    bottom halves are all "do X elemental damage/healing + burn self" - burn 1-2 cards on each dying foe to heal them to >0hp
+    uncon foes you just talk to for a reward - change "uncon" to "yield" at 1 HP instead (or, just _display_ 1 more HP)
+      have them say "I yield!"
+  make test double-level of:
+    fight floor
+    boss floor
+    heal on fight floor
+  assuming that funish, add XP and GP (coins and gems?) and add loot choices/shop between floors
 
+Use appropriate esc/deck button
 Use appropriate font
 Hooks and placeholders for audio
+Upon death, reset floor, try again, deduct a life
+Show number of living / uncon / dead monsters on floor
+
+maybe: try choosing which cards to discard (and redrawing constantly)
+  this makes combat slower, but does it make it more fun / strategic / (discoverable)?
 
 block tick down if we are standing still, executing block, and a monster is walking towards us
   so, ticks down if at the end of our turn, before the monster moves, we have no adjacent enemy? logic changes if enemies have ranged attacks though
 if we move through a door, and there's a monster there that's never seen us, it shouldn't get a move, it should just come alert (or, rather "coming alert" is a move?)
 
+Level sizes
+  ~4 enemies per level
+  gain 1-2 cards per level on way in, 1 total on way out (but potentially lots of upgrade points)
+  Dungeon #1: 3 floors@4 - 12
+  Dungeon #2: 4 floors@4-5 - 18
+  Dungeon #3: 5 floors@5 - 25
+  deck size goes up by 2 per dungeon, therefore, want more enemies per floor in later dungeons?
+  Dungeon #1: 3 floors@4 - 12
+  Dungeon #2: 3 floors@5 - 15
+  Dungeon #3: 3 floors@6 - 18
+  or, more extreme:
+  Dungeon #1: 3 floors@4 - 12
+  Dungeon #2: 4 floors@5 - 20
+  Dungeon #3: 5 floors@6 - 30 - with a deck size of 14, need to get at least 16 yields!
+
+stretch: bosses / (later dungeons?) are multi-element and you can switch between elements during the fight (once every 4 actions or something)
 
 Notes / Brainstorming
 =====================

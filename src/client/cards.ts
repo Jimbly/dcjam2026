@@ -10,12 +10,23 @@ export type CardDef = {
   name: string;
   range: CardRange;
   effect: Partial<Record<CardEffect, number>>;
+  healeffect: Partial<Record<CardEffect, number>>;
 };
+export type EnemyMove = Omit<CardDef, 'healeffect'>;
 
-export const EFFECT_TEMPLATE: Record<CardEffect, string> = {
-  damage: '{N} [img=attack]',
-  heal: '{N} [img=heal]',
-  block: '{N} [img=block]',
+export type EffectVis = {
+  prefix?: boolean;
+  img?: string;
+};
+export const EFFECT_TEMPLATE: Record<CardEffect, EffectVis> = {
+  damage: { prefix: true, img: 'attack' },
+  heal: { prefix: true, img: 'heal' },
+  block: { prefix: true, img: 'block' },
+};
+export const EFFECT_NEEDS_TARGET: Record<CardEffect, boolean> = {
+  damage: true,
+  heal: true,
+  block: false,
 };
 
 export const CARDS_RAW = {
@@ -25,11 +36,17 @@ export const CARDS_RAW = {
     effect: {
       damage: 2,
     },
+    healeffect: {
+      damage: 5,
+    },
   },
   'attack3': {
     name: 'Slash',
     range: 'melee',
     effect: {
+      damage: 3,
+    },
+    healeffect: {
       damage: 3,
     },
   },
@@ -39,12 +56,18 @@ export const CARDS_RAW = {
     effect: {
       damage: 4,
     },
+    healeffect: {
+      damage: 1,
+    },
   },
   'block2': {
     name: 'Dodge',
     range: 'self',
     effect: {
       block: 2,
+    },
+    healeffect: {
+      damage: 2,
     },
   },
 } as const satisfies TSMap<CardDef>;

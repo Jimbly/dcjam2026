@@ -10,7 +10,6 @@ import {
   ALIGN,
   Font,
   fontStyle,
-  fontStyleAlpha,
 } from 'glov/client/font';
 import { markdownAuto } from 'glov/client/markdown';
 import {
@@ -669,9 +668,10 @@ export function crawlerRenderEntities(ent_set: SplitSet): void {
           let text_height = uiTextHeight() * 2;
           markdownAuto({
             font,
-            font_style: fontStyleAlpha(style_text, alpha),
+            font_style: style_text,
+            alpha,
             x,
-            y: y + h/2 - float - 400,
+            y: y + h/2 - float - 400 + (floater.yoffs || 0) * text_height,
             z: Z.FLOATERS,
             w, h: 400,
             text_height,

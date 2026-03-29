@@ -13,9 +13,17 @@ import {
 } from 'glov/common/types.js';
 import { clone } from 'glov/common/util';
 import type { ROVec2, ROVec3 } from 'glov/common/vmath';
-import { EntityCrawlerDataCommon, entSamePos } from '../common/crawler_entity_common';
+import {
+  EntityCrawlerDataCommon,
+  entSamePos,
+} from '../common/crawler_entity_common';
 import type { JSVec3 } from '../common/crawler_state';
-import { Card, CardDef, CardID, HAND_SIZE } from './cards';
+import {
+  Card,
+  CardID,
+  EnemyMove,
+  HAND_SIZE,
+} from './cards';
 import {
   crawlerEntClientDefaultDraw2D,
   crawlerEntClientDefaultOnDelete,
@@ -34,7 +42,7 @@ const { floor, min, random } = Math;
 type Entity = EntityClient;
 
 export type EnemyOpts = {
-  moves: CardDef[];
+  moves: EnemyMove[];
 };
 export type EntityEnemy = Entity & {
   enemy_opts: EnemyOpts;
@@ -67,6 +75,7 @@ export type EntityDataClient = {
   stats: StatsData;
   // Player:
   combat_phase: CombatPhase;
+  heal_mode: boolean;
   incoming_damage: number;
   block: number;
   deck: Record<number, Card>; // uid -> card
@@ -77,6 +86,7 @@ export type EntityDataClient = {
   // Monster:
   next_move: number;
   alert: boolean;
+  recovered: boolean;
 } & EntityCrawlerDataCommon;
 
 const dummy_rand = {
@@ -202,7 +212,7 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
     shuffleArray(dummy_rand, draw_pile);
   }
 
-  monsterMoveGet(): CardDef {
+  monsterMoveGet(): EnemyMove {
     let opts = (this as unknown as EntityEnemy).enemy_opts;
     let { data } = this;
     if (data.next_move === undefined) {
