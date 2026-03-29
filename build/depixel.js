@@ -55,6 +55,9 @@ gb.task({
     //   otherwise, wrap
     rules: [
       '**/*chest*:balpha',
+      'main/dun1-*solid*:hwrap,vwrap',
+      'main/dun1-*stairs*:hwrap,vwrap',
+      'main/dun1-*door*:hwrap,vwrap',
       '**/*wall*:hwrap,vclamp',
       '**/*solid*:hwrap,vclamp',
       '**/*door*:hwrap,vclamp',

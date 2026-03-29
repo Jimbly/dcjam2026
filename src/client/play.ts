@@ -292,6 +292,9 @@ function aiStep(reason: TurnBasedStepReason): void {
     });
     let { data } = myEnt();
     data.combat_phase = 'redraw';
+    if (reason === 'move') {
+      myEnt().tickOnMove();
+    }
     combat_state.countdown = 0;
   }
 }
@@ -1790,7 +1793,7 @@ export function playStartup(): void {
       new_player_data: {
         type: 'player',
         pos: [0, 0, 0],
-        floor: 0,
+        floor: 3,
         stats: { hp: 10, hp_max: 10 },
       },
       loading_state: playOfflineLoading,

@@ -231,9 +231,13 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
 
   startPlayerPhase(): void {
     let { data } = this;
-    // Reduce block each turn?
-    // data.block = data.block ? data.block - 1 : 0;
     data.combat_phase = 'player';
+  }
+
+  tickOnMove(): void {
+    let { data } = this;
+    // Reduce block each turn?
+    data.block = data.block ? data.block - 1 : 0;
   }
 
   takeDamage(amt: number): number {

@@ -2,10 +2,13 @@ TODO
 ====
 
 make test encounter floor
+  5 slimes left me with 5 cards, but close
 
 monsters should be able to swap positions with dead monsters
 Use appropriate font
 add border
+
+if we move through a door, and there's a monster there that's never seen us, it shouldn't get a move, it should just come alert (or, rather "coming alert" is a move?)
 
 
 Notes / Brainstorming
