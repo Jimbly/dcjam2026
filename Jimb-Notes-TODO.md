@@ -12,6 +12,7 @@ hunter is triggering wander to go through a door
   but, we're doing hunter but not wander, so it's never executing!
 
 Use appropriate font
+Hooks and placeholders for audio
 
 block tick down if we are standing still, executing block, and a monster is walking towards us
   so, ticks down if at the end of our turn, before the monster moves, we have no adjacent enemy? logic changes if enemies have ranged attacks though
