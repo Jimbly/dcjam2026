@@ -1,7 +1,6 @@
 TODO
 ====
 
-monsters should be able to swap positions with dead monsters
 add border
 
 make test encounter floor

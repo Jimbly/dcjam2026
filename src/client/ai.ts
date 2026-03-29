@@ -126,6 +126,10 @@ function isEnemy(ent: Entity): boolean {
   return ent.isEnemy();
 }
 
+function isLivingEnemy(ent: Entity): boolean {
+  return ent.isEnemy() && ent.isAlive();
+}
+
 export function aiTraitsClientStartup(): void {
   let ent_factory = crawlerEntFactory<Entity>();
   ent_factory.registerTrait<WanderOpts, WanderState>('wander', {
@@ -407,7 +411,7 @@ export function aiTraitsClientStartup(): void {
         if (dx) {
           let new_pos: JSVec3 = [pos[0] + DX[xdir!], pos[1] + DY[xdir!], pos[2]];
           let ents = entitiesAt(this.entity_manager, new_pos, floor_id, true);
-          ents = ents.filter(isEnemy);
+          ents = ents.filter(isLivingEnemy);
           if (ents.length) {
             dx = 0;
           }
@@ -415,7 +419,7 @@ export function aiTraitsClientStartup(): void {
         if (dy) {
           let new_pos: JSVec3 = [pos[0] + DX[ydir!], pos[1] + DY[ydir!], pos[2]];
           let ents = entitiesAt(this.entity_manager, new_pos, floor_id, true);
-          ents = ents.filter(isEnemy);
+          ents = ents.filter(isLivingEnemy);
           if (ents.length) {
             dy = 0;
           }
@@ -442,6 +446,8 @@ export function aiTraitsClientStartup(): void {
         }
         let dir = do_x ? xdir! : ydir!;
         let new_pos: JSVec3 = [pos[0] + DX[dir], pos[1] + DY[dir], pos[2]];
+        let swap_ents = entitiesAt(this.entity_manager, new_pos, floor_id, true);
+        swap_ents = swap_ents.filter(isEnemy);
         // if (debugDefineIsSet('HUNTER')) {
         //   statusPush(`${this.id}: Moving from ${pos} to ${new_pos}`);
         // }
@@ -449,6 +455,15 @@ export function aiTraitsClientStartup(): void {
           pos: new_pos,
           last_pos: pos,
         }, undefined, ignoreErrors);
+
+        if (swap_ents.length) {
+          // there was a (dead) enemy in the target, swap places
+          swap_ents[0].applyAIUpdate('ai_move', {
+            pos: pos,
+            last_pos: new_pos,
+          }, undefined, ignoreErrors);
+        }
+
         profilerStopFunc();
         return true;
       },
