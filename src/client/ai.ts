@@ -118,7 +118,7 @@ export type EntityHunter = Entity & {
 };
 
 
-function ignoreErrors(err: unknown): void {
+export function aiIgnoreErrors(err: unknown): void {
   console.log(`Ignoring error sending AI update: ${err}`);
 }
 
@@ -189,7 +189,7 @@ export function aiTraitsClientStartup(): void {
         }
         this.applyAIUpdate('ai_move', {
           pos: new_pos,
-        }, undefined, ignoreErrors);
+        }, undefined, aiIgnoreErrors);
         profilerStopFunc();
         return true;
       },
@@ -252,7 +252,7 @@ export function aiTraitsClientStartup(): void {
         this.applyAIUpdate('ai_move', {
           pos: new_pos,
           last_pos: pos,
-        }, undefined, ignoreErrors);
+        }, undefined, aiIgnoreErrors);
         profilerStopFunc();
         return true;
       },
@@ -454,14 +454,14 @@ export function aiTraitsClientStartup(): void {
         this.applyAIUpdate('ai_move', {
           pos: new_pos,
           last_pos: pos,
-        }, undefined, ignoreErrors);
+        }, undefined, aiIgnoreErrors);
 
         if (swap_ents.length) {
           // there was a (dead) enemy in the target, swap places
           swap_ents[0].applyAIUpdate('ai_move', {
             pos: pos,
             last_pos: new_pos,
-          }, undefined, ignoreErrors);
+          }, undefined, aiIgnoreErrors);
         }
 
         profilerStopFunc();

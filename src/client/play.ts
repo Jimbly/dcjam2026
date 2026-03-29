@@ -79,6 +79,7 @@ import {
 } from '../common/crawler_state';
 import {
   aiDoFloor,
+  aiIgnoreErrors,
   aiStepFloor,
   AIStepPayload,
   aiTraitsClientStartup,
@@ -577,6 +578,63 @@ function healMode(): boolean {
   return myEnt().data.heal_mode;
 }
 
+export function enemyVacate(ent_id: EntityID): void {
+  let { entities } = entityManager();
+
+  let blocked: TSMap<true> = {};
+  let { floor_id } = crawlerGameState();
+  let level = crawlerGameState().level!;
+  for (let ent_id_str in entities) {
+    let other = entities[ent_id_str]!;
+    if (other.data.floor === floor_id) {
+      let pos = other.data.pos;
+      blocked[`${pos[0]},${pos[1]}`] = true;
+    }
+  }
+
+  let preferred_dir = myEnt().data.pos[2];
+  let ent = entities[ent_id]!;
+  let done: TSMap<true> = {};
+  let script_api = crawlerScriptAPI();
+  let todo: JSVec2[] = [];
+  function search(pos: JSVec2): void {
+    let key = `${pos[0]},${pos[1]}`;
+    if (done[key]) {
+      return;
+    }
+    done[key] = true;
+
+    for (let ii = 0; ii < 4; ++ii) {
+      let dir = dirMod(ii + preferred_dir);
+      if (!level.wallsBlock(pos, dir, script_api)) {
+        let nx = pos[0] + DX[dir];
+        let ny = pos[1] + DY[dir];
+        let nkey = `${nx},${ny}`;
+        if (!blocked[nkey]) {
+          // move here
+          todo.length = 0;
+          ent.applyAIUpdate('ai_move', {
+            pos: [nx, ny, ent.data.pos[2]],
+            last_pos: pos,
+          }, undefined, aiIgnoreErrors);
+          return;
+        } else {
+          // search here
+          if (!done[nkey]) {
+            todo.push([nx, ny]);
+          }
+        }
+      }
+    }
+  }
+  let { pos } = ent.data;
+  todo.push(pos as unknown as JSVec2);
+  while (todo.length) {
+    let next = todo.shift()!;
+    search(next);
+  }
+}
+
 const ENEMY_HP_BAR_W = render_width / 4;
 const ENEMY_HP_BAR_X = VIEWPORT_X0 + (render_width - ENEMY_HP_BAR_W)/2;
 const ENEMY_HP_BAR_Y = VIEWPORT_Y0 + 8;
@@ -639,23 +697,6 @@ function drawEnemyStats(ent: Entity): void {
     });
     y += FONT_HEIGHT;
   }
-
-  // probably not the right place to do this
-  if (healMode()) {
-    if (ent.data.recovered) {
-      ent.blocks_player = false;
-    } else if (hp >= 0) {
-      ent.blocks_player = true; // bump to interact
-    } else {
-      ent.blocks_player = false; // walk over dying/deady
-    }
-  } else {
-    if (hp <= 0) {
-      ent.blocks_player = false;
-    } else {
-      ent.blocks_player = true;
-    }
-  }
 }
 
 const BAR_WORLD_PX = DIM * 0.5/ENEMY_HP_BAR_W;
@@ -700,18 +741,40 @@ const INFRONT_ANIMATING_THRESHOLD = 0.75;
 function doHealthbars(): void {
   let game_state = crawlerGameState();
   let level = game_state.level;
-  if (!level || healMode()) {
+  if (!level) {
     return;
   }
   let my_ent = myEnt();
   let { floor_id } = game_state;
   let my_pos = my_ent.getData<JSVec3>('pos')!;
+  let { heal_mode } = my_ent.data;
   let entity_manager = entityManager();
   let ent_in_front = crawlerController().controllerIsAnimating(INFRONT_ANIMATING_THRESHOLD) ? -1 : crawlerEntInFront();
   let ents = entity_manager.entitiesFind((ent) => {
-    if (ent.data.floor !== floor_id || !(ent.isEnemy() || ent.isPlayer()) ||
-      !ent.isAlive() || ent.id === ent_in_front || !ent.data.alert
-    ) {
+    if (ent.data.floor !== floor_id || !(ent.isEnemy() || ent.isPlayer())) {
+      return false;
+    }
+
+    if (ent.isEnemy()) {
+      let { hp } = ent.data.stats;
+      if (heal_mode) {
+        if (ent.data.recovered) {
+          ent.blocks_player = false;
+        } else if (hp >= 0) {
+          ent.blocks_player = true; // bump to interact
+        } else {
+          ent.blocks_player = false; // walk over dying/deady
+        }
+      } else {
+        if (hp <= 0) {
+          ent.blocks_player = false;
+        } else {
+          ent.blocks_player = true;
+        }
+      }
+    }
+
+    if (!ent.isAlive() || ent.id === ent_in_front || !ent.data.alert) {
       return false;
     }
     if (entManhattanDistance(ent, my_pos) <= 5) {
@@ -719,10 +782,12 @@ function doHealthbars(): void {
     }
     return false;
   }, true);
-  for (let ii = 0; ii < ents.length; ++ii) {
-    let ent = ents[ii];
-    ent.draw_cb = drawInWorldHealthbar;
-    ent.draw_cb_frame = engine.getFrameIndex();
+  if (!healMode()) {
+    for (let ii = 0; ii < ents.length; ++ii) {
+      let ent = ents[ii];
+      ent.draw_cb = drawInWorldHealthbar;
+      ent.draw_cb_frame = engine.getFrameIndex();
+    }
   }
 }
 

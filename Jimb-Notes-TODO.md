@@ -29,6 +29,8 @@ block tick down if we are standing still, executing block, and a monster is walk
   so, ticks down if at the end of our turn, before the monster moves, we have no adjacent enemy? logic changes if enemies have ranged attacks though
 if we move through a door, and there's a monster there that's never seen us, it shouldn't get a move, it should just come alert (or, rather "coming alert" is a move?)
 
+try depixel scale up by 4, then do 2 bilinear filters down to get 16xMSAA
+
 Level sizes
   ~4 enemies per level
   gain 1-2 cards per level on way in, 1 total on way out (but potentially lots of upgrade points)

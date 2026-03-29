@@ -99,6 +99,7 @@ import {
 } from './crawler_render';
 import { CrawlerScriptAPIClient } from './crawler_script_api_client';
 import { crawlerOnScreenButton } from './crawler_ui';
+import { enemyVacate } from './play';
 import { statusPush } from './status';
 
 const { PI, abs, cos, floor, max, min, random, round, sin } = Math;
@@ -109,6 +110,8 @@ const FAST_TRAVEL_STEP_MIN_TIME = 200; // affects instant-step-ish controllers
 const KEY_REPEAT_TIME_ROT = 500;
 const KEY_REPEAT_TIME_MOVE_DELAY = 500;
 const KEY_REPEAT_TIME_MOVE_RATE = 200;
+
+const ALLOW_OVERLAP_VIA_DOOR = true; // DCJAM
 
 const FORCE_FACE_TIME = ROT_TIME;
 
@@ -228,7 +231,11 @@ function startMove(
     let is_facing_ent = dir === new_rot;
     if (blocked_vis) {
       // Can't see through this wall, and there's a monster on the other side!
-      script_api.status('move_blocked', 'The door won\'t budge.');
+      if (ALLOW_OVERLAP_VIA_DOOR) {
+        bumped_something = bumped_entity = false;
+      } else {
+        script_api.status('move_blocked', 'The door won\'t budge.');
+      }
     } else if (!is_facing_ent) {
       script_api.status('move_blocked', 'Something blocks your way.');
     } else {
@@ -2271,12 +2278,19 @@ export class CrawlerController {
         this.is_repeating = false;
       }
 
+      let blocked_ent_id;
       if (!no_move &&
-        !this.player_controller.isMoving() && !build_mode && entityBlocks(game_state.floor_id, last_dest_pos, true) &&
+        !this.player_controller.isMoving() && !build_mode &&
+        (blocked_ent_id = entityBlocks(game_state.floor_id, last_dest_pos, true)) &&
         !v2same(last_dest_pos, prev_pos)
       ) {
-        // We're standing over a blocking entity!  Move to where we were before
-        this.player_controller.startMove(dirFromMove(last_dest_pos, prev_pos));
+        if (ALLOW_OVERLAP_VIA_DOOR) {
+          // We're standing over a blocking entity!  Move theme somewhere else!
+          enemyVacate(blocked_ent_id);
+        } else {
+          // We're standing over a blocking entity!  Move to where we were before
+          this.player_controller.startMove(dirFromMove(last_dest_pos, prev_pos));
+        }
       }
 
       if (!no_move && !no_rotate &&
