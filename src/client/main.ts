@@ -64,6 +64,7 @@ Z.SPRITES = 10;
 Z.PARTICLES = 20;
 Z.CHAT = 60;
 Z.UI = 100;
+Z.BORDERS = 120;
 Z.MAP = Z.UI + 5; // also minimap
 Z.FLOATERS = Z.MODAL + 20;
 Z.DIALOG = 140;

@@ -132,6 +132,7 @@ import {
   crawlerPlayTopOfFrame,
   crawlerPlayWantMode,
   crawlerPrepAndRenderFrame,
+  crawlerRenderSetUIClearColor,
   crawlerSaveGame,
   crawlerScriptAPI,
   crawlerTurnBasedMovePreStart,
@@ -175,9 +176,11 @@ import { levelGenTest } from './level_gen_test';
 import { chatUI } from './main';
 import { tickMusic } from './music';
 import {
+  PAL_BLACK_PURE,
   PAL_GREY,
   PAL_RED,
   PAL_WHITE,
+  palette,
   palette_font,
 } from './palette';
 import { renderAppStartup } from './render_app';
@@ -1301,6 +1304,73 @@ function bumpEntityCallback(ent_id: EntityID): void {
   }
 }
 
+const RIGHT_BAR_W = 22;
+const RIGHT_BAR_X = game_width - 12 - RIGHT_BAR_W;
+const RIGHT_BAR_H = 120;
+function drawBorders(): void {
+  [
+    [0, 0],
+    [0, game_height - 12],
+    [game_width - 12, 0],
+    [game_width - 12, game_height - 12],
+    [RIGHT_BAR_X - 12, 0],
+    [game_width - 12, RIGHT_BAR_H + 12],
+  ].forEach(function (pair) {
+    autoAtlas('ui', 'border-corner').draw({
+      x: pair[0],
+      y: pair[1],
+      w: 12, h: 12,
+      z: Z.BORDERS + 0.1,
+    });
+  });
+  autoAtlas('ui', 'border-ll').draw({
+    x: RIGHT_BAR_X - 12,
+    y: RIGHT_BAR_H + 12,
+    w: 12, h: 12,
+    z: Z.BORDERS + 0.1,
+  });
+
+  [
+    [0, game_width - 24],
+    [game_height - 12, game_width - 24],
+    [RIGHT_BAR_H + 12, RIGHT_BAR_W, RIGHT_BAR_X],
+  ].forEach(function (pair) {
+    autoAtlas('ui', 'bar-horiz').draw({
+      x: pair[2] || 12, y: pair[0], z: Z.BORDERS,
+      w: pair[1],
+      h: 12,
+      nozoom: true,
+    });
+  });
+  [
+    [0, game_height - 24],
+    [game_width - 12, game_height - 24],
+    [RIGHT_BAR_X - 12, RIGHT_BAR_H],
+  ].forEach(function (pair) {
+    autoAtlas('ui', 'bar-vert').draw({
+      x: pair[0], y: 12, z: Z.BORDERS,
+      w: 12,
+      h: pair[1],
+      nozoom: true,
+    });
+  });
+  drawRect2({
+    x: RIGHT_BAR_X - 6, y: 6,
+    w: RIGHT_BAR_W + 12,
+    h: RIGHT_BAR_H + 12,
+    z: Z.UI - 0.1,
+    color: palette[PAL_GREY[1]],
+  });
+
+  drawRect2({
+    x: 6, y: game_height - 6,
+    w: game_width - 12,
+    h: 6,
+    z: Z.BORDERS - 0.1,
+    color: palette[PAL_BLACK_PURE],
+  });
+}
+
 const MOVE_BUTTONS_X0 = MINIMAP_X;
 const MOVE_BUTTONS_Y0 = 179;
 
@@ -1469,6 +1539,7 @@ function playCrawl(): void {
       doEngagedEnemy();
       doHealthbars();
       doHand();
+      drawBorders();
       // crawlerButton(2, 0, inventory_frame, 'inventory', [KEYS.I], []);
     }
     // Do modal UIs here
@@ -1616,6 +1687,7 @@ function playCrawl(): void {
 
 export function play(dt: number): void {
   profilerStartFunc();
+  crawlerRenderSetUIClearColor(palette[PAL_BLACK_PURE]);
   let game_state = crawlerGameState();
   if (crawlerCommWant()) {
     // Must have been disconnected?

@@ -1,8 +1,6 @@
 TODO
 ====
 
-add border
-
 make test encounter floor
   5 slimes left me with 5 cards, but close
   second try: 4 slimes nearly killed me
