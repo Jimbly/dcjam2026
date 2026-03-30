@@ -143,6 +143,7 @@ import {
   crawlerRenderSetUIClearColor,
   crawlerSaveGame,
   crawlerScriptAPI,
+  crawlerTurnBasedMoveFinish,
   crawlerTurnBasedMovePreStart,
   crawlerTurnBasedScheduleStep,
   getScaledFrameDt,
@@ -162,9 +163,10 @@ import {
 } from './crawler_render_entities';
 import { crawlerScriptAPIDummyServer } from './crawler_script_api_client';
 import { crawlerOnScreenButton } from './crawler_ui';
-import { dialogNameRender, keyGet } from './dialog_data';
+import { dialogNameRender, keyGet, keySet } from './dialog_data';
 import { dialogMoveLocked, dialogReset, dialogRun, dialogStartup } from './dialog_system';
 import {
+  entitiesAt,
   EntityClient,
   entityManager,
   gameEntityTraitsClientStartup,
@@ -203,7 +205,7 @@ import {
 import { style_damage, style_hotkey, style_label, style_text } from './styles';
 import { uiActionClear, uiActionCurrent, uiActionTick } from './uiaction';
 import { pauseMenuActive, pauseMenuOpen } from './uiaction_pause_menu';
-import { shopOpen } from './uiaction_shop';
+import { pickChestOptions, shopOpen } from './uiaction_shop';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const { atan2, floor, max, min, random, round, sqrt, PI } = Math;
@@ -1007,9 +1009,9 @@ function doReshuffle(): void {
     text_height: FONT_HEIGHT,
     font_style: fontStyleColored(null, palette_font[PAL_WHITE]),
     align: ALIGN.HCENTER|ALIGN.HWRAP,
-    text: 'Your draw pile is exhausted, you must BURN 1 card in order to reshuffle.' +
-      '\n\nChoose one of these cards to BURN.' +
-      '\n\n[c=note]Note: burnt cards are returned to your deck at the end of the encounter (floor).[/c]' +
+    text: 'Your draw pile is exhausted, you must [img=burn scale=1.75]BANISH 1 card in order to reshuffle.' +
+      '\n\nChoose one of these cards to [img=burn scale=1.75]BANISH.' +
+      '\n\n[c=note]Note: banished cards are returned to your deck at the end of the encounter (floor).[/c]' +
       '\n\n[c=note]Warning: if you have no cards left, you die![/c]' +
       `${(data.incoming_damage ?
         `\n\nNote: you still have [c=red]${data.incoming_damage} damage[/c] to resolve after the reshuffle.` : '')}`,
@@ -2219,11 +2221,30 @@ function onInitPos(): void {
   // autoAttackCancel();
 }
 
+function onEnterCell(pos: Vec2): void {
+  let entity_manager = entityManager();
+  let game_state = crawlerGameState();
+  let { floor_id } = game_state;
+  let chests = entitiesAt(entity_manager, pos, floor_id, true).filter(function (ent) {
+    return ent.type_id === 'chest';
+  });
+  chests.forEach(function (chest) {
+    keySet('needs_shop');
+    keySet('shop_chest');
+    pickChestOptions();
+    shopOpen();
+    entity_manager.deleteEntity(chest.id, 'pickup');
+    autosave();
+  });
+  crawlerTurnBasedMoveFinish(pos);
+}
+
 function playInitShared(online: boolean): void {
   controller = crawlerController();
 
   controller.setOnPlayerMove(onPlayerMove);
   controller.setOnInitPos(onInitPos);
+  controller.setOnEnterCell(onEnterCell);
 
   uiActionClear();
 }

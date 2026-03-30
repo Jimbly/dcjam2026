@@ -2,9 +2,9 @@ TODO
 ====
 
 rewards:
-  chests: pick: 1 of 2 cards, ?G, ?R
+  healing: randomly 1 G/R
 
-rename "burn" to "banish"
+between floors, after rewards, manage deck down to expected deck size
 
 add intro and boss "cutscenes"
 
@@ -19,6 +19,7 @@ tooltips everywhere - fixed screen location (per Action) for tooltips to show up
   need tooltips on pool showing card + description
   need tooltips on buy/upgrade shop cards showing descriptions
   need tooltips on cards in hand showing descriptions
+  need tooltips on cards in Reshuffle screen showing descriptions
 
 maybe: try choosing which cards to discard (and redrawing constantly)
   this makes combat slower, but does it make it more fun / strategic / (discoverable)?
@@ -28,6 +29,7 @@ block tick down if we are standing still, executing block, and a monster is walk
 if we move through a door, and there's a monster there that's never seen us, it shouldn't get a move, it should just come alert (or, rather "coming alert" is a move?)
   same for stepping up next to the boss for the first time
 using with no target -> prompt "do you want to discard instead - hint: use right click to discard directly"
+wandering cat
 
 try depixel scale up by 4, then do 2 bilinear filters down to get 16xMSAA
 

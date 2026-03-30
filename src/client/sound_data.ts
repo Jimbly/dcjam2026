@@ -70,4 +70,8 @@ export const SOUND_DATA = {
     file: 'card_pickup',
     volume: 1,
   },
+  reward_choice: { // from chests, or choosing inter-floor reward
+    file: 'card_pickup',
+    volume: 1,
+  },
 } satisfies Partial<Record<string, UISoundID | string | string[] | UISoundID[]>>;

@@ -130,7 +130,7 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
   declare is_boss: boolean;
   declare is_goal: boolean;
 
-  addCard(card_id: CardID, tier: number): void {
+  addCard(card_id: CardID, tier: number): number {
     let { data } = this;
     let uid = this.cardAllocUID();
     data.deck[uid] = {
@@ -138,6 +138,7 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
       tier,
       uid,
     };
+    return uid;
   }
 
   constructor(data_in: DataObject) {

@@ -16,6 +16,7 @@ import {
   uiButtonWidth,
   uiGetFont,
 } from 'glov/client/ui';
+import { ridx } from 'glov/common/util';
 import { blend } from './blend';
 import { Card, CardID, CARDS, MAX_TIER } from './cards';
 import { keyClear, keyGet, keySet } from './dialog_data';
@@ -24,16 +25,17 @@ import {
   game_height,
   game_width,
 } from './globals';
-import { PAL_BLACK, palette_font } from './palette';
+import { PAL_BLACK, PAL_GREY, palette_font } from './palette';
 import {
   autosave,
   CARD_H,
   CARD_W,
   drawCard,
   myEnt,
+  randInt,
   sameCard,
 } from './play';
-import { style_dialog_title, style_label } from './styles';
+import { style_dialog_title, style_hotkey, style_label } from './styles';
 import {
   uiAction,
   UIAction,
@@ -50,6 +52,24 @@ function pickCardShopOptions(): void {
     'attack3', 'attack4', 'attack5', 'block3',
   ];
   data.shop_state = {};
+}
+
+export function pickChestOptions(): void {
+  const me = myEnt();
+  const { data } = me;
+  let opts: CardID[] = [
+    'attack3', 'attack4', 'attack5', 'block3',
+  ];
+  data.shop_options = [];
+  for (let ii = 0; ii < 2; ++ii) {
+    let idx = randInt(opts.length);
+    data.shop_options.push(opts[idx]);
+    ridx(opts, idx);
+  }
+  data.shop_state = {
+    gold: 2 + randInt(4),
+    respect: 2 + randInt(4),
+  };
 }
 
 let card_pool_scroll = scrollAreaCreate({
@@ -161,7 +181,133 @@ class ShopAction extends UIAction {
       text: `${respect}[img=currency-respect]   ${data.gold}[img=currency-gold]`
     });
 
-    if (keyGet('shop_gold')) {
+    if (keyGet('shop_chest')) {
+      font.draw({
+        style: style_dialog_title,
+        x, y, z, w,
+        size: FONT_HEIGHT * 2,
+        align: ALIGN.HCENTER,
+        text: 'CHEST REWARDS',
+      });
+      y += FONT_HEIGHT * 2 + PAD;
+
+      font.draw({
+        color: palette_font[PAL_BLACK],
+        x, y: y - 3, z, w,
+        align: ALIGN.HCENTER,
+        text: '(choose one)',
+      });
+      font.draw({
+        color: palette_font[PAL_GREY[2]],
+        x, y: y + 8, z, w,
+        align: ALIGN.HCENTER | ALIGN.HWRAP,
+        text: 'Note: Cards from chests go\ndirectly into your draw pile.',
+      });
+
+      doCardPool({
+        x, y, z, w: POOL_W, h: y0 + h - y,
+        no_max_tier: false,
+        no_select: true,
+      });
+      // x += POOL_W + PAD;
+      // let w2 = w - (POOL_W + PAD) - card_pool_scroll.barWidth();
+
+      y += 46;
+
+      let { shop_options } = data;
+      let xx0 = x;
+      x += floor((w - (shop_options.length * (CARD_W + PAD) - PAD))/2);
+      let hotkey = 0;
+      for (let ii = 0; ii < shop_options.length; ++ii) {
+        if (!data.shop_state![`bought${ii}`]) {
+          let card_id = shop_options[ii];
+          let tier = 0;
+          let rect = {
+            x, y, z: z + 5,
+            w: CARD_W,
+            h: CARD_H,
+          };
+          let disabled = false;
+          let spot_ret = spot({
+            ...rect,
+            disabled,
+            def: SPOT_DEFAULT_BUTTON,
+            hotkey: KEYS['1'] + hotkey,
+            sound_button: 'reward_choice',
+          });
+          drawCard({
+            ...rect,
+            y: blend(`shopcardy${ii}`, rect.y - (spot_ret.focused && !disabled ? 12 : 0), 200),
+            card: {
+              card_id,
+              tier,
+              uid: -1,
+            },
+            hotkey: disabled ? undefined : String.fromCharCode('1'.charCodeAt(0) + hotkey),
+            no_target: false,
+            disabled,
+            for_shop: true,
+          });
+          if (spot_ret.ret && keyGet('shop_chest')) {
+            let uid = me.addCard(card_id, tier);
+            data.draw_pile.push(uid);
+            keyClear('needs_shop');
+            keyClear('shop_chest');
+            uiActionClear();
+          }
+          ++hotkey;
+        }
+        x += CARD_W + PAD;
+      }
+      y += CARD_H + PAD + FONT_HEIGHT + PAD;
+
+      let button_w = CARD_W;
+      x = xx0 + floor((w - (2 * (button_w + PAD) - PAD))/2);
+      font.draw({
+        style: style_hotkey,
+        x, y: y - FONT_HEIGHT - 2, z, w: CARD_W,
+        align: ALIGN.HCENTER,
+        text: String.fromCharCode('1'.charCodeAt(0) + hotkey),
+      });
+      if (button({
+        x, y, z,
+        w: button_w,
+        h: 24,
+        markdown: true,
+        hotkey: KEYS['1'] + hotkey,
+        sound_button: 'reward_choice',
+        text: `${data.shop_state!.gold}[img=currency-gold scale=1.75]`
+      }) && keyGet('shop_chest')) {
+        data.gold += data.shop_state!.gold as number;
+        keyClear('needs_shop');
+        keyClear('shop_chest');
+        uiActionClear();
+      }
+      ++hotkey;
+      x += button_w + PAD;
+      font.draw({
+        style: style_hotkey,
+        x, y: y - FONT_HEIGHT - 2, z, w: CARD_W,
+        align: ALIGN.HCENTER,
+        text: String.fromCharCode('1'.charCodeAt(0) + hotkey),
+      });
+      if (button({
+        x, y, z,
+        w: button_w,
+        h: 24,
+        markdown: true,
+        hotkey: KEYS['1'] + hotkey,
+        sound_button: 'reward_choice',
+        text: `${data.shop_state!.respect}[img=currency-respect scale=1.75]`
+      }) && keyGet('shop_chest')) {
+        data.respect += data.shop_state!.respect as number;
+        keyClear('needs_shop');
+        keyClear('shop_chest');
+        uiActionClear();
+      }
+      ++hotkey;
+
+    } else if (keyGet('shop_gold')) {
       font.draw({
         style: style_dialog_title,
         x, y, z, w,
@@ -332,6 +478,7 @@ class ShopAction extends UIAction {
             y: y + CARD_H + PAD, z,
             disabled,
             markdown: true,
+            sound_button: 'purchase',
             text: 'Upgrade', // `Upgrade (${cost}[img=currency-respect])`,
           })) {
             data.respect -= cost;
@@ -407,6 +554,7 @@ class ShopAction extends UIAction {
         h: button_height,
         align: ALIGN.HVCENTER | ALIGN.HWRAP,
         markdown: true,
+        sound_button: 'reward_choice',
         img: autoAtlas('ui', 'currency-gold'),
         text: 'Buy [c=green]NEW CARDS[/c]'
       })) {
@@ -430,6 +578,7 @@ class ShopAction extends UIAction {
         markdown: true,
         align: ALIGN.HVCENTER | ALIGN.HWRAP,
         shrink: 0.9,
+        sound_button: 'reward_choice',
         img: autoAtlas('ui', 'currency-respect'),
         text: '[c=green]UPGRADE[/c] cards'
       })) {
