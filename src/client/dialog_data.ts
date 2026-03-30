@@ -10,13 +10,19 @@ import {
   uiTextHeight,
 } from 'glov/client/ui';
 import { WithRequired } from 'glov/common/types';
+import { isInteger } from 'glov/common/util';
 import { dialogIconsRegister } from '../common/crawler_events';
 import {
   CrawlerScriptAPI,
   CrawlerScriptEventMapIcon,
+  CrawlerScriptEventMapIcons,
+  crawlerScriptRegisterEvent,
+  CrawlerScriptWhen,
 } from '../common/crawler_script';
-import { crawlerScriptAPI } from './crawler_play';
+import { CrawlerCell } from '../common/crawler_state';
+import { crawlerController, crawlerScriptAPI } from './crawler_play';
 import {
+  dialog,
   DialogParam,
   dialogPush,
   dialogRegister,
@@ -26,6 +32,8 @@ import {
   entityManager,
 } from './entity_game_client';
 import {
+  healMode,
+  myEnt,
   myEntOptional,
 } from './play';
 import { statusPush } from './status';
@@ -147,6 +155,47 @@ dialogRegister({
         transient: true,
       });
     }
+  },
+  monologue: function (param: string) {
+    dialogPush({
+      name: '',
+      text: param,
+      transient: true,
+      transient_long: true,
+    });
+  }
+});
+
+crawlerScriptRegisterEvent({
+  key: 'stairs_up',
+  when: CrawlerScriptWhen.POST,
+  map_icon: CrawlerScriptEventMapIcons.NONE,
+  func: (api: CrawlerScriptAPI, cell: CrawlerCell, param: string) => {
+    let params = param.split(' ');
+    let delta = -1;
+    if (!healMode()) {
+      crawlerController().forceMoveBackwards();
+      dialog('monologue', 'I can\'t go back now, I must go onward!');
+      return;
+    }
+    api.floorDelta(delta, 'stairs_out', false);
+  },
+});
+
+crawlerScriptRegisterEvent({
+  key: 'stairs_down',
+  when: CrawlerScriptWhen.POST,
+  map_icon: CrawlerScriptEventMapIcons.NONE,
+  func: (api: CrawlerScriptAPI, cell: CrawlerCell, param: string) => {
+    let params = param.split(' ');
+    let delta = 1;
+    if (healMode()) {
+      crawlerController().forceMoveBackwards();
+      dialog('monologue', 'No need to go back down, off to the next adventure!');
+      return;
+    }
+    myEnt().resetDeck();
+    api.floorDelta(delta, 'stairs_in', false);
   },
 });
 

@@ -2,10 +2,6 @@ TODO
 ====
 
 game flow:
-  add stair events:
-    block going back up when not in heal mode
-    block going back down when in heal mode
-    resetDeck() upon going down
   test entire flow of:
     fight floor
     boss floor

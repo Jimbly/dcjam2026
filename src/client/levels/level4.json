@@ -1185,7 +1185,7 @@
       ],
       "events": [
         {
-          "id": "floor_delta",
+          "id": "stairs_up",
           "param": "-1"
         }
       ]

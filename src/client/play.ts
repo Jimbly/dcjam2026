@@ -933,7 +933,7 @@ function drawCard(param: {
         rot: PI,
       });
     }
-    y += 15;
+    y -= 15;
   }
 }
 
