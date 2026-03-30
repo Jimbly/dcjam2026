@@ -13,7 +13,6 @@ test encounter floor results
   first try: 5 slimes left me with 5 cards, but close
   second try: 4 slimes nearly killed me, so, let's do 4
 
-Use appropriate esc/deck button
 Hooks and placeholders for audio
 Upon death, reset floor, try again, deduct a life
 
@@ -48,8 +47,6 @@ stretch: bosses / (later dungeons?) are multi-element and you can switch between
 stretch: undo (to beginning of previous turn)
 
 animate: upon taking the orb, flip cards over, change element, probably a dialog
-
-goal sprites need to be scaled up much more than their UI versions
 
 Card abilities
 ==============

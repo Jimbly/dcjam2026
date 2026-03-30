@@ -27,12 +27,14 @@ import {
   settingsRegister,
   settingsSet,
 } from 'glov/client/settings';
-import { spot, SPOT_DEFAULT_BUTTON, SPOT_DEFAULT_LABEL } from 'glov/client/spot';
+import { spot, SPOT_DEFAULT_BUTTON, SPOT_DEFAULT_LABEL, SPOT_STATE_DOWN } from 'glov/client/spot';
 import {
   Sprite,
   spriteCreate,
 } from 'glov/client/sprites';
 import {
+  button,
+  buttonLastSpotRet,
   ButtonStateString,
   buttonText,
   drawBox,
@@ -1778,7 +1780,7 @@ function playCrawl(): void {
 
   function crawlerButton(
     rx: number, ry: number,
-    frame: number,
+    img: string,
     key: ValidKeys,
     keys: number[],
     pads: number[],
@@ -1818,26 +1820,55 @@ function playCrawl(): void {
     //   align: ALIGN.HVCENTERFIT | ALIGN.HWRAP,
     //   text: label,
     // });
-    let ret = crawlerOnScreenButton({
-      x: button_x0 + (MOVE_BUTTON_W + 2) * rx,
-      y: button_y0 + (MOVE_BUTTON_H + 2) * ry,
-      z,
-      w: MOVE_BUTTON_W, h: MOVE_BUTTON_H,
-      frame,
-      keys,
-      pads,
-      no_visible_ui,
-      do_up_edge: true,
-      disabled: my_disabled,
-      button_sprites: useNoText() ?
-        toggled_down ? button_sprites_notext_down : button_sprites_notext :
-        toggled_down ? button_sprites_down : button_sprites,
-      is_movement: false,
-      show_hotkeys: false,
-    });
-    // down_edge[key] += ret.down_edge;
-    down[key] += ret.down;
-    up_edge[key] += ret.up_edge;
+    if (1) {
+      const BUTTON_STYLE = {
+        // font_style_normal: style_button_text,
+        // font_style_focused: style_button_text_focused,
+        // font_style_disabled: style_button_text_disabled,
+        w: MOVE_BUTTON_W,
+        h: MOVE_BUTTON_H,
+        align: ALIGN.HVCENTERFIT | ALIGN.HWRAP,
+        // base_name: 'buttonstyle',
+        // markdown: true,
+      };
+      button({
+        x: button_x0 + (MOVE_BUTTON_W + 2) * rx,
+        y: button_y0 + (MOVE_BUTTON_H + 2) * ry,
+        z,
+        ...BUTTON_STYLE,
+        img: autoAtlas('ui', img),
+        hotkeys: keys,
+        disabled: my_disabled,
+      });
+      let ret = buttonLastSpotRet();
+      if (ret.spot_state === SPOT_STATE_DOWN) {
+        down[key]++;
+      }
+      if (ret.ret) {
+        up_edge[key]++;
+      }
+    } else {
+      let ret = crawlerOnScreenButton({
+        x: button_x0 + (MOVE_BUTTON_W + 2) * rx,
+        y: button_y0 + (MOVE_BUTTON_H + 2) * ry,
+        z,
+        w: MOVE_BUTTON_W, h: MOVE_BUTTON_H,
+        frame: 10,
+        keys,
+        pads,
+        no_visible_ui,
+        do_up_edge: true,
+        disabled: my_disabled,
+        button_sprites: useNoText() ?
+          toggled_down ? button_sprites_notext_down : button_sprites_notext :
+          toggled_down ? button_sprites_down : button_sprites,
+        is_movement: false,
+        show_hotkeys: false,
+      });
+      // down_edge[key] += ret.down_edge;
+      down[key] += ret.down;
+      up_edge[key] += ret.up_edge;
+    }
   }
 
 
@@ -1850,10 +1881,10 @@ function playCrawl(): void {
   if (menu_up) {
     menu_pads.push(PAD.B, PAD.BACK);
   }
-  crawlerButton(0, 0, menu_up ? 10 : 6,
+  crawlerButton(0, 0, menu_up ? 'menu-close' : 'menu-open',
     'menu', menu_keys, menu_pads, pauseMenuActive());
   if (!build_mode) {
-    crawlerButton(0, 1, 7, 'inv', [KEYS.I], [PAD.Y], false /*inventory_up*/);
+    crawlerButton(0, 1, 'inv', 'inv', [KEYS.I], [PAD.Y], false /*inventory_up*/);
     if (up_edge.inv) {
       // TODO
     }

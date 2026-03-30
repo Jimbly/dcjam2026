@@ -66,6 +66,8 @@ gb.task({
       'ui/bar-vert.png:halpha,vwrap',
       'ui/bar-horiz.png:hwrap,valpha',
       'ui/border-ll.png:bclamp',
+      'ui/button*:balpha',
+      'ui/menu*:balpha',
       '**/*wall*:hwrap,vclamp',
       '**/*solid*:hwrap,vclamp',
       '**/*door*:hwrap,vclamp',

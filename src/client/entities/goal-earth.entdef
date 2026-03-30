@@ -13,7 +13,7 @@ traits:
       frames: [element-earth]
       times: 10000
   sprite_data:
-    atlas: ui
+    atlas: main
     filter_min: LINEAR_MIPMAP_LINEAR
     filter_mag: LINEAR
     origin: [0.5, 1]
