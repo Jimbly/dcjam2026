@@ -1,0 +1,954 @@
+CharInfo
+	c 2
+	x0 90
+	y0 8
+	xpad 4
+	w 20
+	h 32
+End
+CharInfo
+	c 32
+	xpad 20
+End
+CharInfo
+	c 33
+	x0 185
+	y0 8
+	xpad 4
+	w 4
+	h 28
+End
+CharInfo
+	c 34
+	x0 663
+	y0 139
+	xpad 4
+	w 12
+	h 8
+End
+CharInfo
+	c 35
+	x0 506
+	y0 98
+	xpad 4
+	w 24
+	h 24
+End
+CharInfo
+	c 36
+	x0 45
+	y0 8
+	yoffs -4
+	xpad 4
+	w 28
+	h 36
+End
+CharInfo
+	c 37
+	x0 206
+	y0 8
+	xpad 4
+	w 28
+	h 28
+End
+CharInfo
+	c 38
+	x0 251
+	y0 8
+	xpad 4
+	w 24
+	h 28
+End
+CharInfo
+	c 39
+	x0 568
+	y0 139
+	xpad 4
+	w 4
+	h 12
+End
+CharInfo
+	c 40
+	x0 292
+	y0 8
+	xpad 4
+	w 12
+	h 28
+End
+CharInfo
+	c 41
+	x0 321
+	y0 8
+	xpad 4
+	w 12
+	h 28
+End
+CharInfo
+	c 42
+	x0 704
+	y0 98
+	yoffs 4
+	xpad 4
+	w 20
+	h 20
+End
+CharInfo
+	c 43
+	x0 741
+	y0 98
+	yoffs 4
+	xpad 4
+	w 20
+	h 20
+End
+CharInfo
+	c 44
+	x0 506
+	y0 139
+	yoffs 16
+	xpad 4
+	w 8
+	h 16
+End
+CharInfo
+	c 45
+	x0 808
+	y0 135
+	yoffs 12
+	xpad 4
+	w 16
+	h 4
+End
+CharInfo
+	c 46
+	x0 692
+	y0 139
+	yoffs 20
+	xpad 4
+	w 8
+	h 8
+End
+CharInfo
+	c 47
+	x0 350
+	y0 8
+	xpad 4
+	w 28
+	h 28
+End
+CharInfo
+	c 48
+	x0 395
+	y0 8
+	xpad 4
+	w 20
+	h 28
+End
+CharInfo
+	c 49
+	x0 432
+	y0 8
+	xpad 4
+	w 20
+	h 28
+End
+CharInfo
+	c 50
+	x0 469
+	y0 8
+	xpad 4
+	w 20
+	h 28
+End
+CharInfo
+	c 51
+	x0 506
+	y0 8
+	xpad 4
+	w 20
+	h 28
+End
+CharInfo
+	c 52
+	x0 543
+	y0 8
+	xpad 4
+	w 20
+	h 28
+End
+CharInfo
+	c 53
+	x0 580
+	y0 8
+	xpad 4
+	w 20
+	h 28
+End
+CharInfo
+	c 54
+	x0 617
+	y0 8
+	xpad 4
+	w 20
+	h 28
+End
+CharInfo
+	c 55
+	x0 654
+	y0 8
+	xpad 4
+	w 20
+	h 28
+End
+CharInfo
+	c 56
+	x0 691
+	y0 8
+	xpad 4
+	w 20
+	h 28
+End
+CharInfo
+	c 57
+	x0 728
+	y0 8
+	xpad 4
+	w 20
+	h 28
+End
+CharInfo
+	c 58
+	x0 778
+	y0 98
+	yoffs 4
+	xpad 4
+	w 8
+	h 20
+End
+CharInfo
+	c 59
+	x0 765
+	y0 8
+	yoffs 4
+	xpad 4
+	w 8
+	h 28
+End
+CharInfo
+	c 60
+	x0 790
+	y0 8
+	xpad 4
+	w 16
+	h 28
+End
+CharInfo
+	c 61
+	x0 589
+	y0 139
+	yoffs 8
+	xpad 4
+	w 20
+	h 12
+End
+CharInfo
+	c 62
+	x0 823
+	y0 8
+	xpad 4
+	w 16
+	h 28
+End
+CharInfo
+	c 63
+	x0 856
+	y0 8
+	xpad 4
+	w 20
+	h 28
+End
+CharInfo
+	c 64
+	x0 893
+	y0 8
+	xpad 4
+	w 28
+	h 28
+End
+CharInfo
+	c 65
+	x0 938
+	y0 8
+	xpad 4
+	w 20
+	h 28
+End
+CharInfo
+	c 66
+	x0 975
+	y0 8
+	xpad 4
+	w 16
+	h 28
+End
+CharInfo
+	c 67
+	x0 8
+	y0 65
+	xpad 4
+	w 16
+	h 28
+End
+CharInfo
+	c 68
+	x0 41
+	y0 65
+	xpad 4
+	w 16
+	h 28
+End
+CharInfo
+	c 69
+	x0 74
+	y0 61
+	xpad 4
+	w 16
+	h 28
+End
+CharInfo
+	c 70
+	x0 107
+	y0 57
+	xpad 4
+	w 16
+	h 28
+End
+CharInfo
+	c 71
+	x0 140
+	y0 57
+	xpad 4
+	w 16
+	h 28
+End
+CharInfo
+	c 72
+	x0 173
+	y0 57
+	xpad 4
+	w 16
+	h 28
+End
+CharInfo
+	c 73
+	x0 206
+	y0 53
+	xpad 4
+	w 12
+	h 28
+End
+CharInfo
+	c 74
+	x0 235
+	y0 53
+	xpad 4
+	w 16
+	h 28
+End
+CharInfo
+	c 75
+	x0 268
+	y0 53
+	xpad 4
+	w 20
+	h 28
+End
+CharInfo
+	c 76
+	x0 305
+	y0 53
+	xpad 4
+	w 16
+	h 28
+End
+CharInfo
+	c 77
+	x0 338
+	y0 53
+	xpad 4
+	w 20
+	h 28
+End
+CharInfo
+	c 78
+	x0 375
+	y0 53
+	xpad 4
+	w 20
+	h 28
+End
+CharInfo
+	c 79
+	x0 412
+	y0 53
+	xpad 4
+	w 20
+	h 28
+End
+CharInfo
+	c 80
+	x0 449
+	y0 53
+	xpad 4
+	w 16
+	h 28
+End
+CharInfo
+	c 81
+	x0 127
+	y0 8
+	xpad 4
+	w 20
+	h 32
+End
+CharInfo
+	c 82
+	x0 482
+	y0 53
+	xpad 4
+	w 16
+	h 28
+End
+CharInfo
+	c 83
+	x0 515
+	y0 53
+	xpad 4
+	w 16
+	h 28
+End
+CharInfo
+	c 84
+	x0 548
+	y0 53
+	xpad 4
+	w 20
+	h 28
+End
+CharInfo
+	c 85
+	x0 585
+	y0 53
+	xpad 4
+	w 20
+	h 28
+End
+CharInfo
+	c 86
+	x0 622
+	y0 53
+	xpad 4
+	w 20
+	h 28
+End
+CharInfo
+	c 87
+	x0 659
+	y0 53
+	xpad 4
+	w 20
+	h 28
+End
+CharInfo
+	c 88
+	x0 696
+	y0 53
+	xpad 4
+	w 20
+	h 28
+End
+CharInfo
+	c 89
+	x0 733
+	y0 53
+	xpad 4
+	w 20
+	h 28
+End
+CharInfo
+	c 90
+	x0 770
+	y0 53
+	xpad 4
+	w 20
+	h 28
+End
+CharInfo
+	c 91
+	x0 807
+	y0 53
+	xpad 4
+	w 12
+	h 28
+End
+CharInfo
+	c 92
+	x0 836
+	y0 53
+	xpad 4
+	w 28
+	h 28
+End
+CharInfo
+	c 93
+	x0 881
+	y0 53
+	xpad 4
+	w 12
+	h 28
+End
+CharInfo
+	c 94
+	x0 717
+	y0 135
+	xpad 4
+	w 12
+	h 8
+End
+CharInfo
+	c 95
+	x0 841
+	y0 135
+	yoffs 24
+	xpad 4
+	w 20
+	h 4
+End
+CharInfo
+	c 96
+	x0 746
+	y0 135
+	xpad 4
+	w 8
+	h 8
+End
+CharInfo
+	c 97
+	x0 803
+	y0 98
+	yoffs 8
+	xpad 4
+	w 16
+	h 20
+End
+CharInfo
+	c 98
+	x0 910
+	y0 53
+	xpad 4
+	w 16
+	h 28
+End
+CharInfo
+	c 99
+	x0 836
+	y0 98
+	yoffs 8
+	xpad 4
+	w 16
+	h 20
+End
+CharInfo
+	c 100
+	x0 943
+	y0 53
+	xpad 4
+	w 16
+	h 28
+End
+CharInfo
+	c 101
+	x0 869
+	y0 98
+	yoffs 8
+	xpad 4
+	w 16
+	h 20
+End
+CharInfo
+	c 102
+	x0 976
+	y0 53
+	xpad 4
+	w 16
+	h 28
+End
+CharInfo
+	c 103
+	x0 547
+	y0 98
+	yoffs 8
+	xpad 4
+	w 16
+	h 24
+End
+CharInfo
+	c 104
+	x0 8
+	y0 110
+	xpad 4
+	w 16
+	h 28
+End
+CharInfo
+	c 105
+	x0 580
+	y0 98
+	yoffs 4
+	xpad 4
+	w 8
+	h 24
+End
+CharInfo
+	c 106
+	x0 41
+	y0 110
+	yoffs 4
+	xpad 4
+	w 8
+	h 28
+End
+CharInfo
+	c 107
+	x0 66
+	y0 110
+	xpad 4
+	w 16
+	h 28
+End
+CharInfo
+	c 108
+	x0 99
+	y0 106
+	xpad 4
+	w 4
+	h 28
+End
+CharInfo
+	c 109
+	x0 902
+	y0 98
+	yoffs 8
+	xpad 4
+	w 20
+	h 20
+End
+CharInfo
+	c 110
+	x0 939
+	y0 98
+	yoffs 8
+	xpad 4
+	w 16
+	h 20
+End
+CharInfo
+	c 111
+	x0 972
+	y0 98
+	yoffs 8
+	xpad 4
+	w 16
+	h 20
+End
+CharInfo
+	c 112
+	x0 605
+	y0 98
+	yoffs 8
+	xpad 4
+	w 16
+	h 24
+End
+CharInfo
+	c 113
+	x0 638
+	y0 98
+	yoffs 8
+	xpad 4
+	w 16
+	h 24
+End
+CharInfo
+	c 114
+	x0 8
+	y0 155
+	yoffs 8
+	xpad 4
+	w 16
+	h 20
+End
+CharInfo
+	c 115
+	x0 41
+	y0 155
+	yoffs 8
+	xpad 4
+	w 16
+	h 20
+End
+CharInfo
+	c 116
+	x0 120
+	y0 102
+	xpad 4
+	w 12
+	h 28
+End
+CharInfo
+	c 117
+	x0 74
+	y0 155
+	yoffs 8
+	xpad 4
+	w 16
+	h 20
+End
+CharInfo
+	c 118
+	x0 107
+	y0 151
+	yoffs 8
+	xpad 4
+	w 20
+	h 20
+End
+CharInfo
+	c 119
+	x0 144
+	y0 147
+	yoffs 8
+	xpad 4
+	w 20
+	h 20
+End
+CharInfo
+	c 120
+	x0 181
+	y0 147
+	yoffs 8
+	xpad 4
+	w 20
+	h 20
+End
+CharInfo
+	c 121
+	x0 671
+	y0 98
+	yoffs 8
+	xpad 4
+	w 16
+	h 24
+End
+CharInfo
+	c 122
+	x0 218
+	y0 143
+	yoffs 8
+	xpad 4
+	w 20
+	h 20
+End
+CharInfo
+	c 123
+	x0 149
+	y0 102
+	xpad 4
+	w 16
+	h 28
+End
+CharInfo
+	c 124
+	x0 164
+	y0 8
+	xpad 4
+	w 4
+	h 32
+End
+CharInfo
+	c 125
+	x0 182
+	y0 102
+	xpad 4
+	w 16
+	h 28
+End
+CharInfo
+	c 126
+	x0 771
+	y0 135
+	xpad 4
+	w 20
+	h 8
+End
+CharInfo
+	c 160
+	xpad 20
+End
+CharInfo
+	c 161
+	x0 215
+	y0 98
+	yoffs 4
+	xpad 4
+	w 4
+	h 28
+End
+CharInfo
+	c 162
+	x0 236
+	y0 98
+	yoffs 4
+	xpad 4
+	w 20
+	h 28
+End
+CharInfo
+	c 163
+	x0 273
+	y0 98
+	xpad 4
+	w 20
+	h 28
+End
+CharInfo
+	c 167
+	x0 8
+	y0 8
+	yoffs -4
+	xpad 4
+	w 20
+	h 40
+End
+CharInfo
+	c 169
+	x0 310
+	y0 98
+	xpad 4
+	w 28
+	h 28
+End
+CharInfo
+	c 181
+	x0 255
+	y0 143
+	yoffs 8
+	xpad 4
+	w 16
+	h 20
+End
+CharInfo
+	c 916
+	x0 531
+	y0 139
+	yoffs 8
+	xpad 4
+	w 20
+	h 16
+End
+CharInfo
+	c 8364
+	x0 355
+	y0 98
+	xpad 4
+	w 24
+	h 28
+End
+CharInfo
+	c 8592
+	x0 288
+	y0 143
+	yoffs 4
+	xpad 4
+	w 20
+	h 20
+End
+CharInfo
+	c 8593
+	x0 325
+	y0 143
+	yoffs 4
+	xpad 4
+	w 20
+	h 20
+End
+CharInfo
+	c 8594
+	x0 362
+	y0 143
+	yoffs 4
+	xpad 4
+	w 20
+	h 20
+End
+CharInfo
+	c 8595
+	x0 399
+	y0 143
+	yoffs 4
+	xpad 4
+	w 20
+	h 20
+End
+CharInfo
+	c 9654
+	x0 436
+	y0 143
+	yoffs 4
+	xpad 4
+	w 16
+	h 20
+End
+CharInfo
+	c 9660
+	x0 626
+	y0 139
+	yoffs 8
+	xpad 4
+	w 20
+	h 12
+End
+CharInfo
+	c 9742
+	x0 396
+	y0 98
+	yoffs 4
+	xpad 4
+	w 40
+	h 28
+End
+CharInfo
+	c 9743
+	x0 453
+	y0 98
+	yoffs 4
+	xpad 4
+	w 36
+	h 28
+End
+CharInfo
+	c 65533
+	x0 469
+	y0 143
+	yoffs 4
+	xpad 4
+	w 20
+	h 20
+End
+font_size 32
+imageW 1024
+imageH 256
+spread 8
+noFilter 1
+channels 1
+End

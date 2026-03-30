@@ -19,6 +19,7 @@ const {
 
 const scale_globs = {
   'ui/*.png': 8,
+  'font/*.png': 32,
   'test/*.png': 8,
   'main/*.png': 24,
   'enemies/*.png': 8,
@@ -54,6 +55,7 @@ gb.task({
     //   otherwise, if alpha on either vert side, do vert_clamp; same for horiz
     //   otherwise, wrap
     rules: [
+      'font/**:bclamp',
       '**/*chest*:balpha',
       'main/dun1-*solid*:hwrap,vwrap',
       'main/dun1-*stairs*:hwrap,vwrap',
@@ -114,7 +116,8 @@ gb.task(asyncHashed(8, {
       }
     }
     assert(scale !== -1);
-    let scale1 = scale * 2;
+    let intermed_scale = scale < 32 ? 2 : 1;
+    let scale1 = scale * intermed_scale;
     let intermed = depixelScale(img, {
       height: img.height * scale1,
       threshold: 32,
@@ -123,8 +126,13 @@ gb.task(asyncHashed(8, {
 
     let dst = pngAlloc({ width: img.width * scale, height: img.height * scale, byte_depth: 4,
       comment: 'depixel' });
-    drawImageBilinear(
-      dst, 4, 0, 0, dst.width, dst.height, intermed, 4, 0, 0, intermed.width, intermed.height, 0xf);
+    if (intermed_scale !== 1) {
+      drawImageBilinear(
+        dst, 4, 0, 0, dst.width, dst.height, intermed, 4, 0, 0, intermed.width, intermed.height, 0xf);
+    } else {
+      assert.equal(intermed.data.length, dst.data.length);
+      intermed.data.copy(dst.data);
+    }
 
     job.out({
       relative: new_name,

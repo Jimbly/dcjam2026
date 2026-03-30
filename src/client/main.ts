@@ -196,7 +196,7 @@ export function main(): void {
 
   const font_info_04b03x2 = require('./img/font/04b03_8x2.json');
   const font_info_04b03x1 = require('./img/font/04b03_8x1.json');
-  const font_info_palanquin32 = require('./img/font/palanquin32.json');
+  const font_info_habbo8depix = require('./img/font/habbo8-depixel.json');
   let pixely = settings.pixely === 2 ? 'strict' : settings.pixely ? 'on' : false;
   let font;
   if (pixely === 'strict') {
@@ -204,7 +204,7 @@ export function main(): void {
   } else if (pixely && pixely !== 'off') {
     font = { info: font_info_04b03x2, texture: 'font/04b03_8x2' };
   } else {
-    font = { info: font_info_palanquin32, texture: 'font/palanquin32' };
+    font = { info: font_info_habbo8depix, texture: 'font/habbo8-depixel' };
   }
   settingsSet('use_fbos', use_fbos); // If needed for our effects
 
@@ -252,7 +252,7 @@ export function main(): void {
     assert(gl.getExtension('OES_standard_derivatives'), 'GL_OES_standard_derivatives not supported!');
   }
   fonts = [
-    fontCreate(font_info_palanquin32, 'font/palanquin32'),
+    fontCreate(font_info_habbo8depix, 'font/habbo8-depixel'),
     fontCreate(font_info_04b03x2, 'font/04b03_8x2'),
     fontCreate(font_info_04b03x1, 'font/04b03_8x1'),
   ];

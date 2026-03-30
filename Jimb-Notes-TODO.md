@@ -14,7 +14,6 @@ test encounter floor results
   second try: 4 slimes nearly killed me, so, let's do 4
 
 Use appropriate esc/deck button
-Use appropriate font
 Hooks and placeholders for audio
 Upon death, reset floor, try again, deduct a life
 

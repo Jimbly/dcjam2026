@@ -16,3 +16,5 @@ Bfxr
 config/*.json
 .DS_Store
 wsdebug.json
+src/client/atlases/font/
+src/client/atlases-autogen/font-depixel

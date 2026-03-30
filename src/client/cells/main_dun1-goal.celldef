@@ -1,0 +1,15 @@
+---
+open_move: true
+open_vis: true
+default_wall: solid
+visuals:
+- pass: bg
+  type: simple_floor
+  opts:
+    atlas: main
+    tile: dun1-floor2
+- pass: bg
+  type: simple_ceiling
+  opts:
+    atlas: main
+    tile: dun1-ceiling2
