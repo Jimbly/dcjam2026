@@ -65,4 +65,9 @@ export const SOUND_DATA = {
     file: 'msg_in',
     volume: 1,
   },
+
+  purchase: { // purchase in shop
+    file: 'card_pickup',
+    volume: 1,
+  },
 } satisfies Partial<Record<string, UISoundID | string | string[] | UISoundID[]>>;

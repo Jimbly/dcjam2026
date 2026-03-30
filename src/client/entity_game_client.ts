@@ -86,6 +86,8 @@ export type EntityDataClient = {
   element: string;
   gold: number;
   respect: number;
+  shop_options: CardID[];
+  shop_state?: DataObject;
   // Monster:
   next_move: number;
   alert: boolean;
@@ -128,6 +130,16 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
   declare is_boss: boolean;
   declare is_goal: boolean;
 
+  addCard(card_id: CardID, tier: number): void {
+    let { data } = this;
+    let uid = this.cardAllocUID();
+    data.deck[uid] = {
+      card_id,
+      tier,
+      uid,
+    };
+  }
+
   constructor(data_in: DataObject) {
     super(data_in);
     let data = this.data;
@@ -141,21 +153,14 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
     if (this.type_id === 'player') {
       if (!data.deck) {
         data.deck = {};
-        const pushCard = (card_id: CardID): void => {
-          let uid = this.cardAllocUID();
-          data.deck[uid] = {
-            card_id,
-            uid,
-          };
-        };
-        pushCard('attack2');
-        pushCard('attack2');
-        pushCard('attack3');
-        pushCard('attack3');
-        pushCard('attack4');
-        pushCard('attack4');
+        this.addCard('attack2', 0);
+        this.addCard('attack2', 0);
+        this.addCard('attack3', 0);
+        this.addCard('attack3', 0);
+        this.addCard('attack4', 0);
+        this.addCard('attack4', 0);
         for (let ii = 0; ii < 4; ++ii) {
-          pushCard('block2');
+          this.addCard('block2', 0);
         }
         this.populateDrawPileFromDeck();
         this.drawHand();
@@ -197,8 +202,8 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
 
   resetDeck(): void {
     this.populateDrawPileFromDeck();
-    this.drawHand();
-    this.data.combat_phase = 'player';
+    //this.drawHand();
+    this.data.combat_phase = 'redraw';
   }
 
   reshufflePrep(): void {

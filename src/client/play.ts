@@ -1,3 +1,6 @@
+export const CARD_W = 64;
+export const CARD_H = 85;
+
 import assert from 'assert';
 import { autoResetSkippedFrames } from 'glov/client/auto_reset';
 import { autoAtlas, autoAtlasSwap } from 'glov/client/autoatlas';
@@ -8,6 +11,7 @@ import { ClientEntityManagerInterface } from 'glov/client/entity_manager_client'
 import {
   ALIGN,
   Font,
+  fontStyleAlpha,
   fontStyleColored,
 } from 'glov/client/font';
 import * as input from 'glov/client/input';
@@ -158,7 +162,7 @@ import {
 } from './crawler_render_entities';
 import { crawlerScriptAPIDummyServer } from './crawler_script_api_client';
 import { crawlerOnScreenButton } from './crawler_ui';
-import { dialogNameRender } from './dialog_data';
+import { dialogNameRender, keyGet } from './dialog_data';
 import { dialogMoveLocked, dialogReset, dialogRun, dialogStartup } from './dialog_system';
 import {
   EntityClient,
@@ -199,6 +203,7 @@ import {
 import { style_damage, style_hotkey, style_label, style_text } from './styles';
 import { uiActionClear, uiActionCurrent, uiActionTick } from './uiaction';
 import { pauseMenuActive, pauseMenuOpen } from './uiaction_pause_menu';
+import { shopOpen } from './uiaction_shop';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const { atan2, floor, max, min, random, round, sqrt, PI } = Math;
@@ -825,19 +830,27 @@ function doEngagedEnemy(): void {
   }
 }
 
-const CARD_W = 64;
-const CARD_H = 85;
+const TIERLABEL = [
+  '',
+  '*',
+  '**',
+  '***',
+];
+
 const CARD_PAD = 4;
-function drawCard(param: {
+export function drawCard(param: {
   card: Card;
   hotkey?: string;
   x: number;
   y: number;
   z: number;
   no_target: boolean;
+  disabled: boolean;
+  for_shop?: boolean;
 }): void {
-  let { card, hotkey, x, y, z, no_target } = param;
+  let { card, disabled, hotkey, x, y, z, no_target, for_shop } = param;
   const y0 = y;
+  const tier = card.tier || 0;
   let card_def = CARDS[card.card_id]!;
   drawBox({
     x, y, z,
@@ -855,17 +868,17 @@ function drawCard(param: {
     });
   }
   font.draw({
-    style: style_label,
+    style: disabled ? fontStyleAlpha(style_label, 0.5) : style_label,
     x: x + CARD_PAD, y, z, w: CARD_W - CARD_PAD * 2,
     align: ALIGN.HCENTERFIT,
-    text: card_def.name,
+    text: card_def.name + TIERLABEL[tier],
   });
   y += FONT_HEIGHT + CARD_PAD;
   let key: CardEffect;
   let effects = healMode() ? card_def.healeffect : card_def.effect;
   let any_usable = false;
   for (key in effects) {
-    let value = effects[key]!;
+    let value = effects[key]! + tier;
     let vis = EFFECT_TEMPLATE[key];
     let { img } = vis;
     if (key === 'damage' && healMode()) {
@@ -875,7 +888,7 @@ function drawCard(param: {
     if (!no_target || !EFFECT_NEEDS_TARGET[key]) {
       any_usable = true;
     }
-    let alpha = (no_target && EFFECT_NEEDS_TARGET[key] === true) ||
+    let alpha = (disabled || no_target && EFFECT_NEEDS_TARGET[key] === true) ||
       (EFFECT_NEEDS_TARGET[key] === 'auto' && !any_usable) ? 0.5 : 1;
     let prefix = vis.prefix ? `${value} ` : '';
     let prefix_w = (prefix ? font.getStringWidth(style_label, FONT_HEIGHT, prefix) : 0);
@@ -908,14 +921,14 @@ function drawCard(param: {
   effects = healMode() ? card_def.effect : card_def.healeffect;
   y = y0 + CARD_H - CARD_PAD;
   for (key in effects) {
-    let value = effects[key]!;
+    let value = effects[key]! + tier;
     let vis = EFFECT_TEMPLATE[key];
     let { img } = vis;
     if (key === 'damage' && !healMode()) {
       let element = myEnt().data.element;
       img = `element-${element || 'null'}`;
     }
-    let alpha = 0.5;
+    let alpha = disabled || !for_shop || no_target ? 0.5 : 1;
     let prefix = vis.prefix ? `${value} ` : '';
     let prefix_w = (prefix ? font.getStringWidth(style_label, FONT_HEIGHT, prefix) : 0);
     let line_w = prefix_w + (img ? 14 : 0);
@@ -1024,6 +1037,7 @@ function doReshuffle(): void {
     hotkey: '1',
     card: deck[discard_pile[0]],
     no_target: false,
+    disabled: false,
   });
   if (spot_ret.focused) {
     autoAtlas('ui', 'x').draw({
@@ -1046,6 +1060,7 @@ function doReshuffle(): void {
     hotkey: '2',
     card: deck[discard_pile[1]],
     no_target: false,
+    disabled: false,
   });
   if (spot_ret.focused) {
     autoAtlas('ui', 'x').draw({
@@ -1068,8 +1083,8 @@ function doReshuffle(): void {
   }
 }
 
-function sameCard(a: Card, b: Card): boolean {
-  return a.card_id === b.card_id;
+export function sameCard(a: Pick<Card, 'card_id' | 'tier'>, b: Pick<Card, 'card_id' | 'tier'>): boolean {
+  return a.card_id === b.card_id && (a.tier || 0) === (b.tier || 0);
 }
 
 const PANEL_PAD = 6;
@@ -1083,6 +1098,9 @@ function showCardList(title: string, x: number, y: number, pile: number[]): void
     let ca = deck[a];
     let cb = deck[b];
     if (!sameCard(ca, cb)) {
+      if (ca.card_id === cb.card_id) {
+        return (ca.tier || 0) - (cb.tier || 0);
+      }
       return ca.card_id < cb.card_id ? -1 : 1;
     }
     return ca.uid - cb.uid;
@@ -1110,7 +1128,7 @@ function showCardList(title: string, x: number, y: number, pile: number[]): void
     font.draw({
       style: style_label,
       x, y, z,
-      text: `${CARDS[card.card_id]!.name}${count > 1 ? ` (x${count})` : ''}`,
+      text: `${CARDS[card.card_id]!.name}${TIERLABEL[card.tier || 0]}${count > 1 ? ` (${count})` : ''}`,
     });
   }
   if (!list.length) {
@@ -1221,6 +1239,7 @@ function doHand(): void {
   }
   let { data } = me;
   let { hand, draw_pile, discard_pile, deck, heal_mode } = data;
+  let overlay_menu_up = uiActionCurrent()?.is_overlay_menu;
 
   if (combat_state.countdown) {
     combat_state.countdown = max(0, combat_state.countdown - engine.getFrameDt());
@@ -1246,7 +1265,9 @@ function doHand(): void {
   }
 
   if (data.combat_phase === 'redraw') {
-    if (hand.length < HAND_SIZE) {
+    if (overlay_menu_up || keyGet('needs_shop')) {
+      // no drawing for now
+    } else if (hand.length < HAND_SIZE) {
       // draw a card
       if (draw_pile.length) {
         if (!combat_state.countdown) {
@@ -1310,7 +1331,7 @@ function doHand(): void {
         no_target = !target_ent.isAlive();
       }
     }
-    let disabled = data.combat_phase !== 'player' || no_target && heal_mode;
+    let disabled = overlay_menu_up || data.combat_phase !== 'player' || no_target && heal_mode;
     let spot_ret = spot({
       def: SPOT_DEFAULT_BUTTON,
       hotkey: KEYS['1'] + hotkey,
@@ -1335,6 +1356,7 @@ function doHand(): void {
       x: blend(`cardx${uid}`, rect.x, 200),
       y: eff_y,
       card,
+      disabled,
       no_target,
     });
     x += CARD_W - CARD_OVERLAP;
@@ -1389,6 +1411,7 @@ function doHand(): void {
         y: yy,
         z: z + 10,
         no_target: false,
+        disabled: false,
       });
     }
   }
@@ -1403,6 +1426,7 @@ function doHand(): void {
         y: yy,
         z: z - 10,
         no_target: false,
+        disabled: false,
       });
     }
   }
@@ -1413,8 +1437,8 @@ function doHand(): void {
   let y0 = DRAW_PILE_Y;
   y = y0;
   let is_reshuffle = data.combat_phase === 'reshuffle';
-  if (is_reshuffle) {
-    z = Z.MODAL;
+  if (is_reshuffle || uiActionCurrent()?.needs_decks) {
+    z = Z.MODAL + 10;
   }
   let pile = draw_pile;
   drawBox({
@@ -1455,7 +1479,7 @@ function doHand(): void {
     });
   }
 
-  if (data.combat_phase === 'reshuffle') {
+  if (data.combat_phase === 'reshuffle' || uiActionCurrent()?.needs_decks) {
     menuUp();
   }
 
@@ -2311,6 +2335,9 @@ function applyAtlasSwaps(): void {
 function initLevel(cem: ClientEntityManagerInterface<Entity>, floor_id: number, level: CrawlerLevel): void {
   dialogReset();
   combatStateReset();
+  if (keyGet('needs_shop')) {
+    shopOpen();
+  }
 }
 
 export function playStartup(): void {

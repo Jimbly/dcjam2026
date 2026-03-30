@@ -6,6 +6,7 @@ import { inputTouchMode } from 'glov/client/input';
 import {
   panel,
   PanelParam,
+  playUISound,
   uiGetFont,
   uiTextHeight,
 } from 'glov/client/ui';
@@ -43,15 +44,15 @@ const { round } = Math;
 const NAME_BOX_H = 14;
 const NAME_BOX_PAD = 6;
 
-function keyGet(name: string): boolean {
+export function keyGet(name: string): boolean {
   return crawlerScriptAPI().keyGet(name);
 }
 
-function keySet(name: string): void {
+export function keySet(name: string): void {
   crawlerScriptAPI().keySet(name);
 }
 
-function keyClear(name: string): void {
+export function keyClear(name: string): void {
   crawlerScriptAPI().keyClear(name);
 }
 
@@ -193,8 +194,13 @@ crawlerScriptRegisterEvent({
       crawlerController().forceMoveBackwards();
       dialog('monologue', 'No need to go back down, off to the next adventure!');
       return;
+    } else {
+      keySet('needs_shop');
+      keyClear('shop_gold');
+      keyClear('shop_respect');
     }
     myEnt().resetDeck();
+    playUISound('reset_deck');
     api.floorDelta(delta, 'stairs_in', false);
   },
 });

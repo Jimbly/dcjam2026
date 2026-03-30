@@ -3,14 +3,16 @@ import assert from 'assert';
 export abstract class UIAction {
   abstract tick(): void;
   declare name: string;
-  declare is_overlay_menu: boolean;
-  declare is_fullscreen_ui: boolean;
+  declare is_overlay_menu: boolean; // Interrupts other activity
+  declare is_fullscreen_ui: boolean; // Causes any dialogs to be centered on the screen, not the 3D viewport
   declare esc_cancels: boolean;
+  declare needs_decks: boolean; // DCJAM
 }
 UIAction.prototype.name = 'UnknownAction';
 UIAction.prototype.is_overlay_menu = false;
 UIAction.prototype.is_fullscreen_ui = false;
 UIAction.prototype.esc_cancels = false;
+UIAction.prototype.needs_decks = false;
 
 let cur_action: UIAction | null = null;
 

@@ -2,12 +2,12 @@ TODO
 ====
 
 rewards:
-  X combat -> 3G or 3R
   chests: pick: 1 of 2 cards, ?G, ?R
-  between floors:
-    pick a shop type (gold or respect)
-    gold: 4 cards for sale, 5G each?
-    res: (3+2xcard level)R to upgrade
+shop
+  need tooltips on pool showing card + description
+  need tooltips on cards showing descriptions
+
+rename "burn" to "banish"
 
 add intro and boss "cutscenes"
 
@@ -68,6 +68,7 @@ Possible perks
 +1 damage vs [slime/minion/boss]
 +1 reward choice from chests
 critical chance?
++1 damage on first attack per monster
 
 
 Elemental Plan

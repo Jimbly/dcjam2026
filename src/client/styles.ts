@@ -26,3 +26,14 @@ export const style_damage = fontStyle(null, {
   outline_width,
   outline_color: palette_font[PAL_BLACK_PURE],
 });
+
+export const style_dialog_title = fontStyle(null, {
+  color: palette_font[PAL_WHITE],
+  outline_width,
+  outline_color: palette_font[PAL_BLACK],
+  glow_color: palette_font[PAL_BLACK],
+  glow_xoffs: 2,
+  glow_yoffs: 2,
+  glow_inner: -1,
+  glow_outer: 2,
+});

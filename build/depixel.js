@@ -68,6 +68,7 @@ gb.task({
       'ui/border-ll.png:bclamp',
       'ui/button*:balpha',
       'ui/menu*:balpha',
+      'ui/scrollbar*:balpha',
       '**/*wall*:hwrap,vclamp',
       '**/*solid*:hwrap,vclamp',
       '**/*door*:hwrap,vclamp',
