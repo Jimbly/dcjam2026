@@ -1,9 +1,6 @@
 TODO
 ====
 
-rewards:
-  healing: randomly 1 G/R
-
 between floors, after rewards, manage deck down to expected deck size
 
 add intro and boss "cutscenes"

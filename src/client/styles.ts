@@ -21,6 +21,7 @@ export const style_text = fontStyle(null, {
   outline_width,
   outline_color: palette_font[PAL_BLACK_PURE],
 });
+export const style_floater = style_text;
 export const style_damage = fontStyle(null, {
   color: palette_font[PAL_WHITE],
   outline_width,

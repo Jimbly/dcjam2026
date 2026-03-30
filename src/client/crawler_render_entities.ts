@@ -9,7 +9,6 @@ import { PerEntData } from 'glov/client/entity_position_manager';
 import {
   ALIGN,
   Font,
-  fontStyle,
 } from 'glov/client/font';
 import { markdownAuto } from 'glov/client/markdown';
 import {
@@ -84,16 +83,11 @@ import {
   SPLIT_NEAR,
   SplitSet,
 } from './crawler_render';
+import { style_floater } from './styles';
 
 const { ceil, floor } = Math;
 
 let font: Font;
-
-const style_text = fontStyle(null, {
-  color: 0xFFFFFFff,
-  outline_width: 4,
-  outline_color: 0x000000ff,
-});
 
 export type EntityDrawSubOpts = {
   dt: number;
@@ -671,7 +665,7 @@ export function crawlerRenderEntities(ent_set: SplitSet): void {
           let text_height = uiTextHeight() * 2;
           markdownAuto({
             font,
-            font_style: style_text,
+            font_style: style_floater,
             alpha,
             x,
             y: y + h/2 - float - 400 + (floater.yoffs || 0) * text_height,

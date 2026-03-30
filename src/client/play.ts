@@ -1176,6 +1176,13 @@ function applyDamage(target_ent: Entity | null, value: number): void {
         target_ent.data.recovered = true;
         target_ent.triggerAnimation!('idle');
         addFloater(target_ent.id, 'Thank you!');
+        if (randInt(2)) {
+          addFloater(target_ent.id, '+1[img=currency-gold scale=1.5]');
+          data.gold += 1;
+        } else {
+          addFloater(target_ent.id, '+1[img=currency-respect scale=1.5]');
+          data.respect += 1;
+        }
         playUISound('restored');
       }
     } else if (!heal_mode && target_ent.isAlive()) {
@@ -1208,13 +1215,13 @@ function applyDamage(target_ent: Entity | null, value: number): void {
           target_ent.triggerAnimation!('death');
           addFloater(target_ent.id, 'Argh...');
           setTimeout(playUISound.bind(null, 'death'), MSG_STEP_DELAY);
-          addFloater(target_ent.id, `+${REWARD_KILL_GOLD}[img=currency-gold]`);
+          addFloater(target_ent.id, `+${REWARD_KILL_GOLD}[img=currency-gold scale=1.5]`);
           data.gold += REWARD_KILL_GOLD;
         } else if (!stats.hp) {
           target_ent.triggerAnimation!('uncon');
           addFloater(target_ent.id, 'I yield!');
           setTimeout(playUISound.bind(null, 'yield'), MSG_STEP_DELAY);
-          addFloater(target_ent.id, `+${REWARD_YIELD_RESPECT}[img=currency-respect]`);
+          addFloater(target_ent.id, `+${REWARD_YIELD_RESPECT}[img=currency-respect scale=1.5]`);
           data.respect += REWARD_YIELD_RESPECT;
         }
       }
@@ -1589,6 +1596,7 @@ export function playSoundFromEnt(ent: Entity, sound_id: keyof typeof SOUND_DATA)
 
 function bumpEntityCallback(ent_id: EntityID): void {
   let me = myEnt();
+  let { data } = me;
   let all_entities = entityManager().entities;
   let target_ent = all_entities[ent_id]!;
   if (target_ent && me.isAlive()) {
@@ -1602,6 +1610,13 @@ function bumpEntityCallback(ent_id: EntityID): void {
       target_ent.data.recovered = true;
       target_ent.triggerAnimation!('idle');
       addFloater(target_ent.id, 'Howdy, friend');
+      if (randInt(2)) {
+        addFloater(target_ent.id, '+1[img=currency-gold scale=1.5]');
+        data.gold += 1;
+      } else {
+        addFloater(target_ent.id, '+1[img=currency-respect scale=1.5]');
+        data.respect += 1;
+      }
       playUISound('befriended');
     } else if (target_ent.is_goal) {
       entityManager().deleteEntity(target_ent.id, 'removed');
