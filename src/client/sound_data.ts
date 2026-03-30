@@ -31,7 +31,37 @@ export const SOUND_DATA = {
   }],
 
   // Games sounds to be implemented
-  hunter_alert: {
+  hunter_alert: { // one-time when monster sees you and goes into alert
+    file: 'msg_in',
+    volume: 1,
+  },
+  yield: { // when getting monster down to 1 HP
+    file: 'msg_out',
+    volume: 1,
+  },
+  death: { // when getting monster down to <=0 HP
+    file: 'msg_out',
+    volume: 1,
+  },
+  restored: { // healed a monster back from death
+    file: 'msg_out',
+    volume: 1,
+  },
+  befriended: { // talked to a >= 1 hp monster to make friendly
+    file: 'msg_out',
+    volume: 1,
+  },
+
+  card_draw_single: {
+    file: 'card_pickup',
+    volume: 1,
+  },
+  reset_deck: { // reshuffle (and sometimes draw 5 new cards?)
+    file: 'deal_cards',
+    volume: 1,
+  },
+
+  get_goal: { // get a new element, change to that element
     file: 'msg_in',
     volume: 1,
   },

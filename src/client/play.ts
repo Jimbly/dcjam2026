@@ -39,6 +39,7 @@ import {
   buttonText,
   drawBox,
   drawRect2,
+  label,
   menuUp,
   modalDialog,
   panel,
@@ -994,6 +995,8 @@ function doReshuffle(): void {
         `\n\nNote: you still have [c=red]${data.incoming_damage} damage[/c] to resolve after the reshuffle.` : '')}`,
   }).h + 8;
 
+  y += 8; // for hotkeys
+
   let rect = {
     x: x + floor((w - CARD_W *2 - BORDER_PAD) / 2),
     y, z,
@@ -1048,6 +1051,7 @@ function doReshuffle(): void {
     // let burnt = discard_pile[burn_card];
     discard_pile.splice(burn_card, 1);
     me.reshuffle();
+    playUISound('reset_deck');
     data.combat_phase = 'redraw';
     if (data.incoming_damage) {
       let amt = data.incoming_damage;
@@ -1145,6 +1149,7 @@ function applyDamage(target_ent: Entity | null, value: number): void {
         target_ent.data.recovered = true;
         target_ent.triggerAnimation!('idle');
         addFloater(target_ent.id, 'Thank you!');
+        playUISound('restored');
       }
     } else if (!heal_mode && target_ent.isAlive()) {
       let stats = target_ent.data.stats;
@@ -1164,6 +1169,7 @@ function applyDamage(target_ent: Entity | null, value: number): void {
         if (stats.hp <= 0) {
           target_ent.triggerAnimation!('death');
           addFloater(target_ent.id, 'Argh...');
+          playUISound('death');
           let pos = target_ent.data.pos;
           target_ent.applyAIUpdate('ai_move', {
             pos: [pos[0], pos[1] + 2, pos[2]],
@@ -1174,9 +1180,11 @@ function applyDamage(target_ent: Entity | null, value: number): void {
         if (stats.hp < 0) {
           target_ent.triggerAnimation!('death');
           addFloater(target_ent.id, 'Argh...');
+          playUISound('death');
         } else if (!stats.hp) {
           target_ent.triggerAnimation!('uncon');
           addFloater(target_ent.id, 'I yield!');
+          playUISound('yield');
         }
       }
     }
@@ -1232,6 +1240,7 @@ function doHand(): void {
       if (draw_pile.length) {
         if (!combat_state.countdown) {
           me.drawCard();
+          playUISound('card_draw_single');
           if (hand.length === HAND_SIZE) {
             me.startPlayerPhase();
           } else {
@@ -1524,6 +1533,7 @@ function moveBlockDead(): boolean {
   })) {
     myEnt().data.stats.hp = myEnt().data.stats.hp_max;
     myEnt().resetDeck();
+    playUISound('reset_deck');
     combatStateReset();
     controller.goToFloor(0, 'stairs_in', 'respawn');
   }
@@ -1555,11 +1565,13 @@ function bumpEntityCallback(ent_id: EntityID): void {
       target_ent.data.recovered = true;
       target_ent.triggerAnimation!('idle');
       addFloater(target_ent.id, 'Howdy, friend');
+      playUISound('befriended');
     } else if (target_ent.is_goal) {
       entityManager().deleteEntity(target_ent.id, 'removed');
       let elem = crawlerGameState().level!.props.element;
       assert(elem && typeof elem === 'string');
       me.resetDeck();
+      playUISound('get_goal');
       // TODO: once reshuffle and draw anim finishes: flip cards over, then change element
       me.data.heal_mode = true;
       me.data.element = elem;
@@ -1679,11 +1691,12 @@ function drawHud(): void {
   }
 
   ([
-    'aggro',
-    'yield',
-    'dead',
-    'recov',
-  ] as const).forEach(function (img) {
+    ['aggro', 'Remaining enemies'],
+    ['yield', 'Yielded monsters\n\n[c=note]Hint: Monsters yield at 1 HP[/c]'],
+    ['dead', 'Defeated monsters'],
+    ['recov', 'Recovering friends'],
+  ] as const).forEach(function (pair) {
+    let [img, tooltip] = pair;
     if (img === 'recov' && !heal_mode) {
       return;
     }
@@ -1698,6 +1711,13 @@ function drawHud(): void {
       y, z, h: 12,
       align: ALIGN.VCENTER,
       text: `${counts[img]}`,
+    });
+    label({
+      x, y, z,
+      w: RIGHT_BAR_W,
+      h: 12,
+      text: '',
+      tooltip
     });
     y += 12;
   });
@@ -1740,7 +1760,7 @@ function playCrawl(): void {
   let dialog_viewport = {
     ...DIALOG_RECT,
     z: Z.STATUS,
-    pad_top: 2,
+    pad_top: 4,
     pad_bottom: 4,
     pad_bottom_with_buttons: 4,
     pad_lr: 4,
@@ -1756,7 +1776,8 @@ function playCrawl(): void {
 
   const build_mode = buildModeActive();
   let locked_dialog = dialogMoveLocked();
-  const overlay_menu_up = uiActionCurrent()?.is_overlay_menu || is_dead || false;
+  const overlay_menu_up = uiActionCurrent()?.is_overlay_menu || is_dead ||
+    myEnt().data.combat_phase === 'reshuffle' || false;
   let minimap_display_h = build_mode ? MOVE_BUTTON_H : DO_MINIMAP ? MINIMAP_H : 0;
   let show_compass = !build_mode && DO_COMPASS;
   let compass_h = show_compass ? 11 : 0;
@@ -2195,6 +2216,7 @@ cmd_parse.register({
   help: 'Reinitialize hand',
   func: function (str, resp_func) {
     myEnt().resetDeck();
+    playUISound('reset_deck');
     resp_func();
   },
 });

@@ -27,7 +27,7 @@ import { MODE_DEVELOPMENT, platformGetID } from 'glov/client/client_config';
 import { cmd_parse } from 'glov/client/cmds';
 import * as engine from 'glov/client/engine';
 import { environmentsInit } from 'glov/client/environments';
-import { Font, fontCreate } from 'glov/client/font';
+import { Font, fontCreate, fontStyleColored } from 'glov/client/font';
 import {
   markdown_default_renderables,
   markdownImageRegisterAutoAtlas,
@@ -52,7 +52,7 @@ import {
 } from './crawler_play.js';
 import { crawlerRenderSetLODBiasRange } from './crawler_render';
 import { FONT_HEIGHT, game_height, game_width } from './globals';
-import { PAL_BLACK_PURE, palette } from './palette';
+import { PAL_BLACK, PAL_BLACK_PURE, PAL_BLUE, PAL_GREY, palette, palette_font } from './palette';
 import { playStartup } from './play';
 import { SOUND_DATA } from './sound_data';
 import { titleInit, titleStartup } from './title';
@@ -281,6 +281,12 @@ export function main(): void {
   ui.setFontHeight(FONT_HEIGHT);
   ui.setPanelPixelScale(1);
   uiSetPanelColor([1, 1, 1, 1]);
+  ui.setFontStyles(
+    fontStyleColored(null, palette_font[PAL_BLACK]),
+    fontStyleColored(null, palette_font[PAL_BLUE]),
+    fontStyleColored(null, palette_font[PAL_BLACK]),
+    fontStyleColored(null, palette_font[PAL_GREY[1]]),
+  );
   // ui.uiSetFontStyleFocused(fontStyle(ui.uiGetFontStyleFocused(), {
   //   outline_width: 2.5,
   //   outline_color: dawnbringer.font_colors[8],
