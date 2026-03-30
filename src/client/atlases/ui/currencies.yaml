@@ -1,0 +1,5 @@
+---
+tile_res: 14
+tiles:
+  currency-gold: [2, 0]
+  currency-respect: [4, 0]

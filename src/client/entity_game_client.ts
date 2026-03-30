@@ -84,6 +84,8 @@ export type EntityDataClient = {
   hand: number[]; // array of uids
   events_done?: Partial<Record<string, boolean>>;
   element: string;
+  gold: number;
+  respect: number;
   // Monster:
   next_move: number;
   alert: boolean;
@@ -163,6 +165,8 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
         data.combat_phase = 'player';
         data.incoming_damage = 0;
         data.element = '';
+        data.respect = 0;
+        data.gold = 0;
       }
     }
     this.floaters = [];

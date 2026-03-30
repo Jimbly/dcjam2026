@@ -50,7 +50,7 @@ export const CARDS_RAW = {
       damage: 3,
     },
     healeffect: {
-      damage: 3,
+      damage: 2,
       burn: 1,
     },
   },

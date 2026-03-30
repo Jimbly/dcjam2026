@@ -181,9 +181,12 @@ import { chatUI } from './main';
 import { tickMusic } from './music';
 import {
   PAL_BLACK_PURE,
+  PAL_BLUE,
+  PAL_GREEN,
   PAL_GREY,
   PAL_RED,
   PAL_WHITE,
+  PAL_YELLOW,
   palette,
   palette_font,
 } from './palette';
@@ -206,6 +209,9 @@ declare module 'glov/client/settings' {
   export let turn_toggle: 0 | 1;
   export let depixel: 0 | 1;
 }
+
+const REWARD_YIELD_RESPECT = 3;
+const REWARD_KILL_GOLD = 3;
 
 // const ATTACK_WINDUP_TIME = 1000;
 const MINIMAP_RADIUS = 3;
@@ -305,6 +311,7 @@ function aiStep(reason: TurnBasedStepReason): void {
     combat_state.countdown = 0;
   }
 }
+const MSG_STEP_DELAY = 400;
 
 // TODO: move into crawler_play?
 export function addFloater(ent_id: EntityID, message: string | null, anim?: string, blink_good?: boolean): void {
@@ -315,7 +322,7 @@ export function addFloater(ent_id: EntityID, message: string | null, anim?: stri
         ent.floaters = [];
       }
       ent.floaters.push({
-        start: engine.frame_timestamp,
+        start: engine.frame_timestamp + ent.floaters.length * MSG_STEP_DELAY,
         msg: message,
         blink_good,
         yoffs: ent.floaters.length,
@@ -1169,7 +1176,7 @@ function applyDamage(target_ent: Entity | null, value: number): void {
         if (stats.hp <= 0) {
           target_ent.triggerAnimation!('death');
           addFloater(target_ent.id, 'Argh...');
-          playUISound('death');
+          setTimeout(playUISound.bind(null, 'death'), MSG_STEP_DELAY);
           let pos = target_ent.data.pos;
           target_ent.applyAIUpdate('ai_move', {
             pos: [pos[0], pos[1] + 2, pos[2]],
@@ -1180,11 +1187,15 @@ function applyDamage(target_ent: Entity | null, value: number): void {
         if (stats.hp < 0) {
           target_ent.triggerAnimation!('death');
           addFloater(target_ent.id, 'Argh...');
-          playUISound('death');
+          setTimeout(playUISound.bind(null, 'death'), MSG_STEP_DELAY);
+          addFloater(target_ent.id, `+${REWARD_KILL_GOLD}[img=currency-gold]`);
+          data.gold += REWARD_KILL_GOLD;
         } else if (!stats.hp) {
           target_ent.triggerAnimation!('uncon');
           addFloater(target_ent.id, 'I yield!');
-          playUISound('yield');
+          setTimeout(playUISound.bind(null, 'yield'), MSG_STEP_DELAY);
+          addFloater(target_ent.id, `+${REWARD_YIELD_RESPECT}[img=currency-respect]`);
+          data.respect += REWARD_YIELD_RESPECT;
         }
       }
     }
@@ -1581,7 +1592,7 @@ function bumpEntityCallback(ent_id: EntityID): void {
 
 const RIGHT_BAR_W = 22;
 const RIGHT_BAR_X = game_width - 12 - RIGHT_BAR_W;
-const RIGHT_BAR_H = 120;
+const RIGHT_BAR_H = 120-12;
 function drawBorders(): void {
   [
     [0, 0],
@@ -1654,9 +1665,16 @@ function drawBorders(): void {
   });
 }
 
+function pad2(v: number): string {
+  if (v >= 10) {
+    return `${v}`;
+  }
+  return `0${v}`;
+}
+
 function drawHud(): void {
   let x = RIGHT_BAR_X;
-  let y = 12 + MOVE_BUTTON_H * 2 + 8;
+  let y = 12 + MOVE_BUTTON_H + 8;
   let z = Z.UI;
 
   let counts = {
@@ -1690,36 +1708,57 @@ function drawHud(): void {
     }
   }
 
+  let me = myEnt();
+  let { data } = me;
   ([
-    ['aggro', 'Remaining enemies'],
-    ['yield', 'Yielded monsters\n\n[c=note]Hint: Monsters yield at 1 HP[/c]'],
-    ['dead', 'Defeated monsters'],
-    ['recov', 'Recovering friends'],
-  ] as const).forEach(function (pair) {
-    let [img, tooltip] = pair;
-    if (img === 'recov' && !heal_mode) {
+    ['counter-aggro', 'Remaining enemies', counts.aggro],
+    ['counter-yield', 'Yielded monsters\n\n[c=note]Hint: Monsters yield at 1 HP[/c]', counts.yield],
+    ['counter-dead', 'Defeated monsters', counts.dead],
+    ['counter-recov', 'Recovering friends' +
+      '\n\n[c=note]Help monsters recover to gain [c=gold]1 gold[/c] or [c=respect]1 respect[/c] (random)[/c]',
+     counts.recov],
+    ['currency-gold', 'Gold (for buying [c=green]new[/c] cards)' +
+      '\n\n[c=note]Gain [c=gold]gold[/c] from defeated monsters[/c]', data.gold || 0],
+    ['currency-respect', 'Respect (for [c=green]upgrading[/c] cards)' +
+      '\n\n[c=note]Gain [c=respect]respect[/c] from yielded monsters[/c]', data.respect || 0],
+  ] as const).forEach(function (pair, idx) {
+    let [img, tooltip, value] = pair;
+    let h = idx >= 4 ? 14 : 12;
+    if (idx === 4) {
+      y += 4;
+    }
+    if (img === 'counter-recov' && !heal_mode) {
+      y += h;
       return;
     }
-    autoAtlas('ui', `counter-${img}`).draw({
-      x, y, z,
-      w: 12,
-      h: 12,
+    let xx = x;
+    value = min(value, 99);
+    if (idx >= 4) {
+      xx -= 2;
+    }
+    autoAtlas('ui', img).draw({
+      x: xx, y, z,
+      w: h,
+      h: h,
     });
+    if (idx < 4) {
+      xx += 2;
+    }
     font.draw({
       style: style_text,
-      x: x + 12 + 2,
-      y, z, h: 12,
+      x: xx + 12 + 2,
+      y, z, h: h,
       align: ALIGN.VCENTER,
-      text: `${counts[img]}`,
+      text: `${idx >= 4 ? pad2(value) : value}`,
     });
     label({
       x, y, z,
       w: RIGHT_BAR_W,
-      h: 12,
+      h: h,
       text: '',
       tooltip
     });
-    y += 12;
+    y += h;
   });
 }
 
@@ -1745,12 +1784,12 @@ function playCrawl(): void {
 
   let down = {
     menu: 0,
-    inv: 0,
+    // inv: 0,
   };
   type ValidKeys = keyof typeof down;
   let up_edge: Record<ValidKeys, number> = {
     menu: 0,
-    inv: 0,
+    // inv: 0,
   };
 
   let dt = getScaledFrameDt();
@@ -1905,10 +1944,10 @@ function playCrawl(): void {
   crawlerButton(0, 0, menu_up ? 'menu-close' : 'menu-open',
     'menu', menu_keys, menu_pads, pauseMenuActive());
   if (!build_mode) {
-    crawlerButton(0, 1, 'inv', 'inv', [KEYS.I], [PAD.Y], false /*inventory_up*/);
-    if (up_edge.inv) {
-      // TODO
-    }
+    // crawlerButton(0, 1, 'inv', 'inv', [KEYS.I], [PAD.Y], false /*inventory_up*/);
+    // if (up_edge.inv) {
+    //   // TODO
+    // }
   }
 
   uiActionTick();
@@ -2409,5 +2448,8 @@ export function playStartup(): void {
 
   markdownSetColorStyle('note', fontStyleColored(null, palette_font[PAL_GREY[2]]));
   markdownSetColorStyle('red', fontStyleColored(null, palette_font[PAL_RED - 1]));
+  markdownSetColorStyle('green', fontStyleColored(null, palette_font[PAL_GREEN]));
+  markdownSetColorStyle('gold', fontStyleColored(null, palette_font[PAL_YELLOW+1]));
+  markdownSetColorStyle('respect', fontStyleColored(null, palette_font[PAL_BLUE]));
   markdownImageRegisterAutoAtlas('ui');
 }

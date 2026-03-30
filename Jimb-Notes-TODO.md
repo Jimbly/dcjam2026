@@ -1,13 +1,15 @@
 TODO
 ====
 
-game flow:
-  test entire flow of:
-    fight floor
-    boss floor
-    heal on fight floor
-  assuming that funish, add XP and GP (coins and gems?) and add loot choices/shop between floors
-  add intro and boss "cutscenes"
+rewards:
+  X combat -> 3G or 3R
+  chests: pick: 1 of 2 cards, ?G, ?R
+  between floors:
+    pick a shop type (gold or respect)
+    gold: 4 cards for sale, 5G each?
+    res: (3+2xcard level)R to upgrade
+
+add intro and boss "cutscenes"
 
 test encounter floor results
   first try: 5 slimes left me with 5 cards, but close
@@ -23,7 +25,7 @@ block tick down if we are standing still, executing block, and a monster is walk
   so, ticks down if at the end of our turn, before the monster moves, we have no adjacent enemy? logic changes if enemies have ranged attacks though
 if we move through a door, and there's a monster there that's never seen us, it shouldn't get a move, it should just come alert (or, rather "coming alert" is a move?)
   same for stepping up next to the boss for the first time
-warn upon using an attack with no target (pops upward, warnings shows up, hit hotkey or click again to actually use, esc cancels)
+using with no target -> prompt "do you want to discard instead - hint: use right click to discard directly"
 
 try depixel scale up by 4, then do 2 bilinear filters down to get 16xMSAA
 
@@ -50,6 +52,8 @@ animate: upon taking the orb, flip cards over, change element, probably a dialog
 
 Card abilities
 ==============
+ranged attack
+small damage + gain a turn
 push/pull (boss immune / acts as wall)
 "heal" by moving from discard to draw
 pierce
@@ -57,6 +61,14 @@ remove armor
 buff next attack
 poison
 clear debuffs (self)
+1 damage + 1 per time it was played this floor
+
+Possible perks
+==============
++1 damage vs [slime/minion/boss]
++1 reward choice from chests
+critical chance?
+
 
 Elemental Plan
 ==============
