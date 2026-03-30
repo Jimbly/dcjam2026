@@ -1,0 +1,32 @@
+---
+properties:
+  blocks_player: true
+  is_goal: true
+traits:
+- id: drawable
+  # biasL: [-0.25, 0.3]
+  # biasF: [0, -0.25]
+  # biasR: [-0.25, 0.5]
+- id: drawable_sprite
+  anim_data:
+    idle:
+      frames: [element-earth]
+      times: 10000
+  sprite_data:
+    atlas: ui
+    filter_min: LINEAR_MIPMAP_LINEAR
+    filter_mag: LINEAR
+    origin: [0.5, 1]
+  scale: 0.5
+  simple_anim:
+    - period: 2700
+      easing: 2
+      offs:
+        - [0, -0.4]
+        - [0, -0.25]
+    - period: 1000
+      scale: [1, 0.8]
+      easing: 2
+    - period: 1234
+      easing: 2
+      scale: [1.1, 1]

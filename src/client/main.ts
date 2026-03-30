@@ -63,14 +63,14 @@ Z.BACKGROUND = 1;
 Z.CONTROLLER_FADE = 5;
 Z.SPRITES = 10;
 Z.PARTICLES = 20;
-Z.CHAT = 60;
+Z.CHAT = 260;
 Z.UI = 100;
 Z.BORDERS = 120;
 Z.MAP = Z.UI + 5; // also minimap
 Z.FLOATERS = Z.MODAL + 20;
 Z.DIALOG = 140;
 Z.STATUS = 160;
-Z.CHAT_FOCUSED = 100;
+Z.CHAT_FOCUSED = 260;
 
 let fonts: Font[] | undefined;
 

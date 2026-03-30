@@ -1,4 +1,6 @@
 ---
+properties:
+  build_hide: true
 traits:
 - id: enemy
 # - id: stats_default

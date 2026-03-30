@@ -1,0 +1,31 @@
+---
+properties:
+  display_name: Green Dragon
+  is_boss: true
+traits:
+- id: enemy
+- id: stats_default
+  hp: 19
+- id: drawable
+  biasL: [0, 0.4]
+  biasF: [0, -0.4]
+  biasR: [0.2, 0.6]
+- id: drawable_sprite
+  anim_data:
+    idle:
+      frames: [dragon-idle0, dragon-idle1, dragon-idle2, dragon-idle3, dragon-idle2, dragon-idle1]
+      times: 400
+    death:
+      frames: [dragon-death0, dragon-death1, dragon-death2]
+      times: 400
+      loop: false
+  sprite_data:
+    atlas: enemies
+    filter_min: LINEAR_MIPMAP_LINEAR
+    filter_mag: LINEAR
+    origin: [0.75, 1]
+  scale: 1
+  # simple_anim:
+  #   - period: 5000
+  #     scale: [1, 0.8]
+  #     easing: 2

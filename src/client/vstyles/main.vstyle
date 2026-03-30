@@ -22,4 +22,3 @@ wall_swaps:
   solid: main_dun1-solid1
   stairs_in: main_dun1-stairs_in
   stairs_out: main_dun1-stairs_out
-  floorswitch: demo_floorswitch

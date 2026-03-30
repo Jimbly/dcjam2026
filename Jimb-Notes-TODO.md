@@ -1,17 +1,17 @@
 TODO
 ====
 
-healing
-  add second floor, with boss
-  upon defeating the boss
-    flip cards over and change element
-    add "burn self" as card effect with icon, not special case
-  add intro and boss "cutscenes"
+game flow:
+  add stair events:
+    block going back up when not in heal mode
+    block going back down when in heal mode
+    resetDeck() upon going down
   test entire flow of:
     fight floor
     boss floor
     heal on fight floor
   assuming that funish, add XP and GP (coins and gems?) and add loot choices/shop between floors
+  add intro and boss "cutscenes"
 
 test encounter floor results
   first try: 5 slimes left me with 5 cards, but close
@@ -28,6 +28,7 @@ maybe: try choosing which cards to discard (and redrawing constantly)
 block tick down if we are standing still, executing block, and a monster is walking towards us
   so, ticks down if at the end of our turn, before the monster moves, we have no adjacent enemy? logic changes if enemies have ranged attacks though
 if we move through a door, and there's a monster there that's never seen us, it shouldn't get a move, it should just come alert (or, rather "coming alert" is a move?)
+  same for stepping up next to the boss for the first time
 warn upon using an attack with no target (pops upward, warnings shows up, hit hotkey or click again to actually use, esc cancels)
 
 try depixel scale up by 4, then do 2 bilinear filters down to get 16xMSAA
@@ -51,9 +52,13 @@ stretch: bosses / (later dungeons?) are multi-element and you can switch between
 
 stretch: undo (to beginning of previous turn)
 
+animate: upon taking the orb, flip cards over, change element, probably a dialog
+
+goal sprites need to be scaled up much more than their UI versions
+
 Card abilities
 ==============
-push/pull
+push/pull (boss immune / acts as wall)
 "heal" by moving from discard to draw
 pierce
 remove armor

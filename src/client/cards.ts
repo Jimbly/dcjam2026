@@ -4,7 +4,7 @@ export const HAND_SIZE = 5;
 
 export type CardRange = 'melee' | 'ranged' | 'self';
 
-export type CardEffect = 'damage' | 'heal' | 'block';
+export type CardEffect = 'damage' | 'heal' | 'block' | 'burn';
 
 export type CardDef = {
   name: string;
@@ -22,11 +22,13 @@ export const EFFECT_TEMPLATE: Record<CardEffect, EffectVis> = {
   damage: { prefix: true, img: 'attack' },
   heal: { prefix: true, img: 'heal' },
   block: { prefix: true, img: 'block' },
+  burn: { prefix: false, img: 'burn' },
 };
-export const EFFECT_NEEDS_TARGET: Record<CardEffect, boolean> = {
+export const EFFECT_NEEDS_TARGET: Record<CardEffect, boolean | 'auto'> = {
   damage: true,
   heal: true,
   block: false,
+  burn: 'auto',
 };
 
 export const CARDS_RAW = {
@@ -38,6 +40,7 @@ export const CARDS_RAW = {
     },
     healeffect: {
       damage: 5,
+      burn: 1,
     },
   },
   'attack3': {
@@ -48,6 +51,7 @@ export const CARDS_RAW = {
     },
     healeffect: {
       damage: 3,
+      burn: 1,
     },
   },
   'attack4': {
@@ -58,6 +62,7 @@ export const CARDS_RAW = {
     },
     healeffect: {
       damage: 1,
+      burn: 1,
     },
   },
   'block2': {
@@ -68,6 +73,7 @@ export const CARDS_RAW = {
     },
     healeffect: {
       damage: 2,
+      burn: 1,
     },
   },
 } as const satisfies TSMap<CardDef>;

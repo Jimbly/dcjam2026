@@ -123,6 +123,8 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
   declare ai_move_min_time: number;
   declare ai_move_rand_time: number;
   declare display_name?: string;
+  declare is_boss: boolean;
+  declare is_goal: boolean;
 
   constructor(data_in: DataObject) {
     super(data_in);
@@ -187,6 +189,12 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
       data.draw_pile.push(uid);
     }
     shuffleArray(dummy_rand, data.draw_pile);
+  }
+
+  resetDeck(): void {
+    this.populateDrawPileFromDeck();
+    this.drawHand();
+    this.data.combat_phase = 'player';
   }
 
   reshufflePrep(): void {
@@ -329,6 +337,8 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
 EntityClient.prototype.draw2D = crawlerEntClientDefaultDraw2D;
 EntityClient.prototype.onDelete = crawlerEntClientDefaultOnDelete;
 EntityClient.prototype.do_split = true;
+EntityClient.prototype.is_boss = false;
+EntityClient.prototype.is_goal = false;
 EntityClient.prototype.ai_move_min_time = 500;
 EntityClient.prototype.ai_move_rand_time = 500;
 

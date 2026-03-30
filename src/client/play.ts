@@ -652,7 +652,9 @@ function drawEnemyStats(ent: Entity): void {
     blend(`enemyhp${ent.id}`, hp + 1), hp_max + 1, show_text);
   drawBlock(ENEMY_HP_BAR_X + ENEMY_HP_BAR_W + 2, ENEMY_HP_BAR_Y + floor((bar_h - 14) / 2), ent.data.block);
   let label_msg = ent.display_name;
-  if (ent.data.recovered) {
+  if (ent.is_boss && hp <= 0) {
+    // no suffix
+  } else if (ent.data.recovered) {
     label_msg = `${label_msg} (Recovered)`;
   } else if (hp < 0) {
     label_msg = `${label_msg} (Dying)`;
@@ -757,7 +759,9 @@ function doHealthbars(): void {
 
     if (ent.isEnemy()) {
       let { hp } = ent.data.stats;
-      if (heal_mode) {
+      if (ent.is_boss) {
+        ent.blocks_player = true;
+      } else if (heal_mode) {
         if (ent.data.recovered) {
           ent.blocks_player = false;
         } else if (hp >= 0) {
@@ -849,6 +853,7 @@ function drawCard(param: {
   y += FONT_HEIGHT + CARD_PAD;
   let key: CardEffect;
   let effects = healMode() ? card_def.healeffect : card_def.effect;
+  let any_usable = false;
   for (key in effects) {
     let value = effects[key]!;
     let vis = EFFECT_TEMPLATE[key];
@@ -857,7 +862,11 @@ function drawCard(param: {
       let element = myEnt().data.element;
       img = `element-${element || 'null'}`;
     }
-    let alpha = no_target && EFFECT_NEEDS_TARGET[key] ? 0.5 : 1;
+    if (!no_target || !EFFECT_NEEDS_TARGET[key]) {
+      any_usable = true;
+    }
+    let alpha = (no_target && EFFECT_NEEDS_TARGET[key] === true) ||
+      (EFFECT_NEEDS_TARGET[key] === 'auto' && !any_usable) ? 0.5 : 1;
     let prefix = vis.prefix ? `${value} ` : '';
     let prefix_w = (prefix ? font.getStringWidth(style_label, FONT_HEIGHT, prefix) : 0);
     let line_w = prefix_w + (img ? 14 : 0);
@@ -883,7 +892,7 @@ function drawCard(param: {
         color: [1,1,1,alpha],
       });
     }
-    y += FONT_HEIGHT;
+    y += 15;
   }
 
   effects = healMode() ? card_def.effect : card_def.healeffect;
@@ -924,7 +933,7 @@ function drawCard(param: {
         rot: PI,
       });
     }
-    y += FONT_HEIGHT;
+    y += 15;
   }
 }
 
@@ -1116,6 +1125,63 @@ function showCardList(title: string, x: number, y: number, pile: number[]): void
   });
 }
 
+function applyDamage(target_ent: Entity | null, value: number): void {
+  let me = myEnt();
+  let { data } = me;
+  let { heal_mode } = data;
+  let dir = data.pos[2] as DirType;
+  attackSurgeAdd(DX[dir], DY[dir], target_ent ? 0.5 : 0.25);
+  if (target_ent) {
+    if (heal_mode) {
+      let stats = target_ent.data.stats;
+      let msg = [];
+      let was_down = stats.hp < 0;
+      stats.hp = min(stats.hp_max, stats.hp + value);
+      msg.push(`${value}[img=heal]`);
+      addFloater(target_ent.id, msg.join(' '), undefined, true);
+      if (was_down && stats.hp >= 0) {
+        target_ent.data.recovered = true;
+        target_ent.triggerAnimation!('idle');
+        addFloater(target_ent.id, 'Thank you!');
+      }
+    } else if (!heal_mode && target_ent.isAlive()) {
+      let stats = target_ent.data.stats;
+      let msg = [];
+      if (target_ent.data.block) {
+        let blocked = min(target_ent.data.block, value);
+        msg.push(`-${blocked}[img=block]`);
+        value -= blocked;
+        target_ent.data.block -= blocked;
+      }
+      if (value) {
+        stats.hp -= value;
+        msg.push(`-${value}[img=heal]`);
+      }
+      addFloater(target_ent.id, msg.join(' '));
+      if (target_ent.is_boss) {
+        if (stats.hp <= 0) {
+          target_ent.triggerAnimation!('death');
+          addFloater(target_ent.id, 'Argh...');
+          let pos = target_ent.data.pos;
+          target_ent.applyAIUpdate('ai_move', {
+            pos: [pos[0], pos[1] + 2, pos[2]],
+            last_pos: pos,
+          }, undefined, aiIgnoreErrors);
+        }
+      } else {
+        if (stats.hp < 0) {
+          target_ent.triggerAnimation!('death');
+          addFloater(target_ent.id, 'Argh...');
+        } else if (!stats.hp) {
+          target_ent.triggerAnimation!('uncon');
+          addFloater(target_ent.id, 'I yield!');
+        }
+      }
+    }
+  }
+}
+
+
 const DRAW_PILE_X = 12;
 const DRAW_PILE_H = 26;
 const DRAW_PILE_Y = game_height - 12 - DRAW_PILE_H;
@@ -1153,7 +1219,7 @@ function doHand(): void {
   let target_ent: Entity | null = null;
   if (ent_in_front) {
     target_ent = entities[ent_in_front]!;
-    if (!target_ent || !target_ent.isEnemy()) {
+    if (!target_ent || !target_ent.isEnemy() || heal_mode && target_ent.is_boss) {
       target_ent = null;
     }
   }
@@ -1268,51 +1334,13 @@ function doHand(): void {
     for (key in effects) {
       let value = effects[key]!;
       if (key === 'damage') {
-        let dir = data.pos[2] as DirType;
-        attackSurgeAdd(DX[dir], DY[dir], target_ent ? 0.5 : 0.25);
-        if (target_ent) {
-          if (heal_mode) {
-            let stats = target_ent.data.stats;
-            let msg = [];
-            let was_down = stats.hp < 0;
-            stats.hp = min(stats.hp_max, stats.hp + value);
-            msg.push(`${value}[img=heal]`);
-            addFloater(target_ent.id, msg.join(' '), undefined, true);
-            if (was_down) {
-              should_burn = true;
-            }
-            if (was_down && stats.hp >= 0) {
-              target_ent.data.recovered = true;
-              target_ent.triggerAnimation!('idle');
-              addFloater(target_ent.id, 'Thank you!');
-            }
-          } else if (!heal_mode && target_ent.isAlive()) {
-            let stats = target_ent.data.stats;
-            let msg = [];
-            if (target_ent.data.block) {
-              let blocked = min(target_ent.data.block, value);
-              msg.push(`-${blocked}[img=block]`);
-              value -= blocked;
-              target_ent.data.block -= blocked;
-            }
-            if (value) {
-              stats.hp -= value;
-              msg.push(`-${value}[img=heal]`);
-            }
-            addFloater(target_ent.id, msg.join(' '));
-            if (stats.hp < 0) {
-              target_ent.triggerAnimation!('death');
-              addFloater(target_ent.id, 'Argh...');
-            } else if (!stats.hp) {
-              target_ent.triggerAnimation!('uncon');
-              addFloater(target_ent.id, 'I yield!');
-            }
-          }
-        }
+        applyDamage(target_ent, value);
       } else if (key === 'block') {
         data.block = (data.block || 0) + value;
       } else if (key === 'heal') {
         assert(false); // TODO
+      } else if (key === 'burn') {
+        should_burn = true;
       } else {
         unreachable(key);
       }
@@ -1465,6 +1493,8 @@ export function attackPlayer(source: Entity, target: Entity, attack: EnemyMove):
       source.data.block = (source.data.block || 0) + value;
     } else if (key === 'heal') {
       assert(false); // TODO
+    } else if (key === 'burn') {
+      assert(false);
     } else {
       unreachable(key);
     }
@@ -1491,7 +1521,7 @@ function moveBlockDead(): boolean {
     text: 'Respawn',
   })) {
     myEnt().data.stats.hp = myEnt().data.stats.hp_max;
-    myEnt().populateDrawPileFromDeck();
+    myEnt().resetDeck();
     combatStateReset();
     controller.goToFloor(0, 'stairs_in', 'respawn');
   }
@@ -1517,10 +1547,20 @@ function bumpEntityCallback(ent_id: EntityID): void {
     attackSurgeAdd(target_ent.data.pos[0] - me.data.pos[0], target_ent.data.pos[1] - me.data.pos[1], 0.1);
     //crawlerTurnBasedScheduleStep(250, 'attack');
 
-    if (target_ent.isEnemy() && !target_ent.data.recovered && healMode()) {
+    if (target_ent.isEnemy() && !target_ent.data.recovered && healMode() &&
+      !target_ent.is_boss
+    ) {
       target_ent.data.recovered = true;
       target_ent.triggerAnimation!('idle');
       addFloater(target_ent.id, 'Howdy, friend');
+    } else if (target_ent.is_goal) {
+      entityManager().deleteEntity(target_ent.id, 'removed');
+      let elem = crawlerGameState().level!.props.element;
+      assert(elem && typeof elem === 'string');
+      me.resetDeck();
+      // TODO: once reshuffle and draw anim finishes: flip cards over, then change element
+      me.data.heal_mode = true;
+      me.data.element = elem;
     }
   }
 }
@@ -2123,21 +2163,38 @@ cmd_parse.register({
   cmd: 'redeal',
   help: 'Reinitialize hand',
   func: function (str, resp_func) {
-    myEnt().populateDrawPileFromDeck();
-    myEnt().drawHand();
-    myEnt().data.combat_phase = 'player';
+    myEnt().resetDeck();
     resp_func();
   },
 });
 
 cmd_parse.register({
   cmd: 'mode',
-  help: 'Reinitialize hand',
+  help: 'Switch floor mode',
   func: function (str, resp_func) {
     myEnt().data.heal_mode = !myEnt().data.heal_mode;
     resp_func();
   },
 });
+
+cmd_parse.register({
+  cmd: 'damage',
+  help: 'Damage targeted ent',
+  func: function (str, resp_func) {
+    let damage = Number(str);
+    if (!damage || !isFinite(damage)) {
+      damage = 1;
+    }
+    let entities = entityManager().entities;
+    let ent_in_front = crawlerEntInFront();
+    if (ent_in_front) {
+      let target_ent = entities[ent_in_front]!;
+      applyDamage(target_ent, damage);
+    }
+    resp_func();
+  },
+});
+
 
 cmd_parse.register({
   cmd: 'save',
