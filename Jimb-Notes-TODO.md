@@ -3,9 +3,6 @@ TODO
 
 rewards:
   chests: pick: 1 of 2 cards, ?G, ?R
-shop
-  need tooltips on pool showing card + description
-  need tooltips on cards showing descriptions
 
 rename "burn" to "banish"
 
@@ -17,6 +14,11 @@ test encounter floor results
 
 Hooks and placeholders for audio
 Upon death, reset floor, try again, deduct a life
+
+tooltips everywhere - fixed screen location (per Action) for tooltips to show up?
+  need tooltips on pool showing card + description
+  need tooltips on buy/upgrade shop cards showing descriptions
+  need tooltips on cards in hand showing descriptions
 
 maybe: try choosing which cards to discard (and redrawing constantly)
   this makes combat slower, but does it make it more fun / strategic / (discoverable)?

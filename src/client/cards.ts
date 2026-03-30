@@ -6,15 +6,21 @@ export const MAX_TIER = 3;
 export type CardRange = 'melee' | 'ranged' | 'self';
 
 export type CardEffect = 'damage' | 'heal' | 'block' | 'burn';
+export type NumberPerTier = [number, number, number, number];
+const ONES: NumberPerTier = [1,1,1,1];
 
 export type CardDef = {
   cost: number;
   name: string;
   range: CardRange;
-  effect: Partial<Record<CardEffect, number>>;
-  healeffect: Partial<Record<CardEffect, number>>;
+  effect: Partial<Record<CardEffect, NumberPerTier>>;
+  healeffect: Partial<Record<CardEffect, NumberPerTier>>;
 };
-export type EnemyMove = Omit<CardDef, 'healeffect' | 'cost'>;
+export type EnemyMove = {
+  name: string;
+  range: CardRange;
+  effect: Partial<Record<CardEffect, number>>;
+};
 
 export type EffectVis = {
   prefix?: boolean;
@@ -39,11 +45,11 @@ export const CARDS_RAW = {
     name: 'Jab',
     range: 'melee',
     effect: {
-      damage: 2,
+      damage: [2, 2+1, 2+2, 2+3],
     },
     healeffect: {
-      damage: 5,
-      burn: 1,
+      damage: [5, 5+1, 5+2, 5+3],
+      burn: ONES,
     },
   },
   'attack3': {
@@ -51,11 +57,11 @@ export const CARDS_RAW = {
     name: 'Slash',
     range: 'melee',
     effect: {
-      damage: 3,
+      damage: [3, 3+1, 3+2, 3+3],
     },
     healeffect: {
-      damage: 2,
-      burn: 1,
+      damage: [2, 2+1, 2+2, 2+3],
+      burn: ONES,
     },
   },
   'attack4': {
@@ -63,11 +69,11 @@ export const CARDS_RAW = {
     name: 'Strike',
     range: 'melee',
     effect: {
-      damage: 4,
+      damage: [4, 4+1, 4+2, 4+3],
     },
     healeffect: {
-      damage: 1,
-      burn: 1,
+      damage: [1, 1+1, 1+2, 1+3],
+      burn: ONES,
     },
   },
   'attack5': {
@@ -75,11 +81,11 @@ export const CARDS_RAW = {
     name: 'Pummel',
     range: 'melee',
     effect: {
-      damage: 5,
+      damage: [5, 5+1, 5+2, 5+3],
     },
     healeffect: {
-      damage: 1,
-      burn: 1,
+      damage: [1, 1+1, 1+2, 1+3],
+      burn: ONES,
     },
   },
   'block2': {
@@ -87,11 +93,11 @@ export const CARDS_RAW = {
     name: 'Dodge',
     range: 'self',
     effect: {
-      block: 2,
+      block: [2,3,4,5]
     },
     healeffect: {
-      damage: 2,
-      burn: 1,
+      damage: [2, 2+1, 2+2, 2+3],
+      burn: ONES,
     },
   },
   'block3': {
@@ -99,11 +105,11 @@ export const CARDS_RAW = {
     name: 'Shield',
     range: 'self',
     effect: {
-      block: 3,
+      block: [3,4,5,6]
     },
     healeffect: {
-      damage: 1,
-      burn: 1,
+      damage: [1, 1+1, 1+2, 1+3],
+      burn: ONES,
     },
   },
 } as const satisfies TSMap<CardDef>;

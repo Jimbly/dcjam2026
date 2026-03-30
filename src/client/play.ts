@@ -878,7 +878,7 @@ export function drawCard(param: {
   let effects = healMode() ? card_def.healeffect : card_def.effect;
   let any_usable = false;
   for (key in effects) {
-    let value = effects[key]! + tier;
+    let value = effects[key]![tier];
     let vis = EFFECT_TEMPLATE[key];
     let { img } = vis;
     if (key === 'damage' && healMode()) {
@@ -921,7 +921,7 @@ export function drawCard(param: {
   effects = healMode() ? card_def.effect : card_def.healeffect;
   y = y0 + CARD_H - CARD_PAD;
   for (key in effects) {
-    let value = effects[key]! + tier;
+    let value = effects[key]![tier];
     let vis = EFFECT_TEMPLATE[key];
     let { img } = vis;
     if (key === 'damage' && !healMode()) {
@@ -1366,7 +1366,7 @@ function doHand(): void {
   if (play_card !== -1) {
     let uid = hand[play_card];
     let card = deck[uid];
-    let { card_id } = card;
+    let { card_id, tier } = card;
     hand.splice(play_card, 1);
     // do effect / play card
     assert(card_id);
@@ -1376,7 +1376,7 @@ function doHand(): void {
     let effects = heal_mode ? card_def.healeffect : card_def.effect;
     let should_burn = false;
     for (key in effects) {
-      let value = effects[key]!;
+      let value = effects[key]![tier];
       if (key === 'damage') {
         applyDamage(target_ent, value);
       } else if (key === 'block') {
