@@ -1,7 +1,11 @@
 TODO
 ====
 
-between floors, after rewards, manage deck down to expected deck size
+need to edit deck after finishing healing run (before final boss / before next zone)
+  start with telegraphing the increased deck size
+  also spend rewards!
+
+upgrade screen should show two separate lists for in/out of deck cards
 
 add intro and boss "cutscenes"
 

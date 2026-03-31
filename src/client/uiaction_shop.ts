@@ -25,7 +25,7 @@ import {
   game_height,
   game_width,
 } from './globals';
-import { PAL_BLACK, PAL_GREY, palette_font } from './palette';
+import { PAL_BLACK, PAL_GREY, PAL_RED, palette_font } from './palette';
 import {
   autosave,
   CARD_H,
@@ -35,7 +35,7 @@ import {
   randInt,
   sameCard,
 } from './play';
-import { style_dialog_title, style_hotkey, style_label } from './styles';
+import { style_dialog_title, style_dialog_title_err, style_hotkey, style_label } from './styles';
 import {
   uiAction,
   UIAction,
@@ -72,18 +72,38 @@ export function pickChestOptions(): void {
   };
 }
 
+function closeShopAndCheckDeck(): void {
+  keyClear('needs_shop');
+  keyClear('shop_gold');
+  keyClear('shop_respect');
+  uiActionClear();
+
+  // let me = myEnt();
+  // let { data } = me;
+  // let deck_size = me.deckSize();
+  // if (data.picked.length >= deck_size) {
+  if (true) { // always do this, one manage deck between floors
+    keySet('needs_shop');
+    keySet('shop_decksize');
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+    shopOpen();
+  }
+}
+
 let card_pool_scroll = scrollAreaCreate({
   background_color: null,
   auto_hide: true,
 });
 
 let pool_selected: Pick<Card, 'card_id' | 'tier'> | null = null;
+let pool_seen: boolean;
 
 function doCardPool(param: UIBox & {
   no_max_tier: boolean;
   no_select?: boolean;
+  only?: 'deck' | 'pool';
 }): void {
-  let { x, y, z, w, h, no_max_tier, no_select } = param;
+  let { x, y, z, w, h, no_max_tier, no_select, only } = param;
 
   if (autoResetSkippedFrames('cardpool')) {
     pool_selected = null;
@@ -91,66 +111,92 @@ function doCardPool(param: UIBox & {
 
   const me = myEnt();
   const { data } = me;
-  const { deck } = data;
+  const { deck, picked } = data;
   type ByTier = Partial<Record<number, number>>;
-  let by_id: Partial<Record<CardID, ByTier>> = {};
-  let total = 0;
-  for (let uid in deck) {
-    let card = deck[uid]!;
-    let by_tier = by_id[card.card_id] = by_id[card.card_id] || {};
-    let tier = card.tier || 0;
-    by_tier[tier] = (by_tier[tier] || 0) + 1;
-    ++total;
+  type ById = Partial<Record<CardID, ByTier>>;
+  let seen_map: Partial<Record<number, true>> = {};
+  function countById(uids: number[]): [number, ById] {
+    let by_id: ById = {};
+    let total = 0;
+    for (let ii = 0; ii < uids.length; ++ii) {
+      let uid = uids[ii];
+      seen_map[uid] = true;
+      let card = deck[uid]!;
+      let by_tier = by_id[card.card_id] = by_id[card.card_id] || {};
+      let tier = card.tier || 0;
+      by_tier[tier] = (by_tier[tier] || 0) + 1;
+      ++total;
+    }
+    return [total, by_id];
   }
 
-  y -= FONT_HEIGHT + 2;
-  uiGetFont().draw({
-    style: style_label,
-    x, y, z, w: w - card_pool_scroll.barWidth(),
-    align: ALIGN.HCENTERFIT,
-    text: `Card Pool (${total})`
-  });
-  y += FONT_HEIGHT + 2;
+  let [total_active, active] = countById(picked);
+  let unpicked = Object.keys(deck).map(Number).filter((a) => !seen_map[a]);
+  let [total_pool, pool] = countById(unpicked);
 
+  y -= FONT_HEIGHT + 2;
   card_pool_scroll.begin({
     x, y, z, w, h,
   });
   x = 0;
   y = 0;
 
-  let card_id: CardID;
-  let seen = false;
-  for (card_id in by_id) {
-    let by_tier = by_id[card_id]!;
-    let label = CARDS[card_id].name;
-    for (let tier = 0; tier <= MAX_TIER; ++tier) {
-      let count = by_tier[tier] || 0;
-      if (count) {
-        let disabled = no_max_tier && tier === MAX_TIER || no_select;
-        let selected = pool_selected && sameCard({ card_id, tier }, pool_selected);
-        if (selected) {
-          seen = true;
+  if (only !== 'pool') {
+    pool_seen = false;
+  }
+
+  function showList(header: string, total: number, by_id: ById): void {
+    uiGetFont().draw({
+      style: style_label,
+      x, y, z, w: w - card_pool_scroll.barWidth(),
+      align: ALIGN.HCENTERFIT,
+      text: `${header} (${total})`
+    });
+    y += FONT_HEIGHT + 2;
+
+    let card_id: CardID;
+    for (card_id in by_id) {
+      let by_tier = by_id[card_id]!;
+      let label = CARDS[card_id].name;
+      for (let tier = 0; tier <= MAX_TIER; ++tier) {
+        let count = by_tier[tier] || 0;
+        if (count) {
+          let disabled = no_max_tier && tier === MAX_TIER || no_select;
+          let selected = pool_selected && sameCard({ card_id, tier }, pool_selected);
+          if (selected) {
+            pool_seen = true;
+          }
+          if (button({
+            x, y, z, w: w - card_pool_scroll.barWidth(),
+            key: `cardpool${header}${card_id}-${tier}`,
+            disabled,
+            base_name: selected ? 'buttonselected' : undefined,
+            text: `${label}${count > 1 ? ` (${count})` : ''}`
+          })) {
+            pool_seen = true;
+            pool_selected = {
+              card_id,
+              tier,
+            };
+          }
+          y += uiButtonHeight();
         }
-        if (button({
-          x, y, z, w: w - card_pool_scroll.barWidth(),
-          disabled,
-          base_name: selected ? 'buttonselected' : undefined,
-          text: `${label}${count > 1 ? ` (${count})` : ''}`
-        })) {
-          seen = true;
-          pool_selected = {
-            card_id,
-            tier,
-          };
-        }
-        y += uiButtonHeight();
+        label += '*';
       }
-      label += '*';
+    }
+    y += 2;
+  }
+  if (only !== 'pool') {
+    showList('Deck', total_active, active);
+    y += 4;
+  }
+  if (only !== 'deck') {
+    showList('Card Pool', total_pool, pool);
+    if (!pool_seen) {
+      pool_selected = null;
     }
   }
-  if (!seen) {
-    pool_selected = null;
-  }
+
   card_pool_scroll.end(y);
 }
 
@@ -161,8 +207,9 @@ class ShopAction extends UIAction {
   tick(): void {
     const me = myEnt();
     const { data } = me;
-    const { respect, deck } = data;
+    const { respect, deck, gold, picked } = data;
     let w = floor(game_width * 5/6);
+    let w0 = w;
     let h = floor(game_height * 4/5);
     let x0 = floor((game_width - w) / 2);
     let y0 = floor((game_height - h) / 2);
@@ -178,10 +225,162 @@ class ShopAction extends UIAction {
       w: w - 4,
       align: ALIGN.HRIGHT,
       line_height: 12,
-      text: `${respect}[img=currency-respect]   ${data.gold}[img=currency-gold]`
+      text: `${respect}[img=currency-respect]   ${gold}[img=currency-gold]`
     });
 
-    if (keyGet('shop_chest')) {
+    if (keyGet('shop_decksize')) {
+      let deck_size = me.deckSize();
+      let over = picked.length > deck_size;
+      let under = picked.length < deck_size;
+      font.draw({
+        style: over ? style_dialog_title_err : style_dialog_title,
+        x, y, z, w,
+        size: FONT_HEIGHT * 2,
+        align: ALIGN.HCENTER,
+        text: `MANAGE DECK ${picked.length}/${deck_size}`,
+      });
+      y += FONT_HEIGHT * 2 + PAD;
+
+      doCardPool({
+        x, y, z, w: POOL_W, h: y0 + h - y,
+        no_max_tier: false,
+        no_select: false,
+        only: 'deck',
+      });
+
+      doCardPool({
+        x: x + w - POOL_W, y, z, w: POOL_W, h: y0 + h - y,
+        no_max_tier: false,
+        no_select: false,
+        only: 'pool',
+      });
+
+      x += POOL_W;
+      w -= POOL_W * 2;
+
+      font.draw({
+        color: palette_font[over || under ? PAL_RED : PAL_BLACK],
+        x, y, z, w,
+        align: ALIGN.HCENTER,
+        text: `Cards in Deck: ${picked.length}`,
+      });
+      y += FONT_HEIGHT + 2;
+      font.draw({
+        color: palette_font[over ? PAL_RED : PAL_BLACK],
+        x, y, z, w,
+        align: ALIGN.HCENTER,
+        text: `Current Deck Size Limit: ${deck_size}`,
+      });
+      y += FONT_HEIGHT + 2;
+
+      if (pool_selected) {
+        y += 12;
+        drawCard({
+          x: x + floor((w - CARD_W) / 2),
+          y, z,
+          card: {
+            ...pool_selected,
+            uid: -1,
+          },
+          for_shop: true,
+          no_target: false,
+          disabled: false,
+        });
+        y += CARD_H + PAD;
+
+        let num_in_deck = 0;
+        let num_in_pool = 0;
+        let seen: Partial<Record<number, true>> = {};
+        let picked_uid = 0;
+        let pool_uid = 0;
+        for (let ii = 0; ii < picked.length; ++ii) {
+          let uid = picked[ii];
+          let card = deck[uid]!;
+          if (sameCard(card, pool_selected)) {
+            picked_uid = uid;
+            seen[uid] = true;
+            num_in_deck++;
+          }
+        }
+        for (let uid_str in deck) {
+          if (seen[uid_str]) {
+            continue;
+          }
+          let uid = Number(uid_str);
+          let card = deck[uid]!;
+          if (sameCard(card, pool_selected)) {
+            pool_uid = uid;
+            seen[uid] = true;
+            num_in_pool++;
+          }
+        }
+        let button_w = uiButtonWidth();
+        x += (w - ((button_w + PAD) * 2 - PAD)) / 2;
+        font.draw({
+          style: style_label,
+          x, y, z, w: button_w,
+          align: ALIGN.HCENTER,
+          text: `${num_in_deck ? `${num_in_deck} in Deck` : ''}`,
+        });
+        font.draw({
+          style: style_label,
+          x: x + button_w + PAD, y, z, w: button_w,
+          align: ALIGN.HCENTER,
+          text: `${num_in_pool ? `${num_in_pool} in Pool` : ''}`,
+        });
+        y += FONT_HEIGHT + PAD;
+
+        if (button({
+          x, y, z,
+          w: button_w,
+          disabled: !num_in_pool,
+          text: 'Add to Deck'
+        })) {
+          picked.push(pool_uid);
+        }
+        x += button_w + PAD;
+        if (button({
+          x, y, z,
+          w: button_w,
+          disabled: !num_in_deck,
+          text: 'Move to Pool'
+        })) {
+          let idx = picked.indexOf(picked_uid);
+          picked.splice(idx, 1);
+        }
+        x += button_w + PAD;
+
+      } else {
+        let text;
+        if (over) {
+          text = 'You have too many cards in your deck, please select cards on' +
+            ' the left and move some from your DECK to your POOL.';
+        } else {
+          text = 'Before beginning the next encounter, you may adjust your deck.' +
+            '\n\nIt is recommended to include as many cards as possible.';
+        }
+        font.draw({
+          color: palette_font[over ? PAL_RED : PAL_BLACK],
+          x, y, z, w, h: y0 + h - uiButtonHeight() - BORDER - y - PAD * 3,
+          align: ALIGN.HVCENTER | ALIGN.HWRAP,
+          text,
+        });
+      }
+
+      y = y0 + h - uiButtonHeight() - PAD;
+      if (buttonText({
+        x: x0 + w0 - uiButtonWidth() - PAD * 2,
+        y, z,
+        hotkey: KEYS.ESC,
+        disabled: over,
+        text: 'Done',
+      })) {
+        keyClear('needs_shop');
+        keyClear('shop_decksize');
+        uiActionClear();
+      }
+
+    } else if (keyGet('shop_chest')) {
       font.draw({
         style: style_dialog_title,
         x, y, z, w,
@@ -253,7 +452,7 @@ class ShopAction extends UIAction {
             data.draw_pile.push(uid);
             keyClear('needs_shop');
             keyClear('shop_chest');
-            uiActionClear();
+            uiActionClear(); // NOT closeShopAndCheckDeck()
           }
           ++hotkey;
         }
@@ -281,7 +480,7 @@ class ShopAction extends UIAction {
         data.gold += data.shop_state!.gold as number;
         keyClear('needs_shop');
         keyClear('shop_chest');
-        uiActionClear();
+        uiActionClear(); // NOT closeShopAndCheckDeck()
       }
       ++hotkey;
       x += button_w + PAD;
@@ -303,7 +502,7 @@ class ShopAction extends UIAction {
         data.respect += data.shop_state!.respect as number;
         keyClear('needs_shop');
         keyClear('shop_chest');
-        uiActionClear();
+        uiActionClear(); // NOT closeShopAndCheckDeck()
       }
       ++hotkey;
 
@@ -331,13 +530,13 @@ class ShopAction extends UIAction {
       //   w,
       //   align: ALIGN.HCENTER,
       //   line_height: 12,
-      //   text: `[c=gold]Gold Coins[/c]: ${data.gold}[img=currency-gold]`
+      //   text: `[c=gold]Gold Coins[/c]: ${gold}[img=currency-gold]`
       // });
       // y += FONT_HEIGHT + PAD;
 
       y += 24;
 
-      let { shop_options, gold } = data;
+      let { shop_options } = data;
       x += floor((w2 - (shop_options.length * (CARD_W + PAD) - PAD))/2);
       for (let ii = 0; ii < shop_options.length; ++ii) {
         if (!data.shop_state![`bought${ii}`]) {
@@ -375,7 +574,7 @@ class ShopAction extends UIAction {
             w: CARD_W,
             align: ALIGN.HCENTER,
             line_height: 12,
-            text: `${gold < cost ? '[c=red]' : ''}${cost}[img=currency-gold]`,
+            text: `${gold < cost ? '[c=red]' : ''}${cost}[img=currency-gold scale=1.75]`,
           });
           if (spot_ret.ret) {
             data.shop_state![`bought${ii}`] = true;
@@ -388,14 +587,12 @@ class ShopAction extends UIAction {
 
       y = y0 + h - uiButtonHeight() - PAD * 2;
       if (buttonText({
-        x: x0 + (w - uiButtonWidth()) / 2,
+        x: x0 + (w0 - uiButtonWidth()) / 2,
         y, z,
         hotkey: KEYS.ESC,
         text: 'Done Shopping',
       })) {
-        keyClear('needs_shop');
-        keyClear('shop_gold');
-        uiActionClear();
+        closeShopAndCheckDeck();
       }
 
     } else if (keyGet('shop_respect')) {
@@ -457,7 +654,7 @@ class ShopAction extends UIAction {
           markdownAuto({
             ...center_rect,
             y: center_rect.y + FONT_HEIGHT * 3,
-            text: `${disabled ? '[c=red]' : ''}${cost}[img=currency-respect]`,
+            text: `${disabled ? '[c=red]' : ''}${cost}[img=currency-respect scale=1.75]`,
           });
 
           drawCard({
@@ -512,14 +709,12 @@ class ShopAction extends UIAction {
 
       y = y0 + h - uiButtonHeight() - PAD * 2;
       if (buttonText({
-        x: x0 + (w - uiButtonWidth()) / 2,
+        x: x0 + (w0 - uiButtonWidth()) / 2,
         y, z,
         hotkey: KEYS.ESC,
         text: 'Done Upgrading',
       })) {
-        keyClear('needs_shop');
-        keyClear('shop_respect');
-        uiActionClear();
+        closeShopAndCheckDeck();
       }
 
     } else {
@@ -555,8 +750,10 @@ class ShopAction extends UIAction {
         align: ALIGN.HVCENTER | ALIGN.HWRAP,
         markdown: true,
         sound_button: 'reward_choice',
+        disabled: gold < 3 && respect >= 3,
+        hotkey: KEYS['1'],
         img: autoAtlas('ui', 'currency-gold'),
-        text: 'Buy [c=green]NEW CARDS[/c]'
+        text: '[c=hotkey]1[/c]) Buy [c=green]NEW CARDS[/c]'
       })) {
         keySet('shop_gold');
         data.shop_state = {};
@@ -568,7 +765,7 @@ class ShopAction extends UIAction {
         y: y + button_height + PAD, z,
         w: button_width,
         align: ALIGN.HWRAP | ALIGN.HCENTER,
-        text: `Costs [img=currency-gold][c=gold]Gold Coins[/c]\n\nYou have: [c=gold]${data.gold}[/c]`
+        text: `Costs [img=currency-gold scale=1.75][c=gold]Gold Coins[/c]\n\nYou have: [c=gold]${gold}[/c]`
       });
       if (button({
         x: x + margin * 2 + button_width + margin,
@@ -579,8 +776,10 @@ class ShopAction extends UIAction {
         align: ALIGN.HVCENTER | ALIGN.HWRAP,
         shrink: 0.9,
         sound_button: 'reward_choice',
+        disabled: respect < 3 && gold >= 3,
+        hotkey: KEYS['2'],
         img: autoAtlas('ui', 'currency-respect'),
-        text: '[c=green]UPGRADE[/c] cards'
+        text: '[c=hotkey]2[/c]) [c=green]UPGRADE[/c] cards'
       })) {
         keySet('shop_respect');
         data.shop_state = {};
@@ -591,7 +790,7 @@ class ShopAction extends UIAction {
         y: y + button_height + PAD, z,
         w: button_width,
         align: ALIGN.HWRAP | ALIGN.HCENTER,
-        text: `Costs [img=currency-respect][c=respect]Respect[/c]\n\nYou have: [c=respect]${respect}[/c]`
+        text: `Costs [img=currency-respect scale=1.75][c=respect]Respect[/c]\n\nYou have: [c=respect]${respect}[/c]`
       });
     }
 
@@ -599,7 +798,7 @@ class ShopAction extends UIAction {
       x: x0 - BORDER,
       y: y0 - BORDER - PAD,
       z,
-      w: w + BORDER * 2, h: h + PAD + BORDER * 2,
+      w: w0 + BORDER * 2, h: h + PAD + BORDER * 2,
     });
     menuUp();
   }
@@ -610,6 +809,7 @@ ShopAction.prototype.is_fullscreen_ui = true;
 ShopAction.prototype.needs_decks = false;
 
 export function shopOpen(): void {
+  pool_selected = null;
   uiAction(new ShopAction());
 }
 

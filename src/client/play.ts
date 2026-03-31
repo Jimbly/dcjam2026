@@ -1507,7 +1507,9 @@ export function autosave(): void {
     return;
   }
   crawlerSaveGame('auto');
-  statusPush('Auto-saved.');
+  if (engine.DEBUG) {
+    statusPush('Auto-saved.');
+  }
 }
 
 export function attackPlayer(source: Entity, target: Entity, attack: EnemyMove): void {
@@ -2514,5 +2516,6 @@ export function playStartup(): void {
   markdownSetColorStyle('green', fontStyleColored(null, palette_font[PAL_GREEN]));
   markdownSetColorStyle('gold', fontStyleColored(null, palette_font[PAL_YELLOW+1]));
   markdownSetColorStyle('respect', fontStyleColored(null, palette_font[PAL_BLUE]));
+  markdownSetColorStyle('hotkey', style_hotkey);
   markdownImageRegisterAutoAtlas('ui');
 }

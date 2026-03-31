@@ -198,9 +198,10 @@ crawlerScriptRegisterEvent({
       keySet('needs_shop');
       keyClear('shop_gold');
       keyClear('shop_respect');
+      keyClear('shop_decksize');
     }
-    myEnt().resetDeck();
-    playUISound('reset_deck');
+    // myEnt().resetDeck();
+    // playUISound('reset_deck');
     api.floorDelta(delta, 'stairs_in', false);
   },
 });

@@ -79,6 +79,7 @@ export type EntityDataClient = {
   incoming_damage: number;
   block: number;
   deck: Record<number, Card>; // uid -> card
+  picked: number[]; // array of uids in working set
   draw_pile: number[]; // array of uids
   discard_pile: number[]; // array of uids
   hand: number[]; // array of uids
@@ -138,7 +139,21 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
       tier,
       uid,
     };
+    data.picked.push(uid);
     return uid;
+  }
+
+  deckSize(): number {
+    switch (this.data.element) {
+      case 'earth':
+        return 12;
+      case 'water':
+        return 14;
+      case 'fire':
+        return 16;
+      default:
+        return 10;
+    }
   }
 
   constructor(data_in: DataObject) {
@@ -154,6 +169,7 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
     if (this.type_id === 'player') {
       if (!data.deck) {
         data.deck = {};
+        data.picked = [];
         this.addCard('attack2', 0);
         this.addCard('attack2', 0);
         this.addCard('attack3', 0);
@@ -194,8 +210,8 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
     data.draw_pile = [];
     data.discard_pile = [];
     data.hand = [];
-    for (let uid_str in data.deck) {
-      let uid = Number(uid_str);
+    for (let ii = 0; ii < data.picked.length; ++ii) {
+      let uid = data.picked[ii];
       data.draw_pile.push(uid);
     }
     shuffleArray(dummy_rand, data.draw_pile);

@@ -5,6 +5,7 @@ import {
 import {
   PAL_BLACK,
   PAL_BLACK_PURE,
+  PAL_RED,
   PAL_WHITE,
   palette_font,
 } from './palette';
@@ -37,4 +38,8 @@ export const style_dialog_title = fontStyle(null, {
   glow_yoffs: 2,
   glow_inner: -1,
   glow_outer: 2,
+});
+
+export const style_dialog_title_err = fontStyle(style_dialog_title, {
+  color: palette_font[PAL_RED - 1],
 });
