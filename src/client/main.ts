@@ -313,6 +313,7 @@ export function main(): void {
     ],
     level_props: [
       'element',
+      'boss',
     ]
   });
   playStartup();

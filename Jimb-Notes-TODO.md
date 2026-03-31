@@ -1,20 +1,26 @@
-TODO
+TODO - The Adventures of Draco Vacuus vs the Chromatic Dragons
 ====
 
-need to edit deck after finishing healing run (before final boss / before next zone)
-  start with telegraphing the increased deck size
-  also spend rewards!
-
-upgrade screen should show two separate lists for in/out of deck cards
-
 add intro and boss "cutscenes"
+  similar for 2 more floors / minibosses
+  final boss: fight Rasa's dad?
+  after final fight
+    Mother of Dragons: "Don't you dare come in here until you've cleaned all that paint off your scales.  ...well, at least it's not glitter this time..."
+    - fade to black, "you win, thanks for playing" screen
+  story upon death
+    "No, no, no!  That's not what happened.  Okay everybody, let's take five and then try this again."
 
-test encounter floor results
-  first try: 5 slimes left me with 5 cards, but close
-  second try: 4 slimes nearly killed me, so, let's do 4
 
+all enemy floaters should just be on-the-viewport floaters instead, always visible
+
+hook up music and combat track fading
 Hooks and placeholders for audio
-Upon death, reset floor, try again, deduct a life
+  chests
+  doors
+  more combat events
+Upon death, reset floor, try again (keeping gains), deduct a life?
+
+track score - element, total friends (higher), damage dealt (lower)
 
 tooltips everywhere - fixed screen location (per Action) for tooltips to show up?
   need tooltips on pool showing card + description
@@ -27,11 +33,10 @@ maybe: try choosing which cards to discard (and redrawing constantly)
 
 block tick down if we are standing still, executing block, and a monster is walking towards us
   so, ticks down if at the end of our turn, before the monster moves, we have no adjacent enemy? logic changes if enemies have ranged attacks though
-if we move through a door, and there's a monster there that's never seen us, it shouldn't get a move, it should just come alert (or, rather "coming alert" is a move?)
-  same for stepping up next to the boss for the first time
 using with no target -> prompt "do you want to discard instead - hint: use right click to discard directly"
 wandering cat
 floor title - top and center?
+different text color for all of Rasa's speech?
 
 try depixel scale up by 4, then do 2 bilinear filters down to get 16xMSAA
 

@@ -316,6 +316,22 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
     return !(this.data.floor % 10);
   }
 
+  floorElement(): string {
+    let dungeon = floor(this.data.floor / 10) - 2;
+    return ['earth', 'water', 'fire'][dungeon] || 'fire';
+  }
+  floorElementNumber(): 0 | 1 | 2 {
+    let element = this.floorElement();
+    switch (element) {
+      case 'earth':
+        return 0;
+      case 'water':
+        return 1;
+      default:
+        return 2;
+    }
+  }
+
   static AI_UPDATE_FIELD = 'seq_ai_update';
   applyAIUpdate(
     action_id: string,

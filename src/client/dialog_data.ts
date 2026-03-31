@@ -14,7 +14,7 @@ import {
 } from 'glov/client/ui';
 import { WithRequired } from 'glov/common/types';
 import { isInteger } from 'glov/common/util';
-import { ROVec4 } from 'glov/common/vmath';
+import { ROVec4, v2copy } from 'glov/common/vmath';
 import { dialogIconsRegister } from '../common/crawler_events';
 import {
   CrawlerScriptAPI,
@@ -27,6 +27,7 @@ import { CrawlerCell } from '../common/crawler_state';
 import { crawlerController, crawlerScriptAPI } from './crawler_play';
 import {
   dialog,
+  dialogActive,
   DialogParam,
   dialogPush,
   dialogRegister,
@@ -43,6 +44,7 @@ import {
 } from './play';
 import { statusPush } from './status';
 import { style_label } from './styles';
+import { TEXT } from './text';
 import { shopOpen } from './uiaction_shop';
 
 const { floor, round } = Math;
@@ -58,6 +60,10 @@ export function keySet(name: string): void {
 export function keyClear(name: string): void {
   crawlerScriptAPI().keyClear(name);
 }
+
+const MONO = {
+  name: 'Rasa',
+};
 
 function killEntWhereIStand(type_id: string): void {
   let api = crawlerScriptAPI();
@@ -103,9 +109,38 @@ export function onetimeEvent(query_only?: boolean): boolean {
 const NAME_BOX_IMG_H = 48;
 export function dialogNameRender(dialog_param: WithRequired<DialogParam, 'name'>, param: PanelParam): void {
   let { name } = dialog_param;
+
+  if (name !== MONO.name) {
+    let h = FONT_HEIGHT + 4 * 2;
+    let name_panel = {
+      x: param.x - 10,
+      w: 0,
+      y: param.y - h + 4,
+      h,
+      z: (param.z || Z.UI) + 0.1,
+      color: param.color,
+      eat_clicks: false,
+      pixel_scale: 1,
+    };
+    let alpha = param.color?.[3] || 1;
+    let text_w = uiGetFont().draw({
+      ...name_panel,
+      x: name_panel.x + 4,
+      color: undefined,
+      style: style_label,
+      alpha,
+      size: FONT_HEIGHT,
+      z: name_panel.z + 0.2,
+      align: ALIGN.VCENTER,
+      text: name,
+    });
+    name_panel.w = text_w + 4 * 2;
+    panel(name_panel);
+    return;
+  }
   let h = 3 + NAME_BOX_IMG_H + 4 + FONT_HEIGHT + 5;
   let name_panel = {
-    x: param.x - NAME_BOX_IMG_H - 4,
+    x: param.x - NAME_BOX_IMG_H - 7,
     w: NAME_BOX_IMG_H + 4 * 2,
     y: param.y + param.h - h - 2,
     h,
@@ -161,6 +196,27 @@ export function signWithName(name: string, message: string, transient_long?: boo
   });
 }
 
+export function myElement(): string | null {
+  let me = myEnt();
+  let { data } = me;
+  return data.element || null;
+}
+
+// 0 on the way in, 1 on the way out
+function elementNumber(): 0 | 1 | 2 | 3 {
+  let element = myElement();
+  switch (element) {
+    case 'earth':
+      return 1;
+    case 'water':
+      return 2;
+    case 'fire':
+      return 3;
+    default:
+      return 0;
+  }
+}
+
 dialogIconsRegister({
   nametest: (param: string, script_api: CrawlerScriptAPI): CrawlerScriptEventMapIcon => {
     return 'icon_exclamation';
@@ -190,12 +246,97 @@ dialogRegister({
   },
   monologue: function (param: string) {
     dialogPush({
-      name: 'Rasa',
+      ...MONO,
       text: param,
       transient: true,
-      transient_long: true,
     });
-  }
+  },
+  intro: function () {
+    dialogPush({
+      ...MONO,
+      flags: { cutscene: true },
+      text: TEXT.RASA_INTRO_CUTSCENE1,
+      buttons: [{
+        label: '(continue)',
+        cb: function () {
+          dialogPush({
+            flags: { cutscene: true },
+            name: 'Mother of Dragons',
+            text: TEXT.MOM_INTRO_CUTSCENE2,
+            buttons: [{
+              label: '"..."',
+              cb: function () {
+                // nothing?
+              },
+            }]
+          });
+        },
+      }]
+    });
+  },
+  bosshello: function () {
+    let elemnum = elementNumber();
+    if (!onetimeEvent() || elemnum === 3) {
+      return;
+    }
+    dialogPush({
+      name: TEXT[`UNCLE${elemnum}_NAME`],
+      text: TEXT[`UNCLE${elemnum}_HELLO`],
+      buttons: [{
+        label: `"${TEXT.RASA_UNCLE_RESPONSE}"`,
+      }]
+    });
+  },
+  bossvictory: function () {
+    let elemnum = elementNumber();
+    dialogPush({
+      ...MONO,
+      text: TEXT[`RASA_BOSS${elemnum}_VICTORY`],
+      buttons: [{
+        label: '(continue)',
+      }],
+    });
+  },
+  bosspoke: function () {
+    let elemnum = elementNumber();
+    dialogPush({
+      name: TEXT[`UNCLE${elemnum}_NAME`],
+      text: TEXT[`UNCLE_BOSS${elemnum}_POKE`],
+      transient: true,
+    });
+  },
+  get_goal: function () {
+    let elemnum = elementNumber();
+    if (elemnum === 3) {
+      return;
+    }
+    playUISound('get_goal');
+    dialog('monologue', TEXT[`RASA_ORB${elemnum}_ACQUIRED`]);
+  },
+  healtro: function () {
+    let elemnum = myEnt().floorElementNumber();
+    dialogPush({
+      ...MONO,
+      flags: { cutscene: true },
+      text: TEXT[`RASA_HEAL${elemnum}`],
+      buttons: [{
+        label: TEXT[`RASA_HEAL${elemnum}_BUTTON`],
+      }]
+    });
+  },
+  outtro: function () {
+    let elemnum = myEnt().floorElementNumber();
+    // dialog('monologue', TEXT[`RASA_OUTTRO${elemnum}`]);
+    // or, cutscene between floors?
+    dialogPush({
+      ...MONO,
+      flags: { cutscene: true },
+      text: TEXT[`RASA_OUTTRO${elemnum}`],
+      buttons: [{
+        label: '(continue)',
+      }]
+    });
+  },
 });
 
 crawlerScriptRegisterEvent({
@@ -207,15 +348,23 @@ crawlerScriptRegisterEvent({
     let delta = -1;
     if (!healMode()) {
       crawlerController().forceMoveBackwards();
-      dialog('monologue', 'I can\'t go back now, I must go onward!');
+      dialogPush({
+        ...MONO,
+        transient: true,
+        transient_dist: 1,
+        text: TEXT.RASA_NOEXIT_ON_WAY_IN,
+      });
       return;
     }
     let me = myEnt();
     if (me.isFloorSectionStart()) {
       let { element } = me.data;
-      // won't be seen: dialog('monologue', 'Time to get ready for the next adventure!');
+      // monologues won't be seen: dialog('monologue', 'Time to get ready for the next adventure!');
+      dialog('outtro');
       api.floorDelta(10, 'stairs_out', false);
     } else {
+      // let elemnum = (elementNumber() - 1) as 0 | 1 | 2;
+      // dialog('monologue', TEXT[`RASA_HEAL${elemnum}`]);
       api.floorDelta(delta, 'stairs_out', false);
     }
   },
@@ -230,7 +379,7 @@ crawlerScriptRegisterEvent({
     let delta = 1;
     if (healMode()) {
       crawlerController().forceMoveBackwards();
-      dialog('monologue', 'No need to go back down, off to the next adventure!');
+      dialog('monologue', TEXT.RASA_NOEXIT_ON_WAY_OUT);
       return;
     } else {
       keySet('needs_shop');
@@ -251,24 +400,47 @@ crawlerScriptRegisterEvent({
   func: (api: CrawlerScriptAPI, cell: CrawlerCell, param: string) => {
     let me = myEnt();
     if (me.isFloorSectionStart()) {
-      if (onetimeEvent()) {
-        let { element } = me.data;
+      let element = myElement();
+      if (element === myEnt().floorElement()) {
+        // on our way out
+        // dialog('outtro');
+      } else {
+        // on our way in
         if (!element) {
-          dialog('monologue', 'Time to get that Earth power!');
+          dialog('monologue', TEXT.RASA_INTRO0);
+          onetimeEvent(); // Clear this so we don't get an event on the way out though
         } else {
-          // note: messages not seen, shop dialog about deck size overrides it:
-          // if (element === 'earth') {
-          //   dialog('monologue', 'Time to get that Water power!');
-          // } else if (element === 'water') {
-          //   dialog('monologue', 'Time to get that Fire power!');
-          // } else {
-          //   dialog('monologue', 'Oooh, boss fight!');
-          // }
-          keySet('needs_shop');
-          keySet('shop_decksize');
-          shopOpen();
+          if (onetimeEvent()) {
+            // note: messages not seen, shop dialog about deck size overrides it:
+            // if (element === 'earth') {
+            //   dialog('monologue', 'Time to get that Water power!');
+            // } else if (element === 'water') {
+            //   dialog('monologue', 'Time to get that Fire power!');
+            // } else {
+            //   dialog('monologue', 'Oooh, boss fight!');
+            // }
+            keySet('needs_shop');
+            keySet('shop_decksize');
+            shopOpen();
+          }
         }
       }
+    }
+  },
+});
+
+crawlerScriptRegisterEvent({
+  key: 'boss_intro',
+  when: CrawlerScriptWhen.POST,
+  map_icon: CrawlerScriptEventMapIcons.NONE,
+  func: (api: CrawlerScriptAPI, cell: CrawlerCell, param: string) => {
+    let me = myEnt();
+    let element = myElement();
+    if (dialogActive()) {
+      return;
+    }
+    if (element !== me.floorElement()) {
+      dialog('monologue', TEXT[`RASA_BOSS${me.floorElementNumber()}`]);
     }
   },
 });

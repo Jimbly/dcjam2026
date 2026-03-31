@@ -1506,7 +1506,7 @@
       "events": [
         {
           "id": "dialog",
-          "param": "sign *Hullo there!*  This is a test of [c=1]Mark[/c][c=2]down[/c], including [img=brick_brown0]images[img=crystal_wall11], line wrapping, and **bold**. Also [img=tall]tall and [img=wide]wide."
+          "param": "monologue Listen closely, and I will tell the tale of how I, Rasa, the Draco Vacuus, obtained the powers of all of the chromatic dragons."
         }
       ]
     },

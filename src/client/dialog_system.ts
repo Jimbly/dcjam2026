@@ -33,13 +33,15 @@ import {
   suppressNewDOMElemWarnings,
   UIBox,
   uiButtonHeight,
+  uiFontStyleNormal,
+  uiGetFont,
   uiTextHeight,
 } from 'glov/client/ui';
 import { dataError } from 'glov/common/data_error';
-import { WithRequired } from 'glov/common/types';
+import { TSMap, WithRequired } from 'glov/common/types';
 import { merge } from 'glov/common/util';
 import {
-  v2same,
+  v2manhattanDist,
   vec4,
 } from 'glov/common/vmath';
 import { CrawlerScriptAPI } from '../common/crawler_script';
@@ -47,12 +49,15 @@ import { JSVec2, JSVec3 } from '../common/crawler_state';
 import { buildModeActive } from './crawler_build_mode';
 import { crawlerMyEnt } from './crawler_entity_client';
 import { crawlerScriptAPI } from './crawler_play';
+import { FONT_HEIGHT } from './globals';
 
 const { ceil, min, round } = Math;
 
 const FADE_TIME = 1000;
 const MS_PER_CHARACTER = 12;
 const MS_PER_CHARACTER_CENTERED = 6;
+
+let font: Font;
 
 export type DialogButton = {
   label: string;
@@ -65,10 +70,12 @@ export type DialogParam = {
   font_style?: FontStyle;
   transient?: boolean;
   transient_long?: boolean;
+  transient_dist?: number; // don't treat as moved until we've moved than this dist (default 0)
   custom_render?: (param: PanelParam) => void;
   instant?: boolean;
   buttons?: DialogButton[];
   panel_sprite?: Sprite;
+  flags?: TSMap<boolean>;
 };
 
 let active_dialog: DialogParam | null = null;
@@ -103,9 +110,16 @@ function ff(): boolean {
     ) || mouseDownAnywhere() || inputClick();
 }
 
+export function dialogActive(): boolean {
+  return Boolean(active_dialog);
+}
 
 export function dialogMoveLocked(): boolean {
   return Boolean(active_dialog && !active_dialog.transient);
+}
+
+export function dialogFlag(flag: string): boolean {
+  return Boolean(active_dialog && active_dialog.flags && active_dialog.flags[flag]);
 }
 
 function mdTruncate(tree: MDASTNode[], state: { cch: number }): string {
@@ -217,7 +231,7 @@ export function dialogRun(
   if (!active_dialog) {
     return false;
   }
-  let { transient, transient_long, custom_render, text, name, buttons, panel_sprite } = active_dialog;
+  let { transient, transient_long, transient_dist, custom_render, text, name, buttons, panel_sprite } = active_dialog;
   if (transient && suppress_transient) {
     active_dialog = null;
     return false;
@@ -231,7 +245,8 @@ export function dialogRun(
   let { buttons_vis, counter } = active_state;
   if (transient && !active_state.fade_time) {
     let my_pos = crawlerMyEnt().getData<JSVec3>('pos')!;
-    if (!v2same(my_pos, active_state.pos)) {
+    transient_dist = transient_dist || 0;
+    if (v2manhattanDist(my_pos, active_state.pos) > transient_dist) {
       active_state.fade_time = transient_long ? 3000 : FADE_TIME;
     }
   }
@@ -249,7 +264,18 @@ export function dialogRun(
   if (num_buttons) {
     pad_bottom = pad_bottom_with_buttons;
   }
-  let buttons_h = num_buttons * uiButtonHeight() + (num_buttons ? BUTTON_HEAD + (num_buttons - 1) * BUTTON_PAD : 0);
+  let button_h = uiButtonHeight();
+  let button_w = w - HPAD * 2;
+  let button_align: ALIGN | undefined;
+  if (num_buttons === 1) {
+    let button_label_lines = font.numLines(uiFontStyleNormal(), button_w, 0,
+      uiTextHeight(), buttons![0].label);
+    if (button_label_lines > 1) {
+      button_align = ALIGN.HWRAP | ALIGN.HVCENTER;
+      button_h = button_h - FONT_HEIGHT + FONT_HEIGHT * button_label_lines;
+    }
+  }
+  let buttons_h = num_buttons * button_h + (num_buttons ? BUTTON_HEAD + (num_buttons - 1) * BUTTON_PAD : 0);
   const text_height = uiTextHeight();
   let size = text_height;
   let line_height = size;
@@ -287,6 +313,7 @@ export function dialogRun(
   }
   let yy = y;
   markdownAuto({
+    font,
     font_style: style,
     text_height: size,
     line_height,
@@ -316,9 +343,11 @@ export function dialogRun(
         focus_steal: ii === 0 && (num_buttons === 1 || !buttons_vis),
         text: button.label,
         x: x + HPAD,
-        w: w - HPAD * 2,
+        w: button_w,
+        h: button_h,
         y: yy,
         z,
+        align: button_align,
         markdown: true,
         hotkeys,
       })) {
@@ -332,7 +361,7 @@ export function dialogRun(
           }
         }
       }
-      yy += uiButtonHeight() + BUTTON_PAD;
+      yy += button_h + BUTTON_PAD;
     }
     active_state.buttons_vis = true;
   }
@@ -433,6 +462,7 @@ export function dialogStartup(param: {
   text_style_cb?: DialogTextStyleCB;
   name_render_cb?: DialogNameRenderCB;
 }): void {
+  font = param.font || uiGetFont();
   text_style_cb = param.text_style_cb || dialogDefaultTextStyle;
   name_render_cb = param.name_render_cb || null;
   style_default = param.style_default || style_default;

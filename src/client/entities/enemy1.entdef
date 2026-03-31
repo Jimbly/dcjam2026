@@ -1,6 +1,6 @@
 ---
 properties:
-  display_name: Green Dragon
+  display_name: Uncle Verde
   is_boss: true
 traits:
 - id: enemy

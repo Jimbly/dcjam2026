@@ -1647,12 +1647,14 @@ export class CrawlerController {
   }
 
   // go back from whence you came
-  forceMoveBackwards(): void {
+  forceMoveBackwards(): ROVec2 | null {
     this.player_controller.cancelAllMoves?.(false);
     let { last_dest_pos, prev_pos } = this;
     if (!v2same(last_dest_pos, prev_pos)) {
       this.player_controller.startMove(dirFromMove(last_dest_pos, prev_pos));
+      return prev_pos;
     }
+    return null;
   }
 
   pit_time!: number;

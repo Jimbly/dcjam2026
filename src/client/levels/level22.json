@@ -1197,6 +1197,12 @@
         "open",
         "stairs_in",
         "open"
+      ],
+      "events": [
+        {
+          "id": "boss_intro",
+          "param": ""
+        }
       ]
     },
     {
@@ -1215,6 +1221,12 @@
         "solid",
         "open",
         "solid"
+      ],
+      "events": [
+        {
+          "id": "dialog",
+          "param": "bosshello"
+        }
       ]
     },
     {
@@ -2348,7 +2360,7 @@
   "vstyle": "main",
   "seed": "32845502",
   "props": {
-    "element": "earth"
+    "boss": "1"
   },
   "paths": {}
 }

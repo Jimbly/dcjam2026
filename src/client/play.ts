@@ -23,6 +23,7 @@ import {
   PAD,
   padButtonUpEdge,
 } from 'glov/client/input';
+import { localStorageSet } from 'glov/client/local_storage';
 import { markdownAuto } from 'glov/client/markdown';
 import { markdownImageRegisterAutoAtlas, markdownSetColorStyle } from 'glov/client/markdown_renderables';
 import { ClientChannelWorker, netSubs } from 'glov/client/net';
@@ -42,6 +43,7 @@ import {
   ButtonStateString,
   buttonText,
   drawBox,
+  drawRect,
   drawRect2,
   label,
   menuUp,
@@ -52,6 +54,7 @@ import {
   uiGetFont,
   uiTextHeight,
 } from 'glov/client/ui';
+import * as urlhash from 'glov/client/urlhash';
 import { webFSAPI } from 'glov/client/webfs';
 import {
   EntityID,
@@ -163,8 +166,8 @@ import {
 } from './crawler_render_entities';
 import { crawlerScriptAPIDummyServer } from './crawler_script_api_client';
 import { crawlerOnScreenButton } from './crawler_ui';
-import { dialogNameRender, keyGet, keySet } from './dialog_data';
-import { dialogMoveLocked, dialogReset, dialogRun, dialogStartup } from './dialog_system';
+import { dialogNameRender, keyClear, keyGet, keySet, myElement } from './dialog_data';
+import { dialog, dialogFlag, dialogMoveLocked, dialogRun, dialogStartup } from './dialog_system';
 import {
   entitiesAt,
   EntityClient,
@@ -236,7 +239,7 @@ const DO_COMPASS = false;
 const DO_MOVEMENT_BUTTONS = false;
 const DO_MINIMAP = false;
 
-const DIALOG_PAD = 32;
+const DIALOG_PAD = 12*8;
 const DIALOG_RECT = {
   x: VIEWPORT_X0 + DIALOG_PAD,
   w: render_width - DIALOG_PAD * 2,
@@ -292,9 +295,11 @@ function combatMoveBlock(): boolean {
   return me.data.combat_phase === 'redraw' || me.data.combat_phase === 'reshuffle';
 }
 
+let cur_reason: TurnBasedStepReason;
 function aiStep(reason: TurnBasedStepReason): void {
   // playUISound('button_click');
   let game_state = crawlerGameState();
+  cur_reason = reason;
   if (!buildModeActive()) {
     let script_api = crawlerScriptAPI();
     script_api.is_visited = true; // Always visited for AI
@@ -852,6 +857,9 @@ export function drawCard(param: {
   for_shop?: boolean;
 }): void {
   let { card, disabled, hotkey, x, y, z, no_target, for_shop } = param;
+  if (dialogMoveLocked()) {
+    hotkey = undefined;
+  }
   const y0 = y;
   const tier = card.tier || 0;
   let card_def = CARDS[card.card_id]!;
@@ -1205,6 +1213,7 @@ function applyDamage(target_ent: Entity | null, value: number): void {
           target_ent.triggerAnimation!('death');
           addFloater(target_ent.id, 'Argh...');
           setTimeout(playUISound.bind(null, 'death'), MSG_STEP_DELAY);
+          setTimeout(dialog.bind(null, 'bossvictory'), MSG_STEP_DELAY * 2);
           let pos = target_ent.data.pos;
           target_ent.applyAIUpdate('ai_move', {
             pos: [pos[0], pos[1] + 2, pos[2]],
@@ -1517,6 +1526,13 @@ export function attackPlayer(source: Entity, target: Entity, attack: EnemyMove):
   if (healMode()) {
     return;
   }
+
+  if (cur_reason === 'move' &&
+    source.is_boss && source.data.stats.hp === source.data.stats.hp_max
+  ) {
+    return;
+  }
+
   assert.equal(myEnt(), target);
   let dx = source.data.pos[0] - target.data.pos[0];
   let dy = source.data.pos[1] - target.data.pos[1];
@@ -1607,7 +1623,9 @@ function bumpEntityCallback(ent_id: EntityID): void {
     attackSurgeAdd(target_ent.data.pos[0] - me.data.pos[0], target_ent.data.pos[1] - me.data.pos[1], 0.1);
     //crawlerTurnBasedScheduleStep(250, 'attack');
 
-    if (target_ent.isEnemy() && !target_ent.data.recovered && healMode() &&
+    if (target_ent.is_boss && !target_ent.isAlive()) {
+      dialog('bosspoke');
+    } else if (target_ent.isEnemy() && !target_ent.data.recovered && healMode() &&
       !target_ent.is_boss
     ) {
       target_ent.data.recovered = true;
@@ -1623,11 +1641,10 @@ function bumpEntityCallback(ent_id: EntityID): void {
       playUISound('befriended');
     } else if (target_ent.is_goal) {
       entityManager().deleteEntity(target_ent.id, 'removed');
-      let elem = crawlerGameState().level!.props.element;
-      assert(elem && typeof elem === 'string');
+      let elem = me.floorElement();
       me.resetDeck();
-      playUISound('get_goal');
-      // TODO: once reshuffle and draw anim finishes: flip cards over, then change element
+      dialog('get_goal'); // *before* changing element
+      // TODO: after dialog: once reshuffle and draw anim finishes: flip cards over, then change element
       me.data.heal_mode = true;
       me.data.element = elem;
     }
@@ -1842,13 +1859,14 @@ function playCrawl(): void {
   const is_fullscreen_ui = uiActionCurrent()?.is_fullscreen_ui;
   const overlay_menu_up = uiActionCurrent()?.is_overlay_menu || is_dead ||
     myEnt().data.combat_phase === 'reshuffle' || false;
+  const is_cutscene = dialogFlag('cutscene');
   let dialog_viewport = {
     ...DIALOG_RECT,
     z: Z.STATUS,
-    pad_top: 4,
-    pad_bottom: 4,
+    pad_top: 8,
+    pad_bottom: 8,
     pad_bottom_with_buttons: 4,
-    pad_lr: 4,
+    pad_lr: 8,
   };
   if (is_fullscreen_ui || frame_map_view) {
     dialog_viewport.x = 0;
@@ -1857,10 +1875,19 @@ function playCrawl(): void {
     dialog_viewport.h = game_height - 3;
     dialog_viewport.z = Z.MODAL + 100;
   }
-  if (overlay_menu_up) {
+  if (overlay_menu_up || is_cutscene) {
     dialog_viewport.z = Z.MODAL + 100;
   }
   dialogRun(dt, dialog_viewport, false);
+  let cutscene_alpha = blend('cutscenealpha', is_cutscene ? 1 : 0, 500);
+  if (is_cutscene) {
+    cutscene_alpha = 1;
+    input.eatAllInput();
+  }
+  if (cutscene_alpha) {
+    let c = palette[PAL_BLACK_PURE];
+    drawRect(-1, -1, game_width + 2, game_height + 2, Z.MODAL - 1, [c[0], c[1], c[2], cutscene_alpha]);
+  }
 
   const build_mode = buildModeActive();
   let locked_dialog = dialogMoveLocked();
@@ -2036,13 +2063,13 @@ function playCrawl(): void {
 
   profilerStart('doPlayerMotion');
   controller.doPlayerMotion({
-    dt,
+    dt: is_cutscene || overlay_menu_up ? 0 : dt,
     button_x0: MOVE_BUTTONS_X0,
     button_y0: MOVE_BUTTONS_Y0,
     no_visible_ui: frame_map_view || build_mode || !DO_MOVEMENT_BUTTONS,
     button_w: MOVE_BUTTON_W,
     button_sprites: useNoText() ? button_sprites_notext : button_sprites,
-    disable_move: moveBlocked() || overlay_menu_up || combatMoveBlock(),
+    disable_move: moveBlocked() || overlay_menu_up || combatMoveBlock() || is_cutscene,
     disable_player_impulse: Boolean(locked_dialog),
     show_buttons: !locked_dialog,
     do_debug_move: engine.defines.LEVEL_GEN || build_mode,
@@ -2363,6 +2390,52 @@ cmd_parse.register({
   },
 });
 
+cmd_parse.register({
+  cmd: 'wipesave',
+  help: 'Delete this save slot (manual and auto)',
+  func: function (str, resp_func) {
+    let slot = urlhash.get('slot') || '1';
+    localStorageSet(`savedgame_${slot}.auto`, null);
+    localStorageSet(`savedgame_${slot}.manual`, null);
+    resp_func();
+  },
+});
+
+cmd_parse.register({
+  cmd: 'keyget',
+  help: 'Gets a key',
+  func: function (str, resp_func) {
+    if (!str) {
+      return void resp_func(null, crawlerScriptAPI().localDataGet());
+    }
+    resp_func(null, keyGet(str));
+  },
+});
+
+cmd_parse.register({
+  cmd: 'keyset',
+  help: 'Sets a key',
+  func: function (str, resp_func) {
+    if (!str) {
+      return void resp_func('Key required');
+    }
+    keySet(str);
+    resp_func();
+  },
+});
+
+cmd_parse.register({
+  cmd: 'keyclear',
+  help: 'Clearsa a key',
+  func: function (str, resp_func) {
+    if (!str) {
+      return void resp_func('Key required');
+    }
+    keyClear(str);
+    resp_func();
+  },
+});
+
 function applyAtlasSwaps(): void {
   let suffix = settings.depixel ? '-depixel' : '';
   [
@@ -2376,10 +2449,22 @@ function applyAtlasSwaps(): void {
 }
 
 function initLevel(cem: ClientEntityManagerInterface<Entity>, floor_id: number, level: CrawlerLevel): void {
-  dialogReset();
+  // dialogReset();
   combatStateReset();
   if (keyGet('needs_shop')) {
     shopOpen();
+  }
+  if (!keyGet('did_intro')) {
+    keySet('did_intro');
+    dialog('intro');
+  }
+  let floor_elem = myEnt().floorElement();
+  if (floor_elem === myElement() &&
+    !keyGet(`did_healtro_${floor_elem}`) &&
+    !level.props.boss
+  ) {
+    keySet(`did_healtro_${floor_elem}`);
+    dialog('healtro');
   }
 }
 
