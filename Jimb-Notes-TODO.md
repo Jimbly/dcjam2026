@@ -1,16 +1,6 @@
 TODO - The Adventures of Draco Vacuus vs the Chromatic Dragons
 ====
 
-add intro and boss "cutscenes"
-  similar for 2 more floors / minibosses
-  final boss: fight Rasa's dad?
-  after final fight
-    Mother of Dragons: "Don't you dare come in here until you've cleaned all that paint off your scales.  ...well, at least it's not glitter this time..."
-    - fade to black, "you win, thanks for playing" screen
-  story upon death
-    "No, no, no!  That's not what happened.  Okay everybody, let's take five and then try this again."
-
-
 all enemy floaters should just be on-the-viewport floaters instead, always visible
 
 hook up music and combat track fading
@@ -19,6 +9,8 @@ Hooks and placeholders for audio
   doors
   more combat events
 Upon death, reset floor, try again (keeping gains), deduct a life?
+  story upon death
+    "No, no, no!  That's not what happened.  Okay everybody, let's take five and then try this again."
 
 track score - element, total friends (higher), damage dealt (lower)
 

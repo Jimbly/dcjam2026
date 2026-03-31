@@ -151,7 +151,7 @@ function doCardPool(param: UIBox & {
       style: style_label,
       x, y, z, w: w - card_pool_scroll.barWidth(),
       align: ALIGN.HCENTERFIT,
-      text: `${header} (${total})`
+      text: `${header} (${total}${header === 'Deck' ? `/${me.deckSize()}` : ''})`
     });
     y += FONT_HEIGHT + 2;
 
@@ -229,18 +229,18 @@ class ShopAction extends UIAction {
       text: `${respect}[img=currency-respect]   ${gold}[img=currency-gold]`
     });
 
+    let deck_size = me.deckSize();
+    if (deck_size > 10 && !keyGet(`seendeck${deck_size}`)) {
+      keySet(`seendeck${deck_size}`);
+      dialogPush({
+        text: `Congratulations!  For obtaining the power of ${data.element},` +
+          ` your Deck Size Limit has increased to ${deck_size}!`,
+        buttons: [{
+          label: 'Yay!',
+        }],
+      });
+    }
     if (keyGet('shop_decksize')) {
-      let deck_size = me.deckSize();
-      if (deck_size > 10 && !keyGet(`seendeck${deck_size}`)) {
-        keySet(`seendeck${deck_size}`);
-        dialogPush({
-          text: `Congratulations!  For obtaining the power of ${data.element},` +
-            ` your Deck Size Limit has increased to ${deck_size}!`,
-          buttons: [{
-            label: 'Yay!',
-          }],
-        });
-      }
       let over = picked.length > deck_size;
       let under = picked.length < deck_size;
       font.draw({
@@ -248,7 +248,7 @@ class ShopAction extends UIAction {
         x, y, z, w,
         size: FONT_HEIGHT * 2,
         align: ALIGN.HCENTER,
-        text: `MANAGE DECK ${picked.length}/${deck_size}`,
+        text: 'MANAGE DECK',
       });
       y += FONT_HEIGHT * 2 + PAD;
 

@@ -2451,7 +2451,7 @@ function applyAtlasSwaps(): void {
 function initLevel(cem: ClientEntityManagerInterface<Entity>, floor_id: number, level: CrawlerLevel): void {
   // dialogReset();
   combatStateReset();
-  if (keyGet('needs_shop')) {
+  if (keyGet('needs_shop') && !buildModeActive()) {
     shopOpen();
   }
   if (!keyGet('did_intro')) {

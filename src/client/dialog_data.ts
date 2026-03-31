@@ -12,6 +12,7 @@ import {
   uiGetFont,
   uiTextHeight,
 } from 'glov/client/ui';
+import * as urlhash from 'glov/client/urlhash';
 import { WithRequired } from 'glov/common/types';
 import { isInteger } from 'glov/common/util';
 import { ROVec4, v2copy } from 'glov/common/vmath';
@@ -261,7 +262,7 @@ dialogRegister({
         cb: function () {
           dialogPush({
             flags: { cutscene: true },
-            name: 'Mother of Dragons',
+            name: TEXT.MOM_NAME,
             text: TEXT.MOM_INTRO_CUTSCENE2,
             buttons: [{
               label: '"..."',
@@ -276,7 +277,7 @@ dialogRegister({
   },
   bosshello: function () {
     let elemnum = elementNumber();
-    if (!onetimeEvent() || elemnum === 3) {
+    if (!onetimeEvent()) {
       return;
     }
     dialogPush({
@@ -337,6 +338,30 @@ dialogRegister({
       }]
     });
   },
+  victory: function () {
+    dialogPush({
+      ...MONO,
+      flags: { cutscene: true },
+      text: TEXT.RASA_VICTORY,
+      buttons: [{
+        label: TEXT.RASA_VICTORY_BUTTON,
+        cb: function () {
+          dialogPush({
+            name: TEXT.MOM_NAME,
+            flags: { cutscene: true },
+            text: TEXT.MOM_VICTORY,
+            buttons: [{
+              label: 'You win!  Thanks for playing!',
+              cb: function () {
+                // TODO: send to high score screen
+                urlhash.go('');
+              },
+            }]
+          });
+        },
+      }]
+    });
+  },
 });
 
 crawlerScriptRegisterEvent({
@@ -359,9 +384,10 @@ crawlerScriptRegisterEvent({
     let me = myEnt();
     if (me.isFloorSectionStart()) {
       let { element } = me.data;
-      // monologues won't be seen: dialog('monologue', 'Time to get ready for the next adventure!');
+      // note: monologues won't be seen here
+      me.data.heal_mode = false;
       dialog('outtro');
-      api.floorDelta(10, 'stairs_out', false);
+      api.floorDelta(10, 'stairs_in', false);
     } else {
       // let elemnum = (elementNumber() - 1) as 0 | 1 | 2;
       // dialog('monologue', TEXT[`RASA_HEAL${elemnum}`]);
@@ -377,6 +403,7 @@ crawlerScriptRegisterEvent({
   func: (api: CrawlerScriptAPI, cell: CrawlerCell, param: string) => {
     let params = param.split(' ');
     let delta = 1;
+    // TODO: final victory text here (too?)
     if (healMode()) {
       crawlerController().forceMoveBackwards();
       dialog('monologue', TEXT.RASA_NOEXIT_ON_WAY_OUT);
@@ -401,7 +428,7 @@ crawlerScriptRegisterEvent({
     let me = myEnt();
     if (me.isFloorSectionStart()) {
       let element = myElement();
-      if (element === myEnt().floorElement()) {
+      if (element === myEnt().floorElement() && myEnt().data.floor !== 50) {
         // on our way out
         // dialog('outtro');
       } else {
@@ -420,7 +447,7 @@ crawlerScriptRegisterEvent({
             //   dialog('monologue', 'Oooh, boss fight!');
             // }
             keySet('needs_shop');
-            keySet('shop_decksize');
+            // keySet('shop_decksize');
             shopOpen();
           }
         }
