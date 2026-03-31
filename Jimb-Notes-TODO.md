@@ -1,10 +1,6 @@
-TODO - The Adventures of Draco Vacuus vs the Chromatic Dragons
+TODO - The Adventures of Draco Vacuus and the Chromatic Dragons
 ====
 
-Hooks and placeholders for audio
-  chests
-  doors
-  more combat events
 Upon death, reset floor, try again (keeping gains), deduct a life?
   story upon death
     "No, no, no!  That's not what happened.  Okay everybody, let's take five and then try this again."

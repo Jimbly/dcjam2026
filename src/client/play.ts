@@ -1294,6 +1294,37 @@ function applyDamage(target_ent: Entity | null, value: number): void {
   }
 }
 
+function cardSound(no_target: boolean, target_ent: Entity | null, card: Card): string | undefined {
+  let { card_id, tier } = card;
+  let card_def = CARDS[card_id];
+  assert(card_def);
+  let key: CardEffect;
+  let effects = healMode() ? card_def.healeffect : card_def.effect;
+  for (key in effects) {
+    let value = effects[key]![tier];
+    if (key === 'damage') {
+      if (no_target) {
+        return;
+      }
+      if (healMode()) {
+        return; // handled elsewhere
+      }
+      if (target_ent?.data.block && target_ent?.data.block >= value) {
+        return 'monster_blocked';
+      }
+      return 'hit_enemy';
+    } else if (key === 'block') {
+      return 'gain_block';
+    } else if (key === 'heal') {
+      assert(false); // TODO
+    } else if (key === 'burn') {
+      // ignore, no SFX
+    } else {
+      unreachable(key);
+    }
+  }
+}
+
 
 const DRAW_PILE_X = 12;
 const DRAW_PILE_H = 26;
@@ -1413,6 +1444,7 @@ function doHand(): void {
       ...click_rect,
       disabled,
       disabled_focusable: false,
+      sound_button: cardSound(no_target, target_ent, card),
     });
     let target_y = rect.y;
     if (spot_ret.focused) {
@@ -1578,6 +1610,15 @@ export function autosave(): void {
   }
 }
 
+export function playSoundFromEnt(ent: Entity, sound_id: keyof typeof SOUND_DATA): void {
+  let pos = ent.getData<JSVec3>('pos')!;
+
+  playUISound(sound_id, {
+    pos: [pos[0] + 0.5, pos[1] + 0.5, 0.5],
+    volume: 1,
+  });
+}
+
 export function attackPlayer(source: Entity, target: Entity, attack: EnemyMove): void {
   if (healMode()) {
     return;
@@ -1612,6 +1653,9 @@ export function attackPlayer(source: Entity, target: Entity, attack: EnemyMove):
       }
       if (unblocked) {
         msg.push(`-${unblocked}[img=cardicon]`);
+        playSoundFromEnt(source, 'hit_player');
+      } else if (blocked) {
+        playSoundFromEnt(source, 'hero_blocked');
       }
 
       incoming_damage.push({
@@ -1658,15 +1702,6 @@ function moveBlockDead(): boolean {
   }
 
   return true;
-}
-
-export function playSoundFromEnt(ent: Entity, sound_id: keyof typeof SOUND_DATA): void {
-  let pos = ent.getData<JSVec3>('pos')!;
-
-  playUISound(sound_id, {
-    pos: [pos[0] + 0.5, pos[1] + 0.5, 0.5],
-    volume: 1,
-  });
 }
 
 function bumpEntityCallback(ent_id: EntityID): void {
@@ -2381,6 +2416,7 @@ function onEnterCell(pos: Vec2): void {
     keySet('needs_shop');
     keySet('shop_chest');
     pickChestOptions();
+    playUISound('chest');
     shopOpen();
     entity_manager.deleteEntity(chest.id, 'pickup');
     autosave();

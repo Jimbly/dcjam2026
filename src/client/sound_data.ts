@@ -44,7 +44,7 @@ export const SOUND_DATA = {
     volume: 1,
   },
   restored: { // healed a monster back from death
-    file: 'msg_out',
+    file: 'restored',
     volume: 1,
   },
   befriended: { // talked to a >= 1 hp monster to make friendly
@@ -74,4 +74,39 @@ export const SOUND_DATA = {
     file: 'card_pickup',
     volume: 1,
   },
+
+  door_regular: {
+    file: 'door_regular',
+    volume: 1,
+  },
+  door_secret: {
+    file: 'door_secret',
+    volume: 1,
+  },
+  chest: {
+    file: 'chest',
+    volume: 1,
+  },
+
+  hit_monster: [{
+    file: 'hit_monster/1',
+    volume: 1,
+  }],
+  hit_hero: [{
+    file: 'hit_hero/1',
+    volume: 1,
+  }],
+  gain_block: {
+    file: 'gain_block',
+    volume: 1,
+  },
+  hero_blocked: {
+    file: 'hero_blocked',
+    volume: 1,
+  },
+  monster_blocked: {
+    file: 'monster_blocked',
+    volume: 1,
+  },
+
 } satisfies Partial<Record<string, UISoundID | string | string[] | UISoundID[]>>;

@@ -5,6 +5,7 @@ advertise_other_side: true
 ascii_char: '+'
 map_view_wall_frame_north: door_horiz
 map_view_wall_frame_east: door_vert
+sound_id: door_regular
 visuals:
   type: simple_wall
   opts:
