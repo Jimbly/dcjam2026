@@ -378,6 +378,7 @@ class ShopAction extends UIAction {
         keyClear('needs_shop');
         keyClear('shop_decksize');
         uiActionClear();
+        me.resetDeck();
       }
 
     } else if (keyGet('shop_chest')) {
