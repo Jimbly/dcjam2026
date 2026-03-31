@@ -1,0 +1,12 @@
+---
+tile_res: [56, 32]
+tiles:
+  rasa-earth-idle0: [0, 0]
+  rasa-earth-idle1: [1, 0]
+  rasa-earth-idle2: [2, 0]
+  rasa-earth-idle3: [3, 0]
+  rasa-earth-idle4: [4, 0]
+  rasa-earth-idle5: [5, 0]
+  rasa-earth-idle6: [6, 0]
+  rasa-earth-idle7: [7, 0]
+  rasa-earth-idle8: [8, 0]

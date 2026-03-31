@@ -2220,12 +2220,6 @@
         "solid",
         "open",
         "open"
-      ],
-      "events": [
-        {
-          "id": "dialog",
-          "param": "monologue I'm totally awesome."
-        }
       ]
     },
     {

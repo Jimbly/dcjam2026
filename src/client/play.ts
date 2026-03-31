@@ -236,9 +236,10 @@ const DO_COMPASS = false;
 const DO_MOVEMENT_BUTTONS = false;
 const DO_MINIMAP = false;
 
+const DIALOG_PAD = 32;
 const DIALOG_RECT = {
-  x: VIEWPORT_X0 + 8,
-  w: render_width - 16,
+  x: VIEWPORT_X0 + DIALOG_PAD,
+  w: render_width - DIALOG_PAD * 2,
   y: VIEWPORT_Y0,
   h: render_height + 4,
 };
@@ -1839,6 +1840,8 @@ function playCrawl(): void {
 
   const frame_map_view = mapViewActive();
   const is_fullscreen_ui = uiActionCurrent()?.is_fullscreen_ui;
+  const overlay_menu_up = uiActionCurrent()?.is_overlay_menu || is_dead ||
+    myEnt().data.combat_phase === 'reshuffle' || false;
   let dialog_viewport = {
     ...DIALOG_RECT,
     z: Z.STATUS,
@@ -1854,12 +1857,13 @@ function playCrawl(): void {
     dialog_viewport.h = game_height - 3;
     dialog_viewport.z = Z.MODAL + 100;
   }
+  if (overlay_menu_up) {
+    dialog_viewport.z = Z.MODAL + 100;
+  }
   dialogRun(dt, dialog_viewport, false);
 
   const build_mode = buildModeActive();
   let locked_dialog = dialogMoveLocked();
-  const overlay_menu_up = uiActionCurrent()?.is_overlay_menu || is_dead ||
-    myEnt().data.combat_phase === 'reshuffle' || false;
   let minimap_display_h = build_mode ? MOVE_BUTTON_H : DO_MINIMAP ? MINIMAP_H : 0;
   let show_compass = !build_mode && DO_COMPASS;
   let compass_h = show_compass ? 11 : 0;
@@ -2365,6 +2369,7 @@ function applyAtlasSwaps(): void {
     'main',
     'ui',
     'enemies',
+    'rasa',
   ].forEach(function (base_name) {
     autoAtlasSwap(base_name, `${base_name}${suffix}`);
   });
@@ -2390,7 +2395,7 @@ export function playStartup(): void {
       new_player_data: {
         type: 'player',
         pos: [0, 0, 0],
-        floor: 3,
+        floor: 20,
         stats: { hp: 10, hp_max: 10 },
       },
       loading_state: playOfflineLoading,
@@ -2498,6 +2503,7 @@ export function playStartup(): void {
     font,
     // text_style_cb: dialogTextStyle,
     name_render_cb: dialogNameRender,
+    style_default: style_label,
   });
   crawlerLoadData(webFSAPI());
   crawlerMapViewStartup({

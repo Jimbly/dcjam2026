@@ -1,0 +1,12 @@
+---
+tile_res: [56, 32]
+tiles:
+  rasa-water-idle0: [0, 0]
+  rasa-water-idle1: [1, 0]
+  rasa-water-idle2: [2, 0]
+  rasa-water-idle3: [3, 0]
+  rasa-water-idle4: [4, 0]
+  rasa-water-idle5: [5, 0]
+  rasa-water-idle6: [6, 0]
+  rasa-water-idle7: [7, 0]
+  rasa-water-idle8: [8, 0]

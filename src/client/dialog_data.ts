@@ -1,6 +1,8 @@
 /* eslint prefer-template:off, @stylistic/max-len:off, @typescript-eslint/no-unused-vars:off */
 export const SHUTTLE_COST = 100;
+import { autoAtlas } from 'glov/client/autoatlas';
 import { cmd_parse } from 'glov/client/cmds';
+import { getFrameTimestamp } from 'glov/client/engine';
 import { ALIGN } from 'glov/client/font';
 import { inputTouchMode } from 'glov/client/input';
 import {
@@ -12,6 +14,7 @@ import {
 } from 'glov/client/ui';
 import { WithRequired } from 'glov/common/types';
 import { isInteger } from 'glov/common/util';
+import { ROVec4 } from 'glov/common/vmath';
 import { dialogIconsRegister } from '../common/crawler_events';
 import {
   CrawlerScriptAPI,
@@ -32,17 +35,17 @@ import {
   entitiesAt,
   entityManager,
 } from './entity_game_client';
+import { FONT_HEIGHT } from './globals';
 import {
   healMode,
   myEnt,
   myEntOptional,
 } from './play';
 import { statusPush } from './status';
+import { style_label } from './styles';
+import { shopOpen } from './uiaction_shop';
 
-const { round } = Math;
-
-const NAME_BOX_H = 14;
-const NAME_BOX_PAD = 6;
+const { floor, round } = Math;
 
 export function keyGet(name: string): boolean {
   return crawlerScriptAPI().keyGet(name);
@@ -97,27 +100,55 @@ export function onetimeEvent(query_only?: boolean): boolean {
   return onetimeEventForPos(pos[0], pos[1], query_only);
 }
 
+const NAME_BOX_IMG_H = 48;
 export function dialogNameRender(dialog_param: WithRequired<DialogParam, 'name'>, param: PanelParam): void {
   let { name } = dialog_param;
+  let h = 3 + NAME_BOX_IMG_H + 4 + FONT_HEIGHT + 5;
   let name_panel = {
-    x: param.x + NAME_BOX_H/2,
-    w: 0,
-    y: param.y - NAME_BOX_H * 0.8,
-    h: NAME_BOX_H,
+    x: param.x - NAME_BOX_IMG_H - 4,
+    w: NAME_BOX_IMG_H + 4 * 2,
+    y: param.y + param.h - h - 2,
+    h,
     z: (param.z || Z.UI) + 0.1,
     color: param.color,
     eat_clicks: false,
+    sprite: autoAtlas('ui', 'nameplate'),
+    pixel_scale: 1,
   };
+  let alpha = param.color?.[3] || 1;
+  let frame = floor((getFrameTimestamp() / 250)) % 9;
+  let { element } = myEnt().data;
+  let sprite = autoAtlas('rasa', `rasa-${element || 'null'}-idle${frame}`);
+  let uvs = (sprite.uidata.rects as ROVec4[])[0];
+  let zoom = 0.4;
+  let aspect = sprite.uidata.aspect![0];
+  let offs = [0.38, 0.27];
+  offs[0] *= uvs[2] - uvs[0];
+  offs[1] *= uvs[3] - uvs[1];
+  sprite.draw({
+    x: name_panel.x + 4,
+    y: name_panel.y + 4,
+    w: NAME_BOX_IMG_H,
+    h: NAME_BOX_IMG_H,
+    z: name_panel.z - 0.1,
+    color: param.color,
+    uvs: [
+      uvs[0] + offs[0], uvs[1] + offs[1],
+      uvs[0] + (uvs[2] - uvs[0]) * zoom + offs[0],
+      uvs[1] + (uvs[3] - uvs[1]) * zoom * aspect + offs[1]
+    ],
+  });
   let text_w = uiGetFont().draw({
     ...name_panel,
-    x: name_panel.x + NAME_BOX_PAD,
-    color: round((param.color?.[3] || 1) * 255),
-    size: uiTextHeight() * 0.75,
+    color: undefined,
+    style: style_label,
+    alpha,
+    y: name_panel.y + 3 + NAME_BOX_IMG_H + 4,
+    size: FONT_HEIGHT,
     z: name_panel.z + 0.2,
-    align: ALIGN.VCENTER,
+    align: ALIGN.HCENTER,
     text: name,
   });
-  name_panel.w = text_w + NAME_BOX_PAD * 2;
   panel(name_panel);
 }
 
@@ -159,7 +190,7 @@ dialogRegister({
   },
   monologue: function (param: string) {
     dialogPush({
-      name: '',
+      name: 'Rasa',
       text: param,
       transient: true,
       transient_long: true,
@@ -179,7 +210,14 @@ crawlerScriptRegisterEvent({
       dialog('monologue', 'I can\'t go back now, I must go onward!');
       return;
     }
-    api.floorDelta(delta, 'stairs_out', false);
+    let me = myEnt();
+    if (me.isFloorSectionStart()) {
+      let { element } = me.data;
+      // won't be seen: dialog('monologue', 'Time to get ready for the next adventure!');
+      api.floorDelta(10, 'stairs_out', false);
+    } else {
+      api.floorDelta(delta, 'stairs_out', false);
+    }
   },
 });
 
@@ -203,6 +241,35 @@ crawlerScriptRegisterEvent({
     // myEnt().resetDeck();
     // playUISound('reset_deck');
     api.floorDelta(delta, 'stairs_in', false);
+  },
+});
+
+crawlerScriptRegisterEvent({
+  key: 'section_intro',
+  when: CrawlerScriptWhen.POST,
+  map_icon: CrawlerScriptEventMapIcons.NONE,
+  func: (api: CrawlerScriptAPI, cell: CrawlerCell, param: string) => {
+    let me = myEnt();
+    if (me.isFloorSectionStart()) {
+      if (onetimeEvent()) {
+        let { element } = me.data;
+        if (!element) {
+          dialog('monologue', 'Time to get that Earth power!');
+        } else {
+          // note: messages not seen, shop dialog about deck size overrides it:
+          // if (element === 'earth') {
+          //   dialog('monologue', 'Time to get that Water power!');
+          // } else if (element === 'water') {
+          //   dialog('monologue', 'Time to get that Fire power!');
+          // } else {
+          //   dialog('monologue', 'Oooh, boss fight!');
+          // }
+          keySet('needs_shop');
+          keySet('shop_decksize');
+          shopOpen();
+        }
+      }
+    }
   },
 });
 

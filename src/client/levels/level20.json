@@ -1197,6 +1197,12 @@
         "open",
         "solid",
         "stairs_in"
+      ],
+      "events": [
+        {
+          "id": "section_intro",
+          "param": ""
+        }
       ]
     },
     {
@@ -2220,12 +2226,6 @@
         "solid",
         "open",
         "open"
-      ],
-      "events": [
-        {
-          "id": "dialog",
-          "param": "monologue I'm totally awesome."
-        }
       ]
     },
     {

@@ -31,6 +31,7 @@ if we move through a door, and there's a monster there that's never seen us, it 
   same for stepping up next to the boss for the first time
 using with no target -> prompt "do you want to discard instead - hint: use right click to discard directly"
 wandering cat
+floor title - top and center?
 
 try depixel scale up by 4, then do 2 bilinear filters down to get 16xMSAA
 

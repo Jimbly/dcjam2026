@@ -1,0 +1,12 @@
+---
+tile_res: [56, 32]
+tiles:
+  rasa-fire-idle0: [0, 0]
+  rasa-fire-idle1: [1, 0]
+  rasa-fire-idle2: [2, 0]
+  rasa-fire-idle3: [3, 0]
+  rasa-fire-idle4: [4, 0]
+  rasa-fire-idle5: [5, 0]
+  rasa-fire-idle6: [6, 0]
+  rasa-fire-idle7: [7, 0]
+  rasa-fire-idle8: [8, 0]

@@ -312,6 +312,10 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
     return blocked;
   }
 
+  isFloorSectionStart(): boolean {
+    return !(this.data.floor % 10);
+  }
+
   static AI_UPDATE_FIELD = 'seq_ai_update';
   applyAIUpdate(
     action_id: string,

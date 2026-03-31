@@ -20,6 +20,7 @@ import { ridx } from 'glov/common/util';
 import { blend } from './blend';
 import { Card, CardID, CARDS, MAX_TIER } from './cards';
 import { keyClear, keyGet, keySet } from './dialog_data';
+import { dialogPush } from './dialog_system';
 import {
   FONT_HEIGHT,
   game_height,
@@ -230,6 +231,16 @@ class ShopAction extends UIAction {
 
     if (keyGet('shop_decksize')) {
       let deck_size = me.deckSize();
+      if (deck_size > 10 && !keyGet(`seendeck${deck_size}`)) {
+        keySet(`seendeck${deck_size}`);
+        dialogPush({
+          text: `Congratulations!  For obtaining the power of ${data.element},` +
+            ` your Deck Size Limit has increased to ${deck_size}!`,
+          buttons: [{
+            label: 'Yay!',
+          }],
+        });
+      }
       let over = picked.length > deck_size;
       let under = picked.length < deck_size;
       font.draw({
@@ -806,7 +817,7 @@ class ShopAction extends UIAction {
 }
 ShopAction.prototype.name = 'Shop';
 ShopAction.prototype.is_overlay_menu = true;
-ShopAction.prototype.is_fullscreen_ui = true;
+ShopAction.prototype.is_fullscreen_ui = false;
 ShopAction.prototype.needs_decks = false;
 
 export function shopOpen(): void {

@@ -1,0 +1,12 @@
+---
+tile_res: [56, 32]
+tiles:
+  rasa-null-idle0: [0, 0]
+  rasa-null-idle1: [1, 0]
+  rasa-null-idle2: [2, 0]
+  rasa-null-idle3: [3, 0]
+  rasa-null-idle4: [4, 0]
+  rasa-null-idle5: [5, 0]
+  rasa-null-idle6: [6, 0]
+  rasa-null-idle7: [7, 0]
+  rasa-null-idle8: [8, 0]

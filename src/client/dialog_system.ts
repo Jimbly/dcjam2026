@@ -429,9 +429,11 @@ export function dialog(id: string, param?: string): void {
 
 export function dialogStartup(param: {
   font: Font;
+  style_default: FontStyle;
   text_style_cb?: DialogTextStyleCB;
   name_render_cb?: DialogNameRenderCB;
 }): void {
   text_style_cb = param.text_style_cb || dialogDefaultTextStyle;
   name_render_cb = param.name_render_cb || null;
+  style_default = param.style_default || style_default;
 }
