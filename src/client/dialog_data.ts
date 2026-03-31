@@ -290,6 +290,7 @@ dialogRegister({
   },
   bossvictory: function () {
     let elemnum = elementNumber();
+    keySet(`killed_boss_${myEnt().floorElement()}`);
     dialogPush({
       ...MONO,
       text: TEXT[`RASA_BOSS${elemnum}_VICTORY`],

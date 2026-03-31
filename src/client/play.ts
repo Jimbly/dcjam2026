@@ -93,6 +93,7 @@ import {
   aiStepFloor,
   AIStepPayload,
   aiTraitsClientStartup,
+  entitiesAdjacentTo,
 } from './ai';
 import { blend } from './blend';
 // import './client_cmds';
@@ -189,7 +190,7 @@ import {
 } from './globals';
 import { levelGenTest } from './level_gen_test';
 import { chatUI } from './main';
-import { tickMusic } from './music';
+import { musicTimestamp, tickMusic } from './music';
 import {
   PAL_BLACK_PURE,
   PAL_BLUE,
@@ -647,7 +648,11 @@ function drawBlock(x: number, y: number, block: number): void {
 }
 
 export function healMode(): boolean {
-  return myEnt().data.heal_mode;
+  let me = myEntOptional();
+  if (!me) {
+    return false;
+  }
+  return me.data.heal_mode;
 }
 
 export function enemyVacate(ent_id: EntityID): void {
@@ -1260,6 +1265,7 @@ function applyDamage(target_ent: Entity | null, value: number): void {
       if (target_ent.is_boss) {
         if (stats.hp <= 0) {
           target_ent.triggerAnimation!('death');
+          keySet(`killed_boss_${myEnt().floorElement()}`);
           addFloater(target_ent.id, 'Argh...');
           setTimeout(playUISound.bind(null, 'death'), MSG_STEP_DELAY);
           setTimeout(dialog.bind(null, 'bossvictory'), MSG_STEP_DELAY * 2);
@@ -1300,6 +1306,7 @@ const CARDS_W = HAND_SIZE * (CARD_W - CARD_OVERLAP) + CARD_OVERLAP;
 const CARDS_X = VIEWPORT_X0 + floor((render_width - CARDS_W) / 2);
 const CARDS_Y = 203;
 const CARDS_Y_SEL = VIEWPORT_Y0 + render_height - CARD_H;
+let bgm_track: string | null = null;
 function doHand(): void {
   let me = myEnt();
   if (!me.isAlive()) {
@@ -1318,7 +1325,7 @@ function doHand(): void {
       x: 13, y: game_height, z: Z.MODAL + 10,
       size: uiTextHeight() * 0.5,
       align: ALIGN.VBOTTOM,
-      text: `phase: ${data.combat_phase}`,
+      text: `phase: ${data.combat_phase}   bgm: ${bgm_track} @ ${musicTimestamp().toFixed(2)}`,
     });
   }
 
@@ -2230,6 +2237,43 @@ function playCrawl(): void {
   profilerStopFunc();
 }
 
+function isCombat(): boolean {
+  let me = myEntOptional();
+  if (!me) {
+    return false;
+  }
+  if (healMode()) {
+    return false;
+  }
+  let { level } = crawlerGameState();
+  if (!level) {
+    return false;
+  }
+  let { pos } = me.data;
+  let floor_id = me.data.floor;
+  let script_api = crawlerScriptAPI();
+  let ents = entitiesAdjacentTo(crawlerGameState(), entityManager(), floor_id, pos, script_api);
+  ents = ents.filter(function (e) {
+    return e.isAlive() && e.isEnemy();
+  });
+  return ents.length > 0;
+}
+
+function isDefeatedBoss(): boolean {
+  let me = myEntOptional();
+  if (!me) {
+    return false;
+  }
+  let { level } = crawlerGameState();
+  if (!level) {
+    return false;
+  }
+  if (!level.props.boss) {
+    return false;
+  }
+  return keyGet(`killed_boss_${myEnt().floorElement()}`);
+}
+
 export function play(dt: number): void {
   profilerStartFunc();
   crawlerRenderSetUIClearColor(palette[PAL_BLACK_PURE]);
@@ -2245,7 +2289,14 @@ export function play(dt: number): void {
 
   let overlay_menu_up = Boolean(uiActionCurrent()?.is_overlay_menu || dialogMoveLocked());
 
-  tickMusic(game_state.level?.props.music as string || null); // || 'default_music'
+  let is_combat = isCombat();
+  let element = myEntOptional()?.floorElement() || 'earth';
+  let music: string | null = `bgm_${element}_${healMode() ? 'heal' : is_combat ? 'combat' : 'explore'}`;
+  if (isDefeatedBoss()) {
+    music = null;
+  }
+  bgm_track = music;
+  tickMusic((game_state.level?.props.music as string) || music); // || 'default_music'
   crawlerPlayTopOfFrame(overlay_menu_up, false);
 
   profilerStopStart('mid');

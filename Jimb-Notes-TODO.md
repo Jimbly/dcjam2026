@@ -1,7 +1,6 @@
 TODO - The Adventures of Draco Vacuus vs the Chromatic Dragons
 ====
 
-hook up music and combat track fading
 Hooks and placeholders for audio
   chests
   doors
