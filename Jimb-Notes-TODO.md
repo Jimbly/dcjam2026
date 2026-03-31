@@ -1,8 +1,6 @@
 TODO - The Adventures of Draco Vacuus vs the Chromatic Dragons
 ====
 
-all enemy floaters should just be on-the-viewport floaters instead, always visible
-
 hook up music and combat track fading
 Hooks and placeholders for audio
   chests

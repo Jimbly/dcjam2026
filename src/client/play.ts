@@ -125,6 +125,7 @@ import {
   crawlerEntityTraitsClientStartup,
   crawlerMyEnt,
   crawlerMyEntOptional,
+  Floater,
 } from './crawler_entity_client';
 import {
   crawlerMapViewDraw,
@@ -153,6 +154,7 @@ import {
   TurnBasedStepReason,
 } from './crawler_play';
 import {
+  crawlerRenderViewportGet,
   crawlerRenderViewportSet,
   DIM,
   renderSet3DOffset,
@@ -205,7 +207,7 @@ import {
   statusPush,
   statusTick,
 } from './status';
-import { style_damage, style_hotkey, style_label, style_text } from './styles';
+import { style_damage, style_floater, style_hotkey, style_label, style_text } from './styles';
 import { uiActionClear, uiActionCurrent, uiActionTick } from './uiaction';
 import { pauseMenuActive, pauseMenuOpen } from './uiaction_pause_menu';
 import { pickChestOptions, shopOpen } from './uiaction_shop';
@@ -326,6 +328,45 @@ function aiStep(reason: TurnBasedStepReason): void {
 }
 const MSG_STEP_DELAY = 400;
 
+let floaters: (Floater & { ent_id: EntityID })[] = [];
+export function renderFloaters(): void {
+  // TODO: do floaters in 3D for all entities
+  for (let ii = floaters.length - 1; ii >= 0; --ii) {
+    let floater = floaters[ii];
+    let elapsed = engine.getFrameTimestamp() - floater.start;
+    if (elapsed < 0) {
+      continue;
+    }
+    const FLOATER_TIME = 750; // not including fade
+    const FLOATER_FADE = 250;
+    let alpha = 1;
+    if (elapsed > FLOATER_TIME) {
+      alpha = 1 - (elapsed - FLOATER_TIME) / FLOATER_FADE;
+      if (alpha <= 0) {
+        ridx(floaters, ii);
+        continue;
+      }
+    }
+    if (floater.msg) {
+      let { x, y, w, h } = crawlerRenderViewportGet();
+      let float = easeOut(elapsed / (FLOATER_TIME + FLOATER_FADE), 2) * 20;
+      let text_height = uiTextHeight() * 2;
+      markdownAuto({
+        font,
+        font_style: style_floater,
+        alpha,
+        x,
+        y: y + h/2 - float - 400 + (floater.yoffs || 0) * text_height,
+        z: Z.FLOATERS,
+        w, h: 400,
+        text_height,
+        align: ALIGN.HCENTER|ALIGN.VBOTTOM,
+        text: floater.msg
+      });
+    }
+  }
+}
+
 // TODO: move into crawler_play?
 export function addFloater(ent_id: EntityID, message: string | null, anim?: string, blink_good?: boolean): void {
   let ent = crawlerEntityManager().getEnt(ent_id);
@@ -334,6 +375,14 @@ export function addFloater(ent_id: EntityID, message: string | null, anim?: stri
       if (!ent.floaters) {
         ent.floaters = [];
       }
+      let count = floaters.filter((a) => a.ent_id === ent_id).length;
+      floaters.push({
+        start: engine.frame_timestamp + count * MSG_STEP_DELAY,
+        msg: message,
+        blink_good,
+        yoffs: count,
+        ent_id: ent_id,
+      });
       ent.floaters.push({
         start: engine.frame_timestamp + ent.floaters.length * MSG_STEP_DELAY,
         msg: message,
@@ -2234,6 +2283,7 @@ export function play(dt: number): void {
   renderSet3DOffset(calcAttackCameraOffs());
   renderSetScreenShake(screen_shake);
   crawlerPrepAndRenderFrame(false);
+  renderFloaters();
 
   if (!buildModeActive() && game_state.floor_id >= 0 && !CRAWLER_TURN_BASED) {
     let script_api = crawlerScriptAPI();
@@ -2450,6 +2500,7 @@ function applyAtlasSwaps(): void {
 
 function initLevel(cem: ClientEntityManagerInterface<Entity>, floor_id: number, level: CrawlerLevel): void {
   // dialogReset();
+  floaters.length = 0;
   combatStateReset();
   if (keyGet('needs_shop') && !buildModeActive()) {
     shopOpen();

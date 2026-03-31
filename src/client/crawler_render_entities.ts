@@ -579,8 +579,8 @@ export function crawlerRenderEntitiesPrep(): void {
   ped_list.sort(cmpPeds);
 }
 
-let color_temp = vec4(1, 1, 1, 1);
 let draw_pos_temp = vec3();
+let color_temp = vec4(1, 1, 1, 1);
 export function crawlerRenderEntities(ent_set: SplitSet): void {
   profilerStartFunc();
   // Draw other entities
@@ -659,7 +659,9 @@ export function crawlerRenderEntities(ent_set: SplitSet): void {
             blink_good = floater.blink_good;
           }
         }
-        if (is_in_front && !crawlerController().controllerIsAnimating() && floater.msg) {
+        if (is_in_front && !crawlerController().controllerIsAnimating() && floater.msg &&
+          0 // DCJAM
+        ) {
           let { x, y, w, h } = crawlerRenderViewportGet();
           let float = easeOut(elapsed / (FLOATER_TIME + FLOATER_FADE), 2) * 20;
           let text_height = uiTextHeight() * 2;
