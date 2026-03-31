@@ -1312,7 +1312,7 @@ function cardSound(no_target: boolean, target_ent: Entity | null, card: Card): s
       if (target_ent?.data.block && target_ent?.data.block >= value) {
         return 'monster_blocked';
       }
-      return 'hit_enemy';
+      return 'hit_monster';
     } else if (key === 'block') {
       return 'gain_block';
     } else if (key === 'heal') {
@@ -1653,7 +1653,7 @@ export function attackPlayer(source: Entity, target: Entity, attack: EnemyMove):
       }
       if (unblocked) {
         msg.push(`-${unblocked}[img=cardicon]`);
-        playSoundFromEnt(source, 'hit_player');
+        playSoundFromEnt(source, 'hit_hero');
       } else if (blocked) {
         playSoundFromEnt(source, 'hero_blocked');
       }
