@@ -437,14 +437,14 @@ export function gameEntityTraitsClientStartup(
       //   },
       // },
       moves: [{
-        name: 'Freeze',
-        effect: {
-          freeze: 2,
-        },
-        // name: 'Infect',
+        // name: 'Freeze',
         // effect: {
-        //   poison: 2,
+        //   freeze: 2,
         // },
+        name: 'Infect',
+        effect: {
+          poison: 2,
+        },
 
       // name: 'Splat',
       // effect: {

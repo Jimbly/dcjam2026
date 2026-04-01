@@ -699,13 +699,15 @@ function drawBlock(is_player: boolean, x: number, y: number, block: number): num
   return x + 1;
 }
 
-function drawPoison(x: number, y: number, value: number): number {
+function drawPoison(is_player: boolean, x: number, y: number, value: number): number {
   if (!value) {
     return x;
   }
-  const w = 10;
+  let do_fire = is_player && myEnt().floorElement() === 'fire';
+  let img = do_fire ? 'fire' : 'poison';
+  const w = img === 'fire' ? 14 : 10;
   const h = 14;
-  autoAtlas('ui', 'poison').draw({
+  autoAtlas('ui', img).draw({
     x, y, w, h, z: Z.UI - 2,
   });
   font.draw({
@@ -717,7 +719,7 @@ function drawPoison(x: number, y: number, value: number): number {
   label({
     x, y, w, h,
     text: '',
-    tooltip: 'Poison deals damage every turn and then is reduced by 1.',
+    tooltip: `${do_fire ? 'Burn' : 'Poison'} deals damage every turn and then is reduced by 1.`,
   });
   x += w;
   return x + 1;
@@ -837,7 +839,7 @@ function drawEnemyStats(ent: Entity): void {
     blend(`enemyhp${ent.id}`, hp + 1), hp_max + 1, show_text);
   let x = ENEMY_HP_BAR_X + ENEMY_HP_BAR_W + 2;
   x = drawBlock(false, x, ENEMY_HP_BAR_Y + floor((bar_h - 14) / 2), ent.data.block);
-  x = drawPoison(x, ENEMY_HP_BAR_Y + floor((bar_h - 14) / 2), ent.data.poison || 0);
+  x = drawPoison(false, x, ENEMY_HP_BAR_Y + floor((bar_h - 14) / 2), ent.data.poison || 0);
   x = drawFreeze(false, x, ENEMY_HP_BAR_Y + floor((bar_h - 14) / 2), ent.data.freeze || 0);
   assert(x); // just to make linter happy
   let label_msg = ent.display_name;
@@ -882,6 +884,10 @@ function drawEnemyStats(ent: Entity): void {
         }
         let img = vis.img_enemy || vis.img;
         if (img) {
+          if (img === 'poison' && myEnt().floorElement() === 'fire') {
+            img = 'fire';
+          }
+
           msg.push(`[img=${img}]`);
         }
       }
@@ -2046,7 +2052,7 @@ function doHand(): void {
   x = DRAW_PILE_X;
   y = DRAW_PILE_Y - 16;
   x = drawBlock(true, x, y, data.block);
-  x = drawPoison(x, y, data.poison || 0);
+  x = drawPoison(true, x, y, data.poison || 0);
   x = drawFreeze(true, x, y, data.freeze || 0);
 }
 
@@ -2127,9 +2133,12 @@ export function attackPlayer(source: Entity, target: Entity, attack: EnemyMove, 
     } else if (key === 'poison') {
       playSoundFromEnt(source, 'poison');
       target.data.poison = (target.data.poison || 0) + value;
+
+      let do_fire = target.floorElement() === 'fire';
+
       incoming_damage.push({
         start: engine.frame_timestamp,
-        msg: `${value}[img=poison]`,
+        msg: `${value}[img=${do_fire ? 'fire' : 'poison'}]`,
         from: rot,
       });
     } else if (key === 'freeze') {
