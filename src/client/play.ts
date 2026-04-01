@@ -2587,7 +2587,6 @@ function doVFX(dt: number): void {
 
 export function renderBGHook(): void {
   if (ranged_attack_counter) {
-    // opaqueQueue(function () {
     let pos = renderPlayerPos();
     let forward = dynGeomForward();
     let t = (RANGED_ANIM_TIME - 1 - ranged_attack_counter) / RANGED_ANIM_TIME;
@@ -2595,14 +2594,13 @@ export function renderBGHook(): void {
     let element = myElement() || 'null';
     autoAtlas('ui', `firebreath-${element}${frame}`).withOrigin([0.5, 1]).draw3D({
       bucket: BUCKET_OPAQUE,
-      pos: [pos[0], pos[1], HVDIM * 0.3],
-      size: [DIM, DIM * (ranged_attack_range - 0.4)],
+      pos: [pos[0] + forward[0] * 40, pos[1] + forward[1] * 40, HVDIM * 0.3],
+      size: [DIM, DIM * (ranged_attack_range - 0.6)],
       facing: FACE_CUSTOM,
       face_right: dynGeomRight(),
       face_down: [-forward[0], -forward[1], -forward[2]],
       shader: vfx_shader,
     });
-    // });
   }
 }
 
