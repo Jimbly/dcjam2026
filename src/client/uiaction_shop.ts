@@ -49,18 +49,29 @@ const { floor } = Math;
 function pickCardShopOptions(): void {
   const me = myEnt();
   const { data } = me;
-  data.shop_options = [
-    'attack3', 'attack4', 'attack5', 'block3',
-  ];
+  let { gold } = data;
+  let options = Object.keys(CARDS) as CardID[];
+  data.shop_options = [];
+  while (data.shop_options.length < 4) {
+    let idx = randInt(options.length);
+    let card_id = options[idx];
+    ridx(options, idx);
+    if (
+      CARDS[card_id].cost > gold &&
+      randInt(4) &&
+      options.length > 4
+    ) {
+      continue;
+    }
+    data.shop_options.push(card_id);
+  }
   data.shop_state = {};
 }
 
 export function pickChestOptions(): void {
   const me = myEnt();
   const { data } = me;
-  let opts: CardID[] = [
-    'attack3', 'attack4', 'attack5', 'block3',
-  ];
+  let opts = Object.keys(CARDS) as CardID[];
   data.shop_options = [];
   for (let ii = 0; ii < 2; ++ii) {
     let idx = randInt(opts.length);
@@ -68,8 +79,8 @@ export function pickChestOptions(): void {
     ridx(opts, idx);
   }
   data.shop_state = {
-    gold: 2 + randInt(4),
-    respect: 2 + randInt(4),
+    gold: 2 + randInt(4) + myEnt().floorElementNumber(),
+    respect: 2 + randInt(4) + myEnt().floorElementNumber(),
   };
 }
 
@@ -433,7 +444,7 @@ class ShopAction extends UIAction {
       for (let ii = 0; ii < shop_options.length; ++ii) {
         if (!data.shop_state![`bought${ii}`]) {
           let card_id = shop_options[ii];
-          let tier = 0;
+          let tier = myEnt().floorElementNumber();
           let rect = {
             x, y, z: z + 5,
             w: CARD_W,

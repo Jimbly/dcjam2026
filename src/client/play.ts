@@ -126,6 +126,7 @@ import { blend } from './blend';
 import {
   Card,
   CardEffect,
+  CardID,
   CARDS,
   EFFECT_NEEDS_TARGET,
   EFFECT_TEMPLATE,
@@ -825,6 +826,13 @@ function drawEnemyStats(ent: Entity): void {
   let hp_max = ent.getData('stats.hp_max', 0);
   let bar_h = ENEMY_HP_BAR_H;
   let show_text = true;
+
+  if (ent.data.recovered || hp <= 0) {
+    ent.data.block = 0;
+    ent.data.freeze = 0;
+    ent.data.poison = 0;
+  }
+
   drawHealthBar(ENEMY_HP_BAR_X, ENEMY_HP_BAR_Y, Z.UI, ENEMY_HP_BAR_W, bar_h,
     blend(`enemyhp${ent.id}`, hp + 1), hp_max + 1, show_text);
   let x = ENEMY_HP_BAR_X + ENEMY_HP_BAR_W + 2;
@@ -3125,6 +3133,21 @@ cmd_parse.register({
   func: function (str, resp_func) {
     myEnt().resetDeck();
     playUISound('reset_deck');
+    resp_func();
+  },
+});
+
+cmd_parse.register({
+  cmd: 'addcard',
+  help: 'Add a card',
+  func: function (str, resp_func) {
+    let card_id = str as CardID;
+    if (!CARDS[card_id]) {
+      return void resp_func('Invalid CardID');
+    }
+    let me = myEnt();
+    me.addCard(card_id, min(me.floorElementNumber(), 3));
+    me.data.draw_pile.push(me.data.picked[me.data.picked.length - 1]);
     resp_func();
   },
 });

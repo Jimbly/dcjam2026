@@ -107,7 +107,7 @@ export const CARDS_RAW = {
     ...heal(2),
   },
   'block3': {
-    cost: 5,
+    cost: 4,
     name: 'Shield',
     effect: {
       block: grow(3),
@@ -115,7 +115,7 @@ export const CARDS_RAW = {
     ...heal(1),
   },
   'ranged2': {
-    cost: 5,
+    cost: 3,
     name: 'Breath',
     effect: {
       ranged: grow(2),
@@ -123,7 +123,7 @@ export const CARDS_RAW = {
     ...heal(1),
   },
   'ranged3': {
-    cost: 6,
+    cost: 5,
     name: 'Bolt',
     effect: {
       ranged: grow(3),
@@ -131,7 +131,7 @@ export const CARDS_RAW = {
     ...heal(1),
   },
   'push': {
-    cost: 5,
+    cost: 3,
     name: 'Push',
     effect: {
       damage: grow(1),
@@ -140,7 +140,7 @@ export const CARDS_RAW = {
     ...heal(3),
   },
   'pull': {
-    cost: 5,
+    cost: 3,
     name: 'Pull',
     effect: {
       pull: ONES,
@@ -149,7 +149,7 @@ export const CARDS_RAW = {
     ...heal(2),
   },
   'repeatdam1': {
-    cost: 5,
+    cost: 4,
     name: 'Shiv',
     effect: {
       damage: grow(1),
@@ -158,7 +158,7 @@ export const CARDS_RAW = {
     ...heal(2),
   },
   'repeatblock1': {
-    cost: 5,
+    cost: 4,
     name: 'Weave',
     effect: {
       block: grow(1),
@@ -167,7 +167,7 @@ export const CARDS_RAW = {
     ...heal(2),
   },
   'repeatpoison1': {
-    cost: 6,
+    cost: 5,
     name: 'Wither',
     effect: {
       poison: [1,1,2,2],
@@ -177,7 +177,7 @@ export const CARDS_RAW = {
   },
   'poison2': {
     name: 'Bile',
-    cost: 5,
+    cost: 4,
     effect: {
       poison: [2, 2, 3, 4],
     },

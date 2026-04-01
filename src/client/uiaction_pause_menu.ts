@@ -1,3 +1,4 @@
+import { MODE_DEVELOPMENT } from 'glov/client/client_config';
 import { MenuItem } from 'glov/client/selection_box';
 import * as settings from 'glov/client/settings';
 import { settingsSet } from 'glov/client/settings';
@@ -62,7 +63,7 @@ class PauseMenuAction extends UIAction {
         settingsSet('turn_toggle', 1 - settings.turn_toggle);
       },
     }];
-    if (isLocal()) {
+    if (isLocal() && MODE_DEVELOPMENT) {
       items.push({
         name: 'Save game',
         cb: function () {
@@ -81,7 +82,7 @@ class PauseMenuAction extends UIAction {
         urlhash.go('');
       },
     });
-    if (isLocal()) {
+    if (isLocal() && MODE_DEVELOPMENT) {
       items.push({
         name: 'Exit without saving',
         cb: function () {

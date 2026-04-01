@@ -1,10 +1,6 @@
 TODO - The Adventures of Draco Vacuus and the Chromatic Dragons
 ====
 
-populate chests and shop with reasonable cards
-  chests have tier 1-2 cards in dungeon 1/2, shop always tier 0
-ensure poison/stun/etc doesn't keep ticking or show in heal mode
-
 add more enemy types with different action sets
   unique bosses
   1 generic balanced
