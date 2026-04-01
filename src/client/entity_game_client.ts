@@ -90,6 +90,8 @@ export type EntityDataClient = {
   shop_options: CardID[];
   shop_state?: DataObject;
   deaths?: number;
+  score_friends: number;
+  score_damage: number;
   // Monster:
   next_move: number;
   alert: boolean;
@@ -190,6 +192,8 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
         data.element = '';
         data.respect = 0;
         data.gold = 0;
+        data.score_friends = 0;
+        data.score_damage = 0;
       }
     }
     this.floaters = [];

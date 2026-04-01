@@ -60,6 +60,10 @@ export const SOUND_DATA = {
     file: 'deal_cards',
     volume: 1,
   },
+  card_discard: {
+    file: 'card_drop',
+    volume: 1,
+  },
 
   get_goal: { // get a new element, change to that element
     file: 'msg_in',

@@ -1,7 +1,20 @@
 TODO - The Adventures of Draco Vacuus and the Chromatic Dragons
 ====
 
-track score - element, deaths, total friends (higher), damage dealt (lower)
+add ranged attack for self and enemies
+  means enemies need different moves when in melee and when at ranged - or, just a flag on the enemy?
+add more card types and enemy attacks
+  poison/freeze/burn for elements
+add more enemy types with different action sets
+  unqiue bosses
+  1 generic balanced
+  1 generic hitter
+  1 generic blocker
+  1 elemental-specific (poison/freeze/burn)
+    1 earth guy just stands still and waits - the blocker
+    1 water guy moves two squares - the hitter
+
+highscore table: element, deaths, total friends (higher), damage dealt (lower)
 
 tooltips everywhere - fixed screen location (per Action) for tooltips to show up?
   need tooltips on pool showing card + description
@@ -14,7 +27,6 @@ maybe: try choosing which cards to discard (and redrawing constantly)
 
 block tick down if we are standing still, executing block, and a monster is walking towards us
   so, ticks down if at the end of our turn, before the monster moves, we have no adjacent enemy? logic changes if enemies have ranged attacks though
-using with no target -> prompt "do you want to discard instead - hint: use right click to discard directly"
 wandering cat
 floor title - top and center?
 different text color for all of Rasa's speech?
@@ -46,6 +58,8 @@ Card abilities
 ==============
 ranged attack
 small damage + gain a turn
+freeze enemy / skip their next turn
+  freeze player / N cards are locked for a turn
 push/pull (boss immune / acts as wall)
 "heal" by moving from discard to draw
 pierce

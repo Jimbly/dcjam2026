@@ -172,7 +172,15 @@ import {
 import { crawlerScriptAPIDummyServer } from './crawler_script_api_client';
 import { crawlerOnScreenButton } from './crawler_ui';
 import { dialogNameRender, keyClear, keyGet, keySet, myElement } from './dialog_data';
-import { dialog, dialogActive, dialogFlag, dialogMoveLocked, dialogRun, dialogStartup } from './dialog_system';
+import {
+  dialog,
+  dialogActive,
+  dialogFlag,
+  dialogMoveLocked,
+  dialogPush,
+  dialogRun,
+  dialogStartup,
+} from './dialog_system';
 import {
   entitiesAt,
   EntityClient,
@@ -902,6 +910,10 @@ const TIERLABEL = [
   '***',
 ];
 
+function cardName(card: Card): string {
+  return `${CARDS[card.card_id].name}${TIERLABEL[card.tier || 0]}`;
+}
+
 const CARD_PAD = 4;
 export function drawCard(param: {
   card: Card;
@@ -912,7 +924,7 @@ export function drawCard(param: {
   no_target: boolean;
   disabled: boolean;
   for_shop?: boolean;
-}): void {
+}): boolean {
   let { card, disabled, hotkey, x, y, z, no_target, for_shop } = param;
   if (dialogMoveLocked()) {
     hotkey = undefined;
@@ -1026,6 +1038,7 @@ export function drawCard(param: {
     }
     y -= 15;
   }
+  return any_usable;
 }
 
 function enemiesAlive(): boolean {
@@ -1196,7 +1209,7 @@ function showCardList(title: string, x: number, y: number, pile: number[]): void
     font.draw({
       style: style_label,
       x, y, z,
-      text: `${CARDS[card.card_id]!.name}${TIERLABEL[card.tier || 0]}${count > 1 ? ` (${count})` : ''}`,
+      text: `${cardName(card)}${count > 1 ? ` (${count})` : ''}`,
     });
   }
   if (!list.length) {
@@ -1239,6 +1252,7 @@ function applyDamage(target_ent: Entity | null, value: number): void {
       msg.push(`${value}[img=heal]`);
       addFloater(target_ent.id, msg.join(' '), undefined, true);
       if (was_down && stats.hp >= 0) {
+        me.data.score_friends++;
         target_ent.data.recovered = true;
         target_ent.triggerAnimation!('idle');
         addFloater(target_ent.id, 'Thank you!');
@@ -1261,6 +1275,7 @@ function applyDamage(target_ent: Entity | null, value: number): void {
         target_ent.data.block -= blocked;
       }
       if (value) {
+        me.data.score_damage += value;
         stats.hp -= value;
         msg.push(`-${value}[img=heal]`);
       }
@@ -1326,6 +1341,60 @@ function cardSound(no_target: boolean, target_ent: Entity | null, card: Card): s
       unreachable(key);
     }
   }
+}
+
+function playCard(no_target: boolean, target_ent: Entity | null, hand_index: number): void {
+  let me = myEnt();
+  let { data } = me;
+  let { hand, heal_mode, discard_pile, deck } = data;
+  let uid = hand[hand_index];
+  let card = deck[uid];
+  let { card_id, tier } = card;
+  hand.splice(hand_index, 1);
+  // do effect / play card
+  assert(card_id);
+  let card_def = CARDS[card_id];
+  assert(card_def);
+  let key: CardEffect;
+  let effects = heal_mode ? card_def.healeffect : card_def.effect;
+  let should_burn = false;
+  for (key in effects) {
+    let value = effects[key]![tier];
+    if (key === 'damage') {
+      applyDamage(target_ent, value);
+    } else if (key === 'block') {
+      data.block = (data.block || 0) + value;
+    } else if (key === 'heal') {
+      assert(false); // TODO
+    } else if (key === 'burn') {
+      should_burn = true;
+    } else {
+      unreachable(key);
+    }
+  }
+  if (should_burn) {
+    // goes nowhere
+    // TODO: play VFX
+  } else {
+    discard_pile.push(uid);
+  }
+  data.combat_phase = 'enemy';
+  crawlerTurnBasedScheduleStep(250, 'attack');
+  let sound = cardSound(no_target, target_ent, card);
+  playUISound(sound || 'card_discard');
+}
+
+// as an action, not in response to attacks/etc
+function discardCard(hand_index: number): void {
+  let me = myEnt();
+  let { data } = me;
+  let { hand, discard_pile } = data;
+  let uid = hand[hand_index];
+  hand.splice(hand_index, 1);
+  discard_pile.push(uid);
+  data.combat_phase = 'enemy';
+  crawlerTurnBasedScheduleStep(250, 'attack');
+  playUISound('card_discard');
 }
 
 
@@ -1409,7 +1478,18 @@ function doHand(): void {
   let y = CARDS_Y;
   let z = Z.UI;
 
+  let no_target = !target_ent;
+  if (target_ent) {
+    if (heal_mode) {
+      no_target = target_ent.data.stats.hp >= 0;
+    } else {
+      no_target = !target_ent.isAlive();
+    }
+  }
+
   let play_card = -1;
+  let actually_discard = false;
+  let played_card_any_usable = false;
   let hotkey = 0;
   for (let ii = 0; ii < hand.length; ++ii) {
     let card = deck[hand[ii]];
@@ -1432,14 +1512,6 @@ function doHand(): void {
     if (ii === hand.length - 1) {
       click_rect.w += CARD_OVERLAP/2;
     }
-    let no_target = !target_ent;
-    if (target_ent) {
-      if (heal_mode) {
-        no_target = target_ent.data.stats.hp >= 0;
-      } else {
-        no_target = !target_ent.isAlive();
-      }
-    }
     let disabled = overlay_menu_up || data.combat_phase !== 'player' || no_target && heal_mode;
     let spot_ret = spot({
       def: SPOT_DEFAULT_BUTTON,
@@ -1447,7 +1519,7 @@ function doHand(): void {
       ...click_rect,
       disabled,
       disabled_focusable: false,
-      sound_button: cardSound(no_target, target_ent, card),
+      sound_button: null,
     });
     let target_y = rect.y;
     if (spot_ret.focused) {
@@ -1459,8 +1531,13 @@ function doHand(): void {
     }
     if (spot_ret.ret) {
       play_card = ii;
+      if (spot_ret.button === 2 || keyDown(KEYS.SHIFT)) {
+        if (!heal_mode) {
+          actually_discard = true;
+        }
+      }
     }
-    drawCard({
+    let any_usable = drawCard({
       ...rect,
       hotkey: disabled ? undefined : String.fromCharCode('1'.charCodeAt(0) + ii),
       x: blend(`cardx${uid}`, rect.x, 200),
@@ -1469,44 +1546,60 @@ function doHand(): void {
       disabled,
       no_target,
     });
+    if (play_card === ii) {
+      played_card_any_usable = any_usable;
+    }
     x += CARD_W - CARD_OVERLAP;
     z++;
     hotkey++;
   }
   if (play_card !== -1) {
-    let uid = hand[play_card];
-    let card = deck[uid];
-    let { card_id, tier } = card;
-    hand.splice(play_card, 1);
-    // do effect / play card
-    assert(card_id);
-    let card_def = CARDS[card_id];
-    assert(card_def);
-    let key: CardEffect;
-    let effects = heal_mode ? card_def.healeffect : card_def.effect;
-    let should_burn = false;
-    for (key in effects) {
-      let value = effects[key]![tier];
-      if (key === 'damage') {
-        applyDamage(target_ent, value);
-      } else if (key === 'block') {
-        data.block = (data.block || 0) + value;
-      } else if (key === 'heal') {
-        assert(false); // TODO
-      } else if (key === 'burn') {
-        should_burn = true;
+    if (actually_discard) {
+      if (played_card_any_usable) {
+        playUISound('button_click');
+        dialogPush({
+          instant: true,
+          text: `Are you sure you want to discard this card (${cardName(deck[hand[play_card]])})?` +
+            '  It has usable effects.',
+          buttons: [{
+            label: 'Yes (discard and skip my turn)',
+            hotkeys: [KEYS.Y, KEYS['1']],
+            cb: function () {
+              discardCard(play_card);
+            },
+          }, {
+            hotkeys: [KEYS.N, KEYS['2'], KEYS.ESC],
+            label: 'No',
+          }],
+        });
       } else {
-        unreachable(key);
+        discardCard(play_card);
+      }
+    } else {
+      if (played_card_any_usable) {
+        playCard(no_target, target_ent, play_card);
+      } else {
+        playUISound('button_click');
+        dialogPush({
+          instant: true,
+          text: `Playing this card (${cardName(deck[hand[play_card]])}) will` +
+            ' do nothing, are you sure you want to play it?' +
+            '  It has no usable effects.\n\n[c=note]Hint: If you wish to discard' +
+            ' a card, you can avoid this dialog by right-clicking on the card instead' +
+            ' or presing SHIFT+NUMBER.[/c]',
+          buttons: [{
+            label: 'Yes (discard and skip my turn)',
+            hotkeys: [KEYS.Y, KEYS['1']],
+            cb: function () {
+              discardCard(play_card);
+            },
+          }, {
+            label: 'No',
+            hotkeys: [KEYS.N, KEYS['2'], KEYS.ESC],
+          }],
+        });
       }
     }
-    if (should_burn) {
-      // goes nowhere
-      // TODO: play VFX
-    } else {
-      discard_pile.push(uid);
-    }
-    data.combat_phase = 'enemy';
-    crawlerTurnBasedScheduleStep(250, 'attack');
   }
 
   // blend positions of cards in draw pile / discard pile
@@ -1786,6 +1879,7 @@ function bumpEntityCallback(ent_id: EntityID): void {
     } else if (target_ent.isEnemy() && !target_ent.data.recovered && healMode() &&
       !target_ent.is_boss
     ) {
+      me.data.score_friends++;
       target_ent.data.recovered = true;
       target_ent.triggerAnimation!('idle');
       addFloater(target_ent.id, 'Howdy, friend');
