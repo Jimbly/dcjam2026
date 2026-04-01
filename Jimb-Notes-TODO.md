@@ -1,8 +1,8 @@
 TODO - The Adventures of Draco Vacuus and the Chromatic Dragons
 ====
 
-add more card types and enemy attacks
-  small damage/small poison/small block + gain a turn
+draft player cards using these abilities
+
 add more enemy types with different action sets
   unique bosses
   1 generic balanced

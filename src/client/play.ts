@@ -1113,8 +1113,8 @@ export function drawCard(param: {
     if (!eff_no_target || !needs_target) {
       any_usable = true;
     }
-    let alpha = (disabled || eff_no_target && needs_target === true) ||
-      (needs_target === 'auto' && !any_usable) ? 0.5 : 1;
+    let alpha = !for_shop && ((disabled || eff_no_target && needs_target === true) ||
+      (needs_target === 'auto' && !any_usable)) ? 0.5 : 1;
     let prefix = vis.prefix ? `${value} ` : '';
     let prefix_w = (prefix ? font.getStringWidth(style_label, FONT_HEIGHT, prefix) : 0);
     let line_w = prefix_w + (img ? 14 : 0);
@@ -1133,9 +1133,11 @@ export function drawCard(param: {
       xx += prefix_w;
     }
     if (img) {
-      autoAtlas('ui', img).draw({
+      let sprite = autoAtlas('ui', img);
+      let aspect = sprite.uidata.aspect?.[0] || 1;
+      sprite.draw({
         x: xx, y, z,
-        w: 14,
+        w: 14 * aspect,
         h: 14,
         color: [1,1,1,alpha],
       });
@@ -1543,6 +1545,8 @@ function cardSound(
       return 'push';
     } else if (key === 'pull') {
       return 'pull';
+    } else if (key === 'delay') {
+      continue; // use some other sound
     } else if (key === 'heal') {
       assert(false); // TODO
     } else if (key === 'burn') {
@@ -1606,6 +1610,7 @@ function playCard(
   let key: CardEffect;
   let effects = heal_mode ? card_def.healeffect : card_def.effect;
   let should_burn = false;
+  let should_end_turn = true;
   for (key in effects) {
     let value = effects[key]![tier];
     if (!value) {
@@ -1635,6 +1640,8 @@ function playCard(
       if (ranged_target && !ranged_target.is_boss) {
         doPushPull(ranged_target, key);
       }
+    } else if (key === 'delay') {
+      should_end_turn = false;
     } else if (key === 'heal') {
       assert(false); // TODO
     } else if (key === 'burn') {
@@ -1649,9 +1656,11 @@ function playCard(
   } else {
     discard_pile.push(uid);
   }
-  tickPlayerDOTs();
-  data.combat_phase = 'enemy';
-  crawlerTurnBasedScheduleStep(ENEMY_DELAY, 'attack');
+  if (should_end_turn) {
+    tickPlayerDOTs();
+    data.combat_phase = 'enemy';
+    crawlerTurnBasedScheduleStep(ENEMY_DELAY, 'attack');
+  }
   let sound = cardSound(no_target, no_ranged_target, target_ent, ranged_target, card);
   playUISound(sound || 'card_discard');
 }
@@ -2137,6 +2146,8 @@ export function attackPlayer(source: Entity, target: Entity, attack: EnemyMove, 
     } else if (key === 'push') {
       assert(false);
     } else if (key === 'pull') {
+      assert(false);
+    } else if (key === 'delay') {
       assert(false);
     } else {
       unreachable(key);
