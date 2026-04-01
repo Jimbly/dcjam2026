@@ -3,15 +3,16 @@ TODO - The Adventures of Draco Vacuus and the Chromatic Dragons
 
 add more card types and enemy attacks
   small damage/small poison/small block + gain a turn
-  push/pull (boss immune / acts as wall)
 add more enemy types with different action sets
-  unqiue bosses
+  unique bosses
   1 generic balanced
   1 generic hitter
   1 generic blocker
   1 elemental-specific (poison/freeze/burn)
     1 earth guy just stands still and waits - the blocker
     1 water guy moves two squares - the hitter
+populate chests and shop with reasonable cards
+  chests have tier 1-2 cards in dungeon 1/2, shop always tier 0
 
 highscore table: element, deaths, total friends (higher), damage dealt (lower)
 

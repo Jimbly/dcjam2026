@@ -81,9 +81,12 @@ import {
   JSVec3,
   ROVec3,
   v2add,
+  v2iAdd,
+  v2iAddScale,
   v2iScale,
   v2length,
   v2manhattanDist,
+  v2same,
   v2sub,
   v3addScale,
   v3cross,
@@ -101,8 +104,10 @@ import {
 import { CRAWLER_IS_ONLINE, CRAWLER_TURN_BASED } from '../common/crawler_config';
 import { entManhattanDistance } from '../common/crawler_entity_common';
 import {
+  BLOCK_MOVE,
   CrawlerLevel,
   crawlerLoadData,
+  dirFromDelta,
   dirMod,
   DirType,
   DX,
@@ -1037,12 +1042,13 @@ export function drawCard(param: {
   x: number;
   y: number;
   z: number;
+  target_ent?: Entity | null;
   no_target: boolean;
   no_ranged_target: boolean;
   disabled: boolean;
   for_shop?: boolean;
 }): boolean {
-  let { card, disabled, hotkey, x, y, z, no_target, no_ranged_target, for_shop } = param;
+  let { card, disabled, hotkey, x, y, z, no_target, no_ranged_target, for_shop, target_ent } = param;
   if (dialogMoveLocked()) {
     hotkey = undefined;
   }
@@ -1076,6 +1082,10 @@ export function drawCard(param: {
   let any_usable = false;
   for (key in effects) {
     let value = effects[key]![tier];
+    if (!value) {
+      // for a later tier
+      continue;
+    }
     let vis = EFFECT_TEMPLATE[key];
     let { img } = vis;
     if (key === 'damage' && healMode()) {
@@ -1087,6 +1097,18 @@ export function drawCard(param: {
     if (needs_target === 'ranged') {
       needs_target = true;
       eff_no_target = no_ranged_target;
+      if (key === 'pull') {
+        if (!no_target) {
+          // have a melee target
+          eff_no_target = true;
+        }
+      }
+      if (key === 'pull' || key === 'push') {
+        if (target_ent && target_ent.is_boss) {
+          // boss immune to these
+          eff_no_target = true;
+        }
+      }
     }
     if (!eff_no_target || !needs_target) {
       any_usable = true;
@@ -1517,6 +1539,10 @@ function cardSound(
       return 'poison';
     } else if (key === 'freeze') {
       return 'freeze';
+    } else if (key === 'push') {
+      return 'push';
+    } else if (key === 'pull') {
+      return 'pull';
     } else if (key === 'heal') {
       assert(false); // TODO
     } else if (key === 'burn') {
@@ -1524,6 +1550,38 @@ function cardSound(
     } else {
       unreachable(key);
     }
+  }
+}
+
+function doPushPull(ent: Entity, effect: 'push' | 'pull'): void {
+  let level = crawlerGameState().level!;
+  let floor_id = crawlerGameState().floor_id;
+  let my_pos = myEnt().data.pos;
+  let pos = ent.data.pos;
+  let delta: JSVec2 = [
+    sign(my_pos[0] - pos[0]),
+    sign(my_pos[1] - pos[1]),
+  ];
+  if (effect === 'push') {
+    v2iScale(delta, -1);
+  }
+  let walk: JSVec2 = [pos[0], pos[1]];
+  let dir = dirFromDelta(delta);
+  while (true) {
+    if (level.wallsBlock(walk, dir, crawlerScriptAPI()) & BLOCK_MOVE) {
+      break;
+    }
+    v2iAdd(walk, delta);
+    if (entitiesAt(entityManager(), walk, floor_id, true).length) {
+      v2iAddScale(walk, delta, -1);
+      break;
+    }
+  }
+  if (!v2same(walk, pos)) {
+    ent.applyAIUpdate('ai_move', {
+      pos: [walk[0], walk[1], pos[2]],
+      last_pos: pos,
+    }, undefined, aiIgnoreErrors);
   }
 }
 
@@ -1550,6 +1608,9 @@ function playCard(
   let should_burn = false;
   for (key in effects) {
     let value = effects[key]![tier];
+    if (!value) {
+      continue;
+    }
     if (key === 'damage') {
       applyDamage(target_ent, value, false);
     } else if (key === 'ranged') {
@@ -1569,6 +1630,10 @@ function playCard(
         let target_data = target_ent.data;
         target_data.freeze = (target_data.freeze || 0) + value;
         addFloater(target_ent.id, `${value}[img=stun]`, undefined, true);
+      }
+    } else if (key === 'push' || key === 'pull') {
+      if (ranged_target && !ranged_target.is_boss) {
+        doPushPull(ranged_target, key);
       }
     } else if (key === 'heal') {
       assert(false); // TODO
@@ -1815,6 +1880,7 @@ function doHand(): void {
       y: eff_y,
       card,
       disabled,
+      target_ent: target_ent || ranged_target,
       no_target,
       no_ranged_target,
     });
@@ -2067,6 +2133,10 @@ export function attackPlayer(source: Entity, target: Entity, attack: EnemyMove, 
     } else if (key === 'heal') {
       assert(false); // TODO
     } else if (key === 'burn') {
+      assert(false);
+    } else if (key === 'push') {
+      assert(false);
+    } else if (key === 'pull') {
       assert(false);
     } else {
       unreachable(key);

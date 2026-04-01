@@ -3,7 +3,7 @@ import { TSMap } from 'glov/common/types';
 export const HAND_SIZE = 5;
 export const MAX_TIER = 3;
 
-export type CardEffect = 'damage' | 'heal' | 'block' | 'burn' | 'ranged' | 'poison' | 'freeze';
+export type CardEffect = 'damage' | 'heal' | 'block' | 'burn' | 'ranged' | 'poison' | 'freeze' | 'pull' | 'push';
 export type NumberPerTier = [number, number, number, number];
 const ONES: NumberPerTier = [1,1,1,1];
 
@@ -31,10 +31,14 @@ export const EFFECT_TEMPLATE: Record<CardEffect, EffectVis> = {
   burn: { prefix: false, img: 'burn' },
   poison: { prefix: true, img: 'poison' },
   freeze: { prefix: true, img: 'stun', img_enemy: 'freeze' },
+  pull: { prefix: false, img: 'pull' },
+  push: { prefix: false, img: 'pushy' },
 };
 export const EFFECT_NEEDS_TARGET: Record<CardEffect, boolean | 'auto' | 'ranged'> = {
   damage: true,
   ranged: 'ranged',
+  pull: 'ranged',
+  push: 'ranged',
   poison: true,
   freeze: true,
   heal: true,
@@ -48,7 +52,7 @@ export const CARDS_RAW = {
     name: 'Jab',
     effect: {
       // damage: [2, 2+1, 2+2, 2+3],
-      poison: [1, 1, 2, 2],
+      poison: [2, 2, 3, 4],
     },
     healeffect: {
       damage: [5, 5+1, 5+2, 5+3],
@@ -59,7 +63,8 @@ export const CARDS_RAW = {
     cost: 3,
     name: 'Breath',
     effect: {
-      ranged: [3, 3+1, 3+2, 3+3],
+      // ranged: [3, 3+1, 3+2, 3+3],
+      push: [1,1,1,1]
     },
     healeffect: {
       damage: [2, 2+1, 2+2, 2+3],
@@ -71,7 +76,9 @@ export const CARDS_RAW = {
     name: 'Strike',
     effect: {
       // damage: [4, 4+1, 4+2, 4+3],
-      freeze: [2, 2, 3, 3],
+      // freeze: [2, 2, 3, 3],
+      pull: [1, 1, 1, 1],
+      ranged: [1, 1, 2, 3],
     },
     healeffect: {
       damage: [1, 1+1, 1+2, 1+3],
