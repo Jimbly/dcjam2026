@@ -849,8 +849,8 @@ function drawInWorldHealthbar(
     });
   }
   y += ENEMY_HP_BAR_H * BAR_WORLD_PX;
-  let move = ent.monsterMoveGet();
-  if (move.effect.ranged) {
+  let move = ent.monsterRangedGet();
+  if (move) {
     const INTENT_SIZE = 28;
     autoAtlas('ui', 'ranged-enemy').draw3D({
       pos: [temp_pos[0], temp_pos[1], z],

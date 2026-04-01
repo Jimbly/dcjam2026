@@ -43,6 +43,7 @@ type Entity = EntityClient;
 
 export type EnemyOpts = {
   moves: EnemyMove[];
+  ranged_attack?: EnemyMove;
 };
 export type EntityEnemy = Entity & {
   enemy_opts: EnemyOpts;
@@ -265,6 +266,10 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
     let opts = (this as unknown as EntityEnemy).enemy_opts;
     this.data.next_move = randInt(opts.moves.length);
   }
+  monsterRangedGet(): EnemyMove | null {
+    let opts = (this as unknown as EntityEnemy).enemy_opts;
+    return opts.ranged_attack || null;
+  }
 
   drawHand(): void {
     let { data } = this;
@@ -410,21 +415,22 @@ export function gameEntityTraitsClientStartup(
   });
   ent_factory.extendTrait<EnemyOpts>('enemy', {
     default_opts: {
-      moves: [{
-      //   name: 'Splat',
-      //   effect: {
-      //     damage: 3,
-      //   },
-      // }, {
-        name: 'Shoot',
+      ranged_attack: {
+        name: 'ignored',
         effect: {
           ranged: 3,
         },
-      // }, {
-      //   name: 'Defend',
-      //   effect: {
-      //     block: 2,
-      //   },
+      },
+      moves: [{
+        name: 'Splat',
+        effect: {
+          damage: 3,
+        },
+      }, {
+        name: 'Defend',
+        effect: {
+          block: 2,
+        },
       }],
     },
     properties: {
