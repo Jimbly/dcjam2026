@@ -1,0 +1,10 @@
+---
+tile_res: [46,89]
+tiles:
+  firebreath-fire0: [0, 0]
+  firebreath-fire1: [1, 0]
+  firebreath-fire2: [2, 0]
+  firebreath-fire3: [3, 0]
+  firebreath-fire4: [4, 0]
+  firebreath-fire5: [5, 0]
+  firebreath-fire6: [6, 0]

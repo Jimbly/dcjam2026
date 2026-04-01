@@ -70,7 +70,7 @@ import * as ui from 'glov/client/ui';
 import { uiTextHeight } from 'glov/client/ui';
 import { dataError } from 'glov/common/data_error';
 import { randSpatial } from 'glov/common/rand_fast';
-import type { TSMap } from 'glov/common/types';
+import type { TSMap, VoidFunc } from 'glov/common/types';
 import { isInteger, lerp, ridx } from 'glov/common/util';
 import {
   mat4,
@@ -1115,6 +1115,7 @@ export type RenderPass = {
   neighbor_draw?: boolean;
   need_split_near?: boolean;
   alpha_blend: boolean;
+  cb?: VoidFunc;
 };
 let render_passes: RenderPass[];
 export function crawlerRenderInit(param: {
@@ -1532,6 +1533,10 @@ export function renderCamPos(): ROVec3 {
   return cam_pos;
 }
 
+export function renderPlayerPos(): ROVec3 {
+  return player_pos;
+}
+
 let viewport_shear = 0;
 // -1 = looking downward, 1 = looking upward
 export function renderViewportShear(amt: number): void {
@@ -1690,6 +1695,7 @@ export function render(
     } else {
       gl.disable(gl.BLEND);
     }
+    pass_data.cb?.();
     for (let yy = 0; yy < h; ++yy) {
       for (let xx = 0; xx < w; ++xx) {
         v2set(cell_pos, xx, yy);

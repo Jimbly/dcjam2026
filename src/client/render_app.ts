@@ -8,6 +8,7 @@ import {
   crawlerRenderInit,
   crawlerRenderStartup,
 } from './crawler_render';
+import { renderBGHook } from './play';
 
 function renderResetFilter(): void {
   let ss = {
@@ -35,6 +36,7 @@ export function renderAppStartup(): void {
       // floor and ceiling
       name: 'bg',
       alpha_blend: false,
+      cb: renderBGHook,
     }, {
       // pillars and floor/ceiling details
       name: 'details',

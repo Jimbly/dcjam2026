@@ -295,6 +295,7 @@ class ShopAction extends UIAction {
           },
           for_shop: true,
           no_target: false,
+          no_ranged_target: false,
           disabled: false,
         });
         y += CARD_H + PAD;
@@ -456,6 +457,7 @@ class ShopAction extends UIAction {
             },
             hotkey: disabled ? undefined : String.fromCharCode('1'.charCodeAt(0) + hotkey),
             no_target: false,
+            no_ranged_target: false,
             disabled,
             for_shop: true,
           });
@@ -578,6 +580,7 @@ class ShopAction extends UIAction {
             },
             hotkey: disabled ? undefined : String.fromCharCode('1'.charCodeAt(0) + ii),
             no_target: false,
+            no_ranged_target: false,
             disabled,
             for_shop: true,
           });
@@ -639,6 +642,7 @@ class ShopAction extends UIAction {
           y, z,
           for_shop: true,
           no_target: false,
+          no_ranged_target: false,
           disabled: false,
         });
 
@@ -679,6 +683,7 @@ class ShopAction extends UIAction {
             y, z,
             for_shop: true,
             no_target: false,
+            no_ranged_target: false,
             disabled,
           });
 

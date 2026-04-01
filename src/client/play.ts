@@ -5,7 +5,7 @@ import assert from 'assert';
 import { autoResetSkippedFrames } from 'glov/client/auto_reset';
 import { autoAtlas, autoAtlasSwap } from 'glov/client/autoatlas';
 import { cmd_parse } from 'glov/client/cmds';
-import { dynGeomForward } from 'glov/client/dyn_geom';
+import { BUCKET_OPAQUE, dynGeomForward, dynGeomRight, FACE_CUSTOM } from 'glov/client/dyn_geom';
 import * as engine from 'glov/client/engine';
 import { ClientEntityManagerInterface } from 'glov/client/entity_manager_client';
 import {
@@ -32,8 +32,15 @@ import {
   settingsRegister,
   settingsSet,
 } from 'glov/client/settings';
-import { spot, SPOT_DEFAULT_BUTTON, SPOT_DEFAULT_LABEL, SPOT_STATE_DOWN } from 'glov/client/spot';
+import { shaderCreate } from 'glov/client/shaders';
 import {
+  spot,
+  SPOT_DEFAULT_BUTTON,
+  SPOT_DEFAULT_LABEL,
+  SPOT_STATE_DOWN,
+} from 'glov/client/spot';
+import {
+  Shader,
   Sprite,
   spriteCreate,
 } from 'glov/client/sprites';
@@ -67,6 +74,7 @@ import {
   JSVec2,
   JSVec3,
   ROVec3,
+  v2manhattanDist,
   v3addScale,
   v3iAddScale,
   v3iNormalize,
@@ -160,6 +168,8 @@ import {
   crawlerRenderViewportGet,
   crawlerRenderViewportSet,
   DIM,
+  HVDIM,
+  renderPlayerPos,
   renderSet3DOffset,
   renderSetScreenShake,
   renderViewportShear,
@@ -266,6 +276,8 @@ type Entity = EntityClient;
 let font: Font;
 
 let controller: CrawlerController;
+
+let vfx_shader: Shader;
 
 let button_sprites: Record<ButtonStateString, Sprite>;
 let button_sprites_down: Record<ButtonStateString, Sprite>;
@@ -922,10 +934,11 @@ export function drawCard(param: {
   y: number;
   z: number;
   no_target: boolean;
+  no_ranged_target: boolean;
   disabled: boolean;
   for_shop?: boolean;
 }): boolean {
-  let { card, disabled, hotkey, x, y, z, no_target, for_shop } = param;
+  let { card, disabled, hotkey, x, y, z, no_target, no_ranged_target, for_shop } = param;
   if (dialogMoveLocked()) {
     hotkey = undefined;
   }
@@ -965,11 +978,17 @@ export function drawCard(param: {
       let element = myEnt().data.element;
       img = `element-${element || 'null'}`;
     }
-    if (!no_target || !EFFECT_NEEDS_TARGET[key]) {
+    let needs_target = EFFECT_NEEDS_TARGET[key];
+    let eff_no_target = no_target;
+    if (needs_target === 'ranged') {
+      needs_target = true;
+      eff_no_target = no_ranged_target;
+    }
+    if (!eff_no_target || !needs_target) {
       any_usable = true;
     }
-    let alpha = (disabled || no_target && EFFECT_NEEDS_TARGET[key] === true) ||
-      (EFFECT_NEEDS_TARGET[key] === 'auto' && !any_usable) ? 0.5 : 1;
+    let alpha = (disabled || eff_no_target && needs_target === true) ||
+      (needs_target === 'auto' && !any_usable) ? 0.5 : 1;
     let prefix = vis.prefix ? `${value} ` : '';
     let prefix_w = (prefix ? font.getStringWidth(style_label, FONT_HEIGHT, prefix) : 0);
     let line_w = prefix_w + (img ? 14 : 0);
@@ -1118,6 +1137,7 @@ function doReshuffle(): void {
     hotkey: '1',
     card: deck[discard_pile[0]],
     no_target: false,
+    no_ranged_target: false,
     disabled: false,
   });
   if (spot_ret.focused) {
@@ -1141,6 +1161,7 @@ function doReshuffle(): void {
     hotkey: '2',
     card: deck[discard_pile[1]],
     no_target: false,
+    no_ranged_target: false,
     disabled: false,
   });
   if (spot_ret.focused) {
@@ -1237,6 +1258,10 @@ function showCardList(title: string, x: number, y: number, pile: number[]): void
   });
 }
 
+const RANGED_ANIM_TIME = 300;
+let ranged_attack_counter = 0;
+let ranged_attack_range = 3;
+
 function applyDamage(target_ent: Entity | null, value: number): void {
   let me = myEnt();
   let { data } = me;
@@ -1281,6 +1306,7 @@ function applyDamage(target_ent: Entity | null, value: number): void {
       }
       addFloater(target_ent.id, msg.join(' '));
       if (target_ent.is_boss) {
+        target_ent.data.alert = true; // so hp bar shows up
         if (stats.hp <= 0) {
           target_ent.triggerAnimation!('death');
           keySet(`killed_boss_${myEnt().floorElement()}`);
@@ -1306,13 +1332,24 @@ function applyDamage(target_ent: Entity | null, value: number): void {
           setTimeout(playUISound.bind(null, 'yield'), MSG_STEP_DELAY);
           addFloater(target_ent.id, `+${REWARD_YIELD_RESPECT}[img=currency-respect scale=1.5]`);
           data.respect += REWARD_YIELD_RESPECT;
+        } else {
+          if (!target_ent.data.alert) {
+            target_ent.data.alert = true;
+            // playSoundFromEnt(target_ent, 'hunter_alert');
+          }
         }
       }
     }
   }
 }
 
-function cardSound(no_target: boolean, target_ent: Entity | null, card: Card): string | undefined {
+function cardSound(
+  no_target: boolean,
+  no_ranged_target: boolean,
+  target_ent: Entity | null,
+  ranged_target: Entity | null,
+  card: Card,
+): keyof typeof SOUND_DATA | undefined {
   let { card_id, tier } = card;
   let card_def = CARDS[card_id];
   assert(card_def);
@@ -1331,6 +1368,11 @@ function cardSound(no_target: boolean, target_ent: Entity | null, card: Card): s
         return 'monster_blocked';
       }
       return 'hit_monster';
+    } else if (key === 'ranged') {
+      if (no_ranged_target) {
+        return;
+      }
+      return 'hero_shoots';
     } else if (key === 'block') {
       return 'gain_block';
     } else if (key === 'heal') {
@@ -1343,7 +1385,13 @@ function cardSound(no_target: boolean, target_ent: Entity | null, card: Card): s
   }
 }
 
-function playCard(no_target: boolean, target_ent: Entity | null, hand_index: number): void {
+function playCard(
+  no_target: boolean,
+  no_ranged_target: boolean,
+  target_ent: Entity | null,
+  ranged_target: Entity | null,
+  hand_index: number
+): void {
   let me = myEnt();
   let { data } = me;
   let { hand, heal_mode, discard_pile, deck } = data;
@@ -1362,6 +1410,10 @@ function playCard(no_target: boolean, target_ent: Entity | null, hand_index: num
     let value = effects[key]![tier];
     if (key === 'damage') {
       applyDamage(target_ent, value);
+    } else if (key === 'ranged') {
+      ranged_attack_counter = RANGED_ANIM_TIME;
+      ranged_attack_range = v2manhattanDist(ranged_target!.data.pos, myEnt().data.pos);
+      applyDamage(ranged_target, value);
     } else if (key === 'block') {
       data.block = (data.block || 0) + value;
     } else if (key === 'heal') {
@@ -1380,7 +1432,7 @@ function playCard(no_target: boolean, target_ent: Entity | null, hand_index: num
   }
   data.combat_phase = 'enemy';
   crawlerTurnBasedScheduleStep(250, 'attack');
-  let sound = cardSound(no_target, target_ent, card);
+  let sound = cardSound(no_target, no_ranged_target, target_ent, ranged_target, card);
   playUISound(sound || 'card_discard');
 }
 
@@ -1397,6 +1449,31 @@ function discardCard(hand_index: number): void {
   playUISound('card_discard');
 }
 
+const MAX_RANGE = 10;
+function findRangedTarget(): Entity | null {
+  let me = myEnt();
+  let { data } = me;
+  let { pos } = data;
+  let game_state = crawlerGameState();
+  let { level, floor_id } = game_state;
+  assert(level);
+  let dir = pos[2] as DirType;
+  let walk: JSVec2 = [pos[0], pos[1]];
+  for (let ii = 0; ii < MAX_RANGE; ++ii) {
+    if (level.wallsBlock(walk, dir, crawlerScriptAPI())) {
+      return null;
+    }
+    walk[0] += DX[dir];
+    walk[1] += DY[dir];
+    let ents = entitiesAt(entityManager(), walk, floor_id, true).filter(function (e) {
+      return e.isEnemy() && e.isAlive();
+    });
+    if (ents.length) {
+      return ents[0];
+    }
+  }
+  return null;
+}
 
 const DRAW_PILE_X = 12;
 const DRAW_PILE_H = 26;
@@ -1437,9 +1514,26 @@ function doHand(): void {
   let target_ent: Entity | null = null;
   if (ent_in_front) {
     target_ent = entities[ent_in_front]!;
-    if (!target_ent || !target_ent.isEnemy() || heal_mode && target_ent.is_boss) {
-      target_ent = null;
+  }
+  let ranged_target = findRangedTarget();
+
+  if (!target_ent || !target_ent.isEnemy() || heal_mode && target_ent.is_boss) {
+    target_ent = null;
+  }
+  let no_target = !target_ent;
+  if (target_ent) {
+    if (heal_mode) {
+      no_target = target_ent.data.stats.hp >= 0;
+    } else {
+      no_target = !target_ent.isAlive();
     }
+  }
+  if (!ranged_target || !ranged_target.isEnemy()) {
+    ranged_target = null;
+  }
+  let no_ranged_target = !ranged_target;
+  if (ranged_target) {
+    no_ranged_target = !ranged_target.isAlive();
   }
 
   if (data.combat_phase === 'redraw') {
@@ -1477,15 +1571,6 @@ function doHand(): void {
   let x = CARDS_X;
   let y = CARDS_Y;
   let z = Z.UI;
-
-  let no_target = !target_ent;
-  if (target_ent) {
-    if (heal_mode) {
-      no_target = target_ent.data.stats.hp >= 0;
-    } else {
-      no_target = !target_ent.isAlive();
-    }
-  }
 
   let play_card = -1;
   let actually_discard = false;
@@ -1545,6 +1630,7 @@ function doHand(): void {
       card,
       disabled,
       no_target,
+      no_ranged_target,
     });
     if (play_card === ii) {
       played_card_any_usable = any_usable;
@@ -1577,7 +1663,7 @@ function doHand(): void {
       }
     } else {
       if (played_card_any_usable) {
-        playCard(no_target, target_ent, play_card);
+        playCard(no_target, no_ranged_target, target_ent, ranged_target, play_card);
       } else {
         playUISound('button_click');
         dialogPush({
@@ -1614,6 +1700,7 @@ function doHand(): void {
         y: yy,
         z: z + 10,
         no_target: false,
+        no_ranged_target: false,
         disabled: false,
       });
     }
@@ -1629,6 +1716,7 @@ function doHand(): void {
         y: yy,
         z: z - 10,
         no_target: false,
+        no_ranged_target: false,
         disabled: false,
       });
     }
@@ -1736,7 +1824,7 @@ export function attackPlayer(source: Entity, target: Entity, attack: EnemyMove):
   let key: CardEffect;
   for (key in effect) {
     let value = effect[key]!;
-    if (key === 'damage') {
+    if (key === 'damage' || key === 'ranged') {
 
       let dss = (source as unknown as EntityDrawableSprite).drawable_sprite_state;
       dss.surge_at = engine.frame_timestamp;
@@ -1749,7 +1837,11 @@ export function attackPlayer(source: Entity, target: Entity, attack: EnemyMove):
       }
       if (unblocked) {
         msg.push(`-${unblocked}[img=cardicon]`);
-        playSoundFromEnt(source, 'hit_hero');
+        if (key === 'ranged') {
+          playSoundFromEnt(source, 'monster_shoots');
+        } else {
+          playSoundFromEnt(source, 'hit_hero');
+        }
       } else if (blocked) {
         playSoundFromEnt(source, 'hero_blocked');
       }
@@ -2483,6 +2575,37 @@ function isDefeatedBoss(): boolean {
   return keyGet(`killed_boss_${myEnt().floorElement()}`);
 }
 
+function doVFX(dt: number): void {
+  if (ranged_attack_counter) {
+    ranged_attack_counter = max(0, ranged_attack_counter - dt);
+  }
+}
+
+// function randNorm(): number {
+//   return random() * 2 - 1;
+// }
+
+export function renderBGHook(): void {
+  if (ranged_attack_counter) {
+    // opaqueQueue(function () {
+    let pos = renderPlayerPos();
+    let forward = dynGeomForward();
+    let t = (RANGED_ANIM_TIME - 1 - ranged_attack_counter) / RANGED_ANIM_TIME;
+    let frame = floor(t * 7);
+    let element = myElement() || 'null';
+    autoAtlas('ui', `firebreath-${element}${frame}`).withOrigin([0.5, 1]).draw3D({
+      bucket: BUCKET_OPAQUE,
+      pos: [pos[0], pos[1], HVDIM * 0.3],
+      size: [DIM, DIM * (ranged_attack_range - 0.4)],
+      facing: FACE_CUSTOM,
+      face_right: dynGeomRight(),
+      face_down: [-forward[0], -forward[1], -forward[2]],
+      shader: vfx_shader,
+    });
+    // });
+  }
+}
+
 export function play(dt: number): void {
   profilerStartFunc();
   crawlerRenderSetUIClearColor(palette[PAL_BLACK_PURE]);
@@ -2542,6 +2665,7 @@ export function play(dt: number): void {
 
   renderSet3DOffset(calcAttackCameraOffs());
   renderSetScreenShake(screen_shake);
+  doVFX(dt);
   crawlerPrepAndRenderFrame(false);
   renderFloaters();
 
@@ -2974,4 +3098,6 @@ export function playStartup(): void {
   markdownSetColorStyle('respect', fontStyleColored(null, palette_font[PAL_BLUE]));
   markdownSetColorStyle('hotkey', style_hotkey);
   markdownImageRegisterAutoAtlas('ui');
+
+  vfx_shader = shaderCreate('shaders/sprite_cutout.fp');
 }

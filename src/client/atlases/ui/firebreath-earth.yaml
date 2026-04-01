@@ -1,0 +1,10 @@
+---
+tile_res: [46,89]
+tiles:
+  firebreath-earth0: [0, 0]
+  firebreath-earth1: [1, 0]
+  firebreath-earth2: [2, 0]
+  firebreath-earth3: [3, 0]
+  firebreath-earth4: [4, 0]
+  firebreath-earth5: [5, 0]
+  firebreath-earth6: [6, 0]

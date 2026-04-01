@@ -412,13 +412,11 @@ export function gameEntityTraitsClientStartup(
     default_opts: {
       moves: [{
         name: 'Splat',
-        range: 'melee',
         effect: {
           damage: 3,
         },
       }, {
         name: 'Defend',
-        range: 'self',
         effect: {
           block: 2,
         },

@@ -1,0 +1,10 @@
+---
+tile_res: [46,89]
+tiles:
+  firebreath-null0: [0, 0]
+  firebreath-null1: [1, 0]
+  firebreath-null2: [2, 0]
+  firebreath-null3: [3, 0]
+  firebreath-null4: [4, 0]
+  firebreath-null5: [5, 0]
+  firebreath-null6: [6, 0]

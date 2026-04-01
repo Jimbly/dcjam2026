@@ -1,7 +1,7 @@
 TODO - The Adventures of Draco Vacuus and the Chromatic Dragons
 ====
 
-add ranged attack for self and enemies
+add ranged attack for enemies
   means enemies need different moves when in melee and when at ranged - or, just a flag on the enemy?
 add more card types and enemy attacks
   poison/freeze/burn for elements
@@ -57,17 +57,18 @@ animate: upon taking the orb, flip cards over, change element, probably a dialog
 Card abilities
 ==============
 ranged attack
-small damage + gain a turn
+small damage/small poison/small block + gain a turn
 freeze enemy / skip their next turn
   freeze player / N cards are locked for a turn
 push/pull (boss immune / acts as wall)
 "heal" by moving from discard to draw
 pierce
 remove armor
-buff next attack
+buff next attack (good for enemies - cancel upon kiting!)
 poison
 clear debuffs (self)
 1 damage + 1 per time it was played this floor
+"charge" - gains one damage for each step while in hand
 
 Possible perks
 ==============

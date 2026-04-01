@@ -112,5 +112,13 @@ export const SOUND_DATA = {
     file: 'monster_blocked',
     volume: 1,
   },
+  hero_shoots: {
+    file: 'hero_shoots',
+    volume: 1,
+  },
+  monster_shoots: {
+    file: 'monster_shoots',
+    volume: 1,
+  },
 
 } satisfies Partial<Record<string, UISoundID | string | string[] | UISoundID[]>>;
