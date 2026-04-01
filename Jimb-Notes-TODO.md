@@ -1,7 +1,9 @@
 TODO - The Adventures of Draco Vacuus and the Chromatic Dragons
 ====
 
-draft player cards using these abilities
+populate chests and shop with reasonable cards
+  chests have tier 1-2 cards in dungeon 1/2, shop always tier 0
+ensure poison/stun/etc doesn't keep ticking or show in heal mode
 
 add more enemy types with different action sets
   unique bosses
@@ -11,8 +13,6 @@ add more enemy types with different action sets
   1 elemental-specific (poison/freeze/burn)
     1 earth guy just stands still and waits - the blocker
     1 water guy moves two squares - the hitter
-populate chests and shop with reasonable cards
-  chests have tier 1-2 cards in dungeon 1/2, shop always tier 0
 
 highscore table: element, deaths, total friends (higher), damage dealt (lower)
 

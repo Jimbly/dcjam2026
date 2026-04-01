@@ -182,7 +182,8 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
         this.addCard('attack3', 0);
         this.addCard('attack4', 0);
         this.addCard('attack4', 0);
-        for (let ii = 0; ii < 4; ++ii) {
+        this.addCard('ranged2', 0);
+        for (let ii = 0; ii < 3; ++ii) {
           this.addCard('block2', 0);
         }
         this.populateDrawPileFromDeck();

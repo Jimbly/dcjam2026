@@ -1,4 +1,5 @@
 import { TSMap } from 'glov/common/types';
+import { JSVec4 } from 'glov/common/vmath';
 
 export const HAND_SIZE = 5;
 export const MAX_TIER = 3;
@@ -49,79 +50,156 @@ export const EFFECT_NEEDS_TARGET: Record<CardEffect, boolean | 'auto' | 'ranged'
   burn: 'auto',
 };
 
+function grow(v: number): JSVec4 {
+  return [v, v+1, v+2, v+3];
+}
+
+function heal(v: number): {
+  healeffect: Partial<Record<CardEffect, NumberPerTier>>;
+} {
+  return {
+    healeffect: {
+      damage: grow(v),
+      burn: ONES,
+    },
+  };
+}
+
 export const CARDS_RAW = {
   'attack2': {
     cost: 1,
-    name: 'Jab',
+    name: 'Claw',
     effect: {
-      damage: [2, 2+1, 2+2, 2+3],
-      // poison: [2, 2, 3, 4],
+      damage: grow(2),
     },
-    healeffect: {
-      damage: [5, 5+1, 5+2, 5+3],
-      burn: ONES,
-    },
+    ...heal(5),
   },
   'attack3': {
     cost: 3,
-    name: 'Breath',
+    name: 'Bite',
     effect: {
-      ranged: [3, 3+1, 3+2, 3+3],
-      // push: ONES
+      damage: grow(3),
     },
-    healeffect: {
-      damage: [2, 2+1, 2+2, 2+3],
-      burn: ONES,
-    },
+    ...heal(2),
   },
   'attack4': {
     cost: 5,
     name: 'Strike',
     effect: {
-      // damage: [4, 4+1, 4+2, 4+3],
-      // freeze: [2, 2, 3, 3],
-      pull: ONES,
-      ranged: [0, 1, 2, 3],
-      // delay: ONES,
+      damage: grow(4),
     },
-    healeffect: {
-      damage: [1, 1+1, 1+2, 1+3],
-      burn: ONES,
-    },
+    ...heal(1),
   },
   'attack5': {
     cost: 6,
     name: 'Pummel',
     effect: {
-      damage: [5, 5+1, 5+2, 5+3],
+      damage: grow(5),
     },
-    healeffect: {
-      damage: [1, 1+1, 1+2, 1+3],
-      burn: ONES,
-    },
+    ...heal(1),
   },
   'block2': {
     cost: 1,
     name: 'Dodge',
     effect: {
-      block: [2,3,4,5]
+      block: grow(2),
     },
-    healeffect: {
-      damage: [2, 2+1, 2+2, 2+3],
-      burn: ONES,
-    },
+    ...heal(2),
   },
   'block3': {
     cost: 5,
     name: 'Shield',
     effect: {
-      block: [3,4,5,6]
+      block: grow(3),
     },
-    healeffect: {
-      damage: [1, 1+1, 1+2, 1+3],
-      burn: ONES,
-    },
+    ...heal(1),
   },
+  'ranged2': {
+    cost: 5,
+    name: 'Breath',
+    effect: {
+      ranged: grow(2),
+    },
+    ...heal(1),
+  },
+  'ranged3': {
+    cost: 6,
+    name: 'Bolt',
+    effect: {
+      ranged: grow(3),
+    },
+    ...heal(1),
+  },
+  'push': {
+    cost: 5,
+    name: 'Push',
+    effect: {
+      damage: grow(1),
+      push: ONES
+    },
+    ...heal(3),
+  },
+  'pull': {
+    cost: 5,
+    name: 'Pull',
+    effect: {
+      pull: ONES,
+      ranged: grow(0),
+    },
+    ...heal(2),
+  },
+  'repeatdam1': {
+    cost: 5,
+    name: 'Shiv',
+    effect: {
+      damage: grow(1),
+      delay: ONES,
+    },
+    ...heal(2),
+  },
+  'repeatblock1': {
+    cost: 5,
+    name: 'Weave',
+    effect: {
+      block: grow(1),
+      delay: ONES,
+    },
+    ...heal(2),
+  },
+  'repeatpoison1': {
+    cost: 6,
+    name: 'Wither',
+    effect: {
+      poison: [1,1,2,2],
+      delay: ONES,
+    },
+    ...heal(1),
+  },
+  'poison2': {
+    name: 'Bile',
+    cost: 5,
+    effect: {
+      poison: [2, 2, 3, 4],
+    },
+    ...heal(3),
+  },
+  'poison3': {
+    name: 'Infect',
+    cost: 6,
+    effect: {
+      poison: [3, 4, 4, 5],
+    },
+    ...heal(1),
+  },
+  'stun2': {
+    name: 'Daze',
+    cost: 5,
+    effect: {
+      freeze: [2, 2, 3, 3],
+    },
+    ...heal(1),
+  },
+
 } as const satisfies TSMap<CardDef>;
 
 export type CardID = keyof typeof CARDS_RAW;
