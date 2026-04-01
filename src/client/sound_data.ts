@@ -2,15 +2,16 @@ import { UISoundID } from 'glov/client/ui';
 
 export const SOUND_DATA = {
   // online multiplayer sounds, ignore these
-  user_join: 'user_join',
-  user_leave: 'user_leave',
-  msg_in: 'msg_in',
-  msg_err: 'msg_err',
-  msg_out_err: 'msg_out_err',
-  msg_out: 'msg_out',
+  user_join: 'rollover',
+  user_leave: 'rollover',
+  msg_in: 'internal/msg_in',
+  msg_err: 'internal/msg_err',
+  msg_out_err: 'internal/msg_out_err',
+  msg_out: 'internal/msg_out',
 
   // UI sounds
   button_click: 'button_click',
+  // button_click2 not used here
   button_click2: { file: 'button_click', volume: 0.125 }, // touch movement controls - just hear footsteps
   // menus/general/etc
   rollover: { file: 'rollover', volume: 0.25 },
@@ -32,15 +33,15 @@ export const SOUND_DATA = {
 
   // Games sounds to be implemented
   hunter_alert: { // one-time when monster sees you and goes into alert
-    file: 'msg_in',
+    file: 'hunter_alert',
     volume: 1,
   },
   yield: { // when getting monster down to 1 HP
-    file: 'msg_out',
+    file: 'yield',
     volume: 1,
   },
   death: { // when getting monster down to <=0 HP
-    file: 'msg_out',
+    file: 'death',
     volume: 1,
   },
   restored: { // healed a monster back from death
@@ -48,34 +49,34 @@ export const SOUND_DATA = {
     volume: 1,
   },
   befriended: { // talked to a >= 1 hp monster to make friendly
-    file: 'msg_out',
+    file: 'befriended',
     volume: 1,
   },
 
   card_draw_single: {
-    file: 'card_pickup',
+    file: 'card_draw_single',
     volume: 1,
   },
   reset_deck: { // reshuffle (and sometimes draw 5 new cards?)
-    file: 'deal_cards',
+    file: 'reset_deck',
     volume: 1,
   },
   card_discard: {
-    file: 'card_drop',
+    file: 'card_discard',
     volume: 1,
   },
 
   get_goal: { // get a new element, change to that element
-    file: 'msg_in',
+    file: 'get_goal',
     volume: 1,
   },
 
   purchase: { // purchase in shop
-    file: 'card_pickup',
+    file: 'purchase',
     volume: 1,
   },
   reward_choice: { // from chests, or choosing inter-floor reward
-    file: 'card_pickup',
+    file: 'reward_choice',
     volume: 1,
   },
 

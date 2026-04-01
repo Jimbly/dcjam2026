@@ -1,8 +1,6 @@
 TODO - The Adventures of Draco Vacuus and the Chromatic Dragons
 ====
 
-update sound list, ensure placeholders for everything
-
 add more enemy types with different action sets
   first:
     pick 4 sprites per zone
@@ -26,8 +24,6 @@ tooltips everywhere - fixed screen location (per Action) for tooltips to show up
 maybe: try choosing which cards to discard (and redrawing constantly)
   this makes combat slower, but does it make it more fun / strategic / (discoverable)?
 
-block tick down if we are standing still, executing block, and a monster is walking towards us
-  so, ticks down if at the end of our turn, before the monster moves, we have no adjacent enemy? logic changes if enemies have ranged attacks though
 wandering cat
 floor title - top and center?
 different text color for all of Rasa's speech?
