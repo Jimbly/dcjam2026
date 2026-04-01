@@ -12,7 +12,6 @@ import {
   v3copy,
   Vec2,
 } from 'glov/common/vmath';
-import { CRAWLER_TURN_BASED } from '../common/crawler_config';
 import { entSamePos } from '../common/crawler_entity_common';
 import type { CrawlerScriptAPI } from '../common/crawler_script';
 import {
@@ -30,7 +29,7 @@ import {
 import { crawlerEntFactory } from './crawler_entity_client';
 import { TurnBasedStepReason } from './crawler_play';
 import { EntityClient } from './entity_game_client';
-import { attackPlayer, myEnt, playSoundFromEnt } from './play';
+import { attackPlayer, findRangedTargetForEnemy, myEnt, playSoundFromEnt } from './play';
 import { statusSet } from './status';
 
 const { abs, floor, random } = Math;
@@ -507,20 +506,21 @@ function aiDoEnemy(
   if (defines?.PEACE || defines?.AIPEACE) {
     target_ent = null;
   }
-  if (!target_ent) {
-    profilerStopFunc();
-    return false;
+  // enemy attack logic goes here
+  let move = ent.monsterMoveGet();
+  if (!target_ent && move.effect.ranged) {
+    target_ent = findRangedTargetForEnemy(ent);
   }
 
-  // enemy attack logic goes here
-  if (random() < 0.01 || CRAWLER_TURN_BASED) {
-    let move = ent.monsterMoveGet();
+  let ret = false;
+  if (target_ent) {
     attackPlayer(ent, target_ent, move);
     ent.monsterMovePick();
+    ret = true;
   }
 
   profilerStopFunc();
-  return true;
+  return ret;
 }
 
 

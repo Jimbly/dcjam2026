@@ -411,15 +411,20 @@ export function gameEntityTraitsClientStartup(
   ent_factory.extendTrait<EnemyOpts>('enemy', {
     default_opts: {
       moves: [{
-        name: 'Splat',
+      //   name: 'Splat',
+      //   effect: {
+      //     damage: 3,
+      //   },
+      // }, {
+        name: 'Shoot',
         effect: {
-          damage: 3,
+          ranged: 3,
         },
-      }, {
-        name: 'Defend',
-        effect: {
-          block: 2,
-        },
+      // }, {
+      //   name: 'Defend',
+      //   effect: {
+      //     block: 2,
+      //   },
       }],
     },
     properties: {

@@ -30,6 +30,8 @@ block tick down if we are standing still, executing block, and a monster is walk
 wandering cat
 floor title - top and center?
 different text color for all of Rasa's speech?
+in-world monologues for Rasa to say randomly?
+bug: keyboard not working on respawn dialog
 
 walls: try depixel scale up by 4, then do 2 bilinear filters down to get 16xMSAA
 

@@ -1,5 +1,6 @@
 export const CARD_W = 64;
 export const CARD_H = 85;
+export const MONSTER_MAX_RANGE = 5; // for health bars and ranged attacks
 
 import assert from 'assert';
 import { autoResetSkippedFrames } from 'glov/client/auto_reset';
@@ -68,7 +69,7 @@ import {
   EntityID,
   TSMap,
 } from 'glov/common/types';
-import { clamp, clone, easeIn, easeOut, ridx } from 'glov/common/util';
+import { clamp, clone, easeIn, easeOut, ridx, sign } from 'glov/common/util';
 import { unreachable } from 'glov/common/verify';
 import {
   JSVec2,
@@ -787,14 +788,16 @@ function drawEnemyStats(ent: Entity): void {
       if (vis.prefix) {
         msg.push(`${value}`);
       }
-      if (vis.img) {
-        msg.push(`[img=${vis.img}]`);
+      let img = vis.img_enemy || vis.img;
+      if (img) {
+        msg.push(`[img=${img}]`);
       }
     }
     markdownAuto({
       font_style: style_text,
       x: ENEMY_HP_BAR_X, y, z: Z.UI, w: ENEMY_HP_BAR_W,
       align: ALIGN.HCENTERFIT,
+      line_height: 12,
       text: `(${next_move.name}: ${msg.join(' ')} )`,
     });
     y += FONT_HEIGHT;
@@ -828,13 +831,24 @@ function drawInWorldHealthbar(
     size: [ENEMY_HP_BAR_W * BAR_WORLD_PX, ENEMY_HP_BAR_H * BAR_WORLD_PX],
   });
 
+  let y = BAR_WORLD_PX * 2;
+  v3addScale(temp_pos, pos, dynGeomForward(), -0.02);
   if (hp) {
-    v3addScale(temp_pos, pos, dynGeomForward(), -0.02);
     let w = max(hp / hp_max, 2/ENEMY_HP_BAR_W);
     autoAtlas('ui', 'bar-frame-3d-fill').draw3D({
       pos: [temp_pos[0], temp_pos[1], z],
-      offs: [(-ENEMY_HP_BAR_W/2 + 2) * BAR_WORLD_PX, BAR_WORLD_PX * 2],
+      offs: [(-ENEMY_HP_BAR_W/2 + 2) * BAR_WORLD_PX, y],
       size: [(ENEMY_HP_BAR_W - 4) * w * BAR_WORLD_PX, (ENEMY_HP_BAR_H - 4) * BAR_WORLD_PX],
+    });
+  }
+  y += ENEMY_HP_BAR_H * BAR_WORLD_PX;
+  let move = ent.monsterMoveGet();
+  if (move.effect.ranged) {
+    const INTENT_SIZE = 28;
+    autoAtlas('ui', 'ranged-enemy').draw3D({
+      pos: [temp_pos[0], temp_pos[1], z],
+      offs: [-INTENT_SIZE/2 * BAR_WORLD_PX, y],
+      size: [INTENT_SIZE * BAR_WORLD_PX, INTENT_SIZE * BAR_WORLD_PX],
     });
   }
 }
@@ -881,7 +895,7 @@ function doHealthbars(): void {
     if (!ent.isAlive() || ent.id === ent_in_front || !ent.data.alert) {
       return false;
     }
-    if (entManhattanDistance(ent, my_pos) <= 5) {
+    if (entManhattanDistance(ent, my_pos) <= MONSTER_MAX_RANGE) {
       return true;
     }
     return false;
@@ -1471,6 +1485,36 @@ function findRangedTarget(): Entity | null {
     if (ents.length) {
       return ents[0];
     }
+  }
+  return null;
+}
+
+export function findRangedTargetForEnemy(enemy: Entity): Entity | null {
+  let me = myEnt();
+  let { data } = me;
+  let { pos } = data;
+  let enemy_pos = enemy.data.pos;
+  if (!(enemy_pos[0] === pos[0] || enemy_pos[1] === pos[1])) {
+    // not lined up
+    return null;
+  }
+  let game_state = crawlerGameState();
+  let { level, floor_id } = game_state;
+  assert(level);
+  if (level.simpleVisCheck(pos, enemy_pos, crawlerScriptAPI(), 'visBlockNormal')) {
+    let walk = enemy_pos.slice(0) as JSVec2;
+    while (walk[0] !== pos[0] || walk[1] !== pos[1]) {
+      walk[0] += sign(pos[0] - walk[0]);
+      walk[1] += sign(pos[1] - walk[1]);
+      let ents = entitiesAt(entityManager(), walk, floor_id, true);
+      ents = ents.filter(function (e) {
+        return e.isEnemy() && e.isAlive();
+      });
+      if (ents.length) {
+        return null;
+      }
+    }
+    return me;
   }
   return null;
 }

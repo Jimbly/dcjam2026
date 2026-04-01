@@ -21,10 +21,11 @@ export type EnemyMove = {
 export type EffectVis = {
   prefix?: boolean;
   img?: string;
+  img_enemy?: string;
 };
 export const EFFECT_TEMPLATE: Record<CardEffect, EffectVis> = {
   damage: { prefix: true, img: 'attack' },
-  ranged: { prefix: true, img: 'ranged' },
+  ranged: { prefix: true, img: 'ranged', img_enemy: 'ranged-enemy' },
   heal: { prefix: true, img: 'heal' },
   block: { prefix: true, img: 'block' },
   burn: { prefix: false, img: 'burn' },
