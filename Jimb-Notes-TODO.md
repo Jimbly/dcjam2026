@@ -2,7 +2,8 @@ TODO - The Adventures of Draco Vacuus and the Chromatic Dragons
 ====
 
 add more card types and enemy attacks
-  poison/freeze/burn for elements
+  small damage/small poison/small block + gain a turn
+  push/pull (boss immune / acts as wall)
 add more enemy types with different action sets
   unqiue bosses
   1 generic balanced
@@ -15,6 +16,7 @@ add more enemy types with different action sets
 highscore table: element, deaths, total friends (higher), damage dealt (lower)
 
 tooltips everywhere - fixed screen location (per Action) for tooltips to show up?
+    - or, F1 to open help screen explaining all effects
   need tooltips on pool showing card + description
   need tooltips on buy/upgrade shop cards showing descriptions
   need tooltips on cards in hand showing descriptions
@@ -23,6 +25,7 @@ tooltips everywhere - fixed screen location (per Action) for tooltips to show up
 maybe: try choosing which cards to discard (and redrawing constantly)
   this makes combat slower, but does it make it more fun / strategic / (discoverable)?
 
+reskin poison (on player) as "burn" when on fire level
 block tick down if we are standing still, executing block, and a monster is walking towards us
   so, ticks down if at the end of our turn, before the monster moves, we have no adjacent enemy? logic changes if enemies have ranged attacks though
 wandering cat
@@ -56,11 +59,6 @@ animate: upon taking the orb, flip cards over, change element, probably a dialog
 
 Card abilities
 ==============
-ranged attack
-small damage/small poison/small block + gain a turn
-freeze enemy / skip their next turn
-  freeze player / N cards are locked for a turn
-push/pull (boss immune / acts as wall)
 "heal" by moving from discard to draw
 pierce
 remove armor

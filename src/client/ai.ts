@@ -509,8 +509,15 @@ function aiDoEnemy(
 ): boolean {
   profilerStartFunc();
 
+  let was_frozen = ent.data.freeze;
+
   tickDOTs(ent);
   if (!ent.isAlive()) {
+    profilerStopFunc();
+    return true;
+  }
+
+  if (was_frozen) {
     profilerStopFunc();
     return true;
   }

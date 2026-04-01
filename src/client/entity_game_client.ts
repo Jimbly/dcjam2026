@@ -80,6 +80,7 @@ export type EntityDataClient = {
   incoming_damage: number;
   block: number;
   poison?: number;
+  freeze?: number;
   deck: Record<number, Card>; // uid -> card
   picked: number[]; // array of uids in working set
   draw_pile: number[]; // array of uids
@@ -188,6 +189,7 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
         this.drawHand();
         data.block = 0;
         data.poison = 0;
+        data.freeze = 0;
       }
       if (!data.combat_phase) {
         data.combat_phase = 'player';
@@ -273,6 +275,10 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
     return opts.ranged_attack || null;
   }
 
+  handSize(): number {
+    return HAND_SIZE - (this.data.freeze || 0);
+  }
+
   drawHand(): void {
     let { data } = this;
     while (data.hand.length) {
@@ -297,7 +303,7 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
     let { data } = this;
     // Reduce block each turn?
     data.block = data.block ? data.block - 1 : 0;
-    data.poison = data.poison ? data.poison - 1 : 0;
+    // data.poison = data.poison ? data.poison - 1 : 0;
   }
 
   takeDamage(amt: number, bypass_block: boolean): number {
@@ -423,17 +429,21 @@ export function gameEntityTraitsClientStartup(
   });
   ent_factory.extendTrait<EnemyOpts>('enemy', {
     default_opts: {
-      ranged_attack: {
-        name: 'ignored',
-        effect: {
-          ranged: 3,
-        },
-      },
+      // ranged_attack: {
+      //   name: 'ignored',
+      //   effect: {
+      //     ranged: 3,
+      //   },
+      // },
       moves: [{
-        name: 'Infect',
+        name: 'Freeze',
         effect: {
-          poison: 2,
+          freeze: 2,
         },
+        // name: 'Infect',
+        // effect: {
+        //   poison: 2,
+        // },
 
       // name: 'Splat',
       // effect: {

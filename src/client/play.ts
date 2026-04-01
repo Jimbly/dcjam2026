@@ -1,6 +1,9 @@
+/* eslint prefer-template:off */
 export const CARD_W = 64;
 export const CARD_H = 85;
 export const MONSTER_MAX_RANGE = 5; // for health bars and ranged attacks
+
+const ENEMY_DELAY = 400;
 
 import assert from 'assert';
 import { autoResetSkippedFrames } from 'glov/client/auto_reset';
@@ -656,28 +659,36 @@ function calcAttackCameraOffs(): Vec3 {
   return attack_camera_offs;
 }
 
-function drawBlock(x: number, y: number, block: number): number {
+function drawBlock(is_player: boolean, x: number, y: number, block: number): number {
   if (!block) {
     return x;
   }
+  const w = 14;
+  const h = 14;
   if (block <= 5 && false) {
     for (let ii = 0; ii < block; ++ii) {
       autoAtlas('ui', 'block').draw({
-        x, y, w: 14, h: 14, z: Z.UI - 2,
+        x, y, w, h, z: Z.UI - 2,
       });
-      x += 14 + 2;
+      x += w + 2;
     }
   } else {
     autoAtlas('ui', 'block').draw({
-      x, y, w: 14, h: 14, z: Z.UI - 2,
+      x, y, w, h, z: Z.UI - 2,
     });
     font.draw({
       style: style_text,
-      x, y, w: 14, h: 14, z: Z.UI - 1.5,
+      x, y, w, h, z: Z.UI - 1.5,
       align: ALIGN.HVCENTERFIT,
       text: `${block}`,
     });
-    x += 14;
+    label({
+      x, y, w, h,
+      text: '',
+      tooltip: 'Block cancels incoming physical damage, getting removed if it blocks damage.' +
+        (is_player ? '\nBlock is decreased by 1 when moving.' : ''),
+    });
+    x += w;
   }
   return x + 1;
 }
@@ -686,16 +697,48 @@ function drawPoison(x: number, y: number, value: number): number {
   if (!value) {
     return x;
   }
+  const w = 10;
+  const h = 14;
   autoAtlas('ui', 'poison').draw({
-    x, y, w: 14, h: 14, z: Z.UI - 2,
+    x, y, w, h, z: Z.UI - 2,
   });
   font.draw({
     style: style_text,
-    x, y, w: 14, h: 14, z: Z.UI - 1.5,
+    x, y, w, h, z: Z.UI - 1.5,
     align: ALIGN.HVCENTERFIT,
     text: `${value}`,
   });
-  x += 14;
+  label({
+    x, y, w, h,
+    text: '',
+    tooltip: 'Poison deals damage every turn and then is reduced by 1.',
+  });
+  x += w;
+  return x + 1;
+}
+
+function drawFreeze(is_player: boolean, x: number, y: number, value: number): number {
+  if (!value) {
+    return x;
+  }
+  const h = 14;
+  const w = 12/13 * h;
+  autoAtlas('ui', is_player ? 'freeze' : 'stun').draw({
+    x, y, w, h, z: Z.UI - 2,
+  });
+  font.draw({
+    style: style_text,
+    x, y, w, h, z: Z.UI - 1.5,
+    align: ALIGN.HVCENTERFIT,
+    text: `${value}`,
+  });
+  label({
+    x, y, w, h,
+    text: '',
+    tooltip: (is_player ? 'Freeze reduces your maximum hand size.' : 'Stun causes a monster to skip its turn.') +
+      '\nIt is reduced by 1 each turn.',
+  });
+  x += w;
   return x + 1;
 }
 
@@ -780,8 +823,10 @@ function drawEnemyStats(ent: Entity): void {
   drawHealthBar(ENEMY_HP_BAR_X, ENEMY_HP_BAR_Y, Z.UI, ENEMY_HP_BAR_W, bar_h,
     blend(`enemyhp${ent.id}`, hp + 1), hp_max + 1, show_text);
   let x = ENEMY_HP_BAR_X + ENEMY_HP_BAR_W + 2;
-  x = drawBlock(x, ENEMY_HP_BAR_Y + floor((bar_h - 14) / 2), ent.data.block);
-  drawPoison(x, ENEMY_HP_BAR_Y + floor((bar_h - 14) / 2), ent.data.poison || 0);
+  x = drawBlock(false, x, ENEMY_HP_BAR_Y + floor((bar_h - 14) / 2), ent.data.block);
+  x = drawPoison(x, ENEMY_HP_BAR_Y + floor((bar_h - 14) / 2), ent.data.poison || 0);
+  x = drawFreeze(false, x, ENEMY_HP_BAR_Y + floor((bar_h - 14) / 2), ent.data.freeze || 0);
+  assert(x); // just to make linter happy
   let label_msg = ent.display_name;
   if (ent.is_boss && hp <= 0) {
     // no suffix
@@ -809,26 +854,32 @@ function drawEnemyStats(ent: Entity): void {
   y += uiTextHeight() + 2;
 
   if (ent.isAlive() && !healMode()) {
-    let next_move = ent.monsterMoveGet();
-    let key: CardEffect;
     let msg = [];
-    for (key in next_move.effect) {
-      let value = next_move.effect[key]!;
-      let vis = EFFECT_TEMPLATE[key];
-      if (vis.prefix) {
-        msg.push(`${value}`);
+    if (ent.data.freeze) {
+      msg.push('stunned');
+    } else {
+      let next_move = ent.monsterMoveGet();
+      msg.push(`${next_move.name}:`);
+      let key: CardEffect;
+      for (key in next_move.effect) {
+        let value = next_move.effect[key]!;
+        let vis = EFFECT_TEMPLATE[key];
+        if (vis.prefix) {
+          msg.push(`${value}`);
+        }
+        let img = vis.img_enemy || vis.img;
+        if (img) {
+          msg.push(`[img=${img}]`);
+        }
       }
-      let img = vis.img_enemy || vis.img;
-      if (img) {
-        msg.push(`[img=${img}]`);
-      }
+      msg.push('');
     }
     markdownAuto({
       font_style: style_text,
       x: ENEMY_HP_BAR_X, y, z: Z.UI, w: ENEMY_HP_BAR_W,
       align: ALIGN.HCENTERFIT,
       line_height: 12,
-      text: `(${next_move.name}: ${msg.join(' ')} )`,
+      text: `(${msg.join(' ')})`,
     });
     y += FONT_HEIGHT;
   }
@@ -1406,6 +1457,9 @@ export function tickDOTs(enemy: Entity): void {
     data.poison--;
     applyDamage(enemy, damage, true);
   }
+  if (data.freeze) {
+    data.freeze--;
+  }
 }
 
 export function tickPlayerDOTs(): void {
@@ -1415,12 +1469,15 @@ export function tickPlayerDOTs(): void {
     let damage = data.poison;
     data.poison--;
 
-    me.takeDamage(damage, false);
+    me.takeDamage(damage, true);
     incoming_damage.push({
       start: engine.frame_timestamp,
       msg: `-${damage}[img=cardicon]`,
       from: 0,
     });
+  }
+  if (data.freeze) {
+    data.freeze--;
   }
 }
 
@@ -1458,6 +1515,8 @@ function cardSound(
       return 'gain_block';
     } else if (key === 'poison') {
       return 'poison';
+    } else if (key === 'freeze') {
+      return 'freeze';
     } else if (key === 'heal') {
       assert(false); // TODO
     } else if (key === 'burn') {
@@ -1505,6 +1564,12 @@ function playCard(
         target_data.poison = (target_data.poison || 0) + value;
         addFloater(target_ent.id, `${value}[img=poison]`, undefined, true);
       }
+    } else if (key === 'freeze') {
+      if (target_ent) {
+        let target_data = target_ent.data;
+        target_data.freeze = (target_data.freeze || 0) + value;
+        addFloater(target_ent.id, `${value}[img=stun]`, undefined, true);
+      }
     } else if (key === 'heal') {
       assert(false); // TODO
     } else if (key === 'burn') {
@@ -1521,7 +1586,7 @@ function playCard(
   }
   tickPlayerDOTs();
   data.combat_phase = 'enemy';
-  crawlerTurnBasedScheduleStep(250, 'attack');
+  crawlerTurnBasedScheduleStep(ENEMY_DELAY, 'attack');
   let sound = cardSound(no_target, no_ranged_target, target_ent, ranged_target, card);
   playUISound(sound || 'card_discard');
 }
@@ -1536,7 +1601,7 @@ function discardCard(hand_index: number): void {
   discard_pile.push(uid);
   tickPlayerDOTs();
   data.combat_phase = 'enemy';
-  crawlerTurnBasedScheduleStep(250, 'attack');
+  crawlerTurnBasedScheduleStep(ENEMY_DELAY, 'attack');
   playUISound('card_discard');
 }
 
@@ -1660,13 +1725,13 @@ function doHand(): void {
   if (data.combat_phase === 'redraw') {
     if (overlay_menu_up || keyGet('needs_shop')) {
       // no drawing for now
-    } else if (hand.length < HAND_SIZE) {
+    } else if (hand.length < me.handSize()) {
       // draw a card
       if (draw_pile.length) {
         if (!combat_state.countdown) {
           me.drawCard();
           playUISound('card_draw_single');
-          if (hand.length === HAND_SIZE) {
+          if (hand.length === me.handSize()) {
             me.startPlayerPhase();
           } else {
             combat_state.countdown = 250;
@@ -1897,8 +1962,9 @@ function doHand(): void {
 
   x = DRAW_PILE_X;
   y = DRAW_PILE_Y - 16;
-  x = drawBlock(x, y, data.block);
+  x = drawBlock(true, x, y, data.block);
   x = drawPoison(x, y, data.poison || 0);
+  x = drawFreeze(true, x, y, data.freeze || 0);
 }
 
 function moveBlocked(): boolean {
@@ -1981,6 +2047,21 @@ export function attackPlayer(source: Entity, target: Entity, attack: EnemyMove, 
       incoming_damage.push({
         start: engine.frame_timestamp,
         msg: `${value}[img=poison]`,
+        from: rot,
+      });
+    } else if (key === 'freeze') {
+      playSoundFromEnt(source, 'freeze');
+      target.data.freeze = max(target.data.freeze || 0, value);
+      let msg = [`${value}[img=freeze]`];
+      let extra = target.data.hand.length - target.handSize();
+      if (extra > 0) {
+        myEnt().takeDamage(extra, true);
+        msg.push(`-${extra}[img=cardicon]`);
+      }
+
+      incoming_damage.push({
+        start: engine.frame_timestamp,
+        msg: msg.join(' '),
         from: rot,
       });
     } else if (key === 'heal') {
