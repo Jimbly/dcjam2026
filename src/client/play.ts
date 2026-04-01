@@ -72,11 +72,17 @@ import {
 import { clamp, clone, easeIn, easeOut, ridx, sign } from 'glov/common/util';
 import { unreachable } from 'glov/common/verify';
 import {
+  half_vec,
   JSVec2,
   JSVec3,
   ROVec3,
+  v2add,
+  v2iScale,
+  v2length,
   v2manhattanDist,
+  v2sub,
   v3addScale,
+  v3cross,
   v3iAddScale,
   v3iNormalize,
   v3iScale,
@@ -86,6 +92,7 @@ import {
   vec3,
   Vec3,
   vec4,
+  zaxis,
 } from 'glov/common/vmath';
 import { CRAWLER_IS_ONLINE, CRAWLER_TURN_BASED } from '../common/crawler_config';
 import { entManhattanDistance } from '../common/crawler_entity_common';
@@ -1273,8 +1280,11 @@ function showCardList(title: string, x: number, y: number, pile: number[]): void
 }
 
 const RANGED_ANIM_TIME = 300;
+const RANGED_ANIM_TIME_INCOMING = 200;
 let ranged_attack_counter = 0;
 let ranged_attack_range = 3;
+let ranged_incoming_attack_counter = 0;
+let ranged_incoming_attack_pos: JSVec2;
 
 function applyDamage(target_ent: Entity | null, value: number): void {
   let me = myEnt();
@@ -1847,7 +1857,7 @@ export function playSoundFromEnt(ent: Entity, sound_id: keyof typeof SOUND_DATA)
   });
 }
 
-export function attackPlayer(source: Entity, target: Entity, attack: EnemyMove): void {
+export function attackPlayer(source: Entity, target: Entity, attack: EnemyMove, is_ranged: boolean): void {
   if (healMode()) {
     return;
   }
@@ -1904,6 +1914,11 @@ export function attackPlayer(source: Entity, target: Entity, attack: EnemyMove):
     } else {
       unreachable(key);
     }
+  }
+
+  if (is_ranged) {
+    ranged_incoming_attack_counter = RANGED_ANIM_TIME_INCOMING;
+    ranged_incoming_attack_pos = source.data.pos.slice(0) as JSVec2;
   }
 }
 
@@ -2623,12 +2638,17 @@ function doVFX(dt: number): void {
   if (ranged_attack_counter) {
     ranged_attack_counter = max(0, ranged_attack_counter - dt);
   }
+  if (ranged_incoming_attack_counter) {
+    ranged_incoming_attack_counter = max(0, ranged_incoming_attack_counter - dt);
+  }
 }
 
 // function randNorm(): number {
 //   return random() * 2 - 1;
 // }
 
+let temp_down = vec3();
+let temp_right = vec3();
 export function renderBGHook(): void {
   if (ranged_attack_counter) {
     let pos = renderPlayerPos();
@@ -2643,6 +2663,42 @@ export function renderBGHook(): void {
       facing: FACE_CUSTOM,
       face_right: dynGeomRight(),
       face_down: [-forward[0], -forward[1], -forward[2]],
+      shader: vfx_shader,
+    });
+  }
+
+  if (ranged_incoming_attack_counter) {
+    let target_pos = renderPlayerPos();
+    v2add(temp_pos, ranged_incoming_attack_pos, half_vec);
+    v2iScale(temp_pos, DIM);
+    v2sub(temp_down, temp_pos, target_pos);
+    let dist = v2length(temp_down) / DIM;
+    temp_down[2] = 0;
+    v3iNormalize(temp_down);
+    v3cross(temp_right, zaxis, temp_down);
+    v3iScale(temp_right, -1);
+
+    let t = (RANGED_ANIM_TIME_INCOMING - 1 - ranged_incoming_attack_counter) / RANGED_ANIM_TIME_INCOMING;
+    let offs = 0;
+    let scale = 1;
+    let ts = [0.25, 0.75];
+    if (t < ts[0]) {
+      scale = t / ts[0];
+    } else if (t < ts[0] + ts[1]) {
+      offs = (t - ts[0]) / ts[1];
+    } else {
+      offs = 1;
+      scale = 1 - (t - (ts[0] + ts[1])) / (1 - (ts[0] + ts[1]));
+    }
+    autoAtlas('ui', 'projectile').withOrigin([0.5, 1]).draw3D({
+      bucket: BUCKET_OPAQUE,
+      pos: [temp_pos[0] - temp_down[0] * DIM * 0.4, temp_pos[1] - temp_down[1] * DIM * 0.4, HVDIM * 0.3],
+      size: [DIM * 0.2, DIM * 2 * 0.2 * scale],
+      offs: [0, -offs * (dist - 0.7) * DIM],
+      facing: FACE_CUSTOM,
+      face_right: temp_right,
+      face_down: temp_down,
+      doublesided: true,
       shader: vfx_shader,
     });
   }

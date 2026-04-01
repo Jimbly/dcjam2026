@@ -1,8 +1,6 @@
 TODO - The Adventures of Draco Vacuus and the Chromatic Dragons
 ====
 
-add ranged attack for enemies
-  means enemies need different moves when in melee and when at ranged - or, just a flag on the enemy?
 add more card types and enemy attacks
   poison/freeze/burn for elements
 add more enemy types with different action sets

@@ -508,13 +508,15 @@ function aiDoEnemy(
   }
   // enemy attack logic goes here
   let move = ent.monsterMoveGet();
+  let is_ranged = false;
   if (!target_ent && move.effect.ranged) {
     target_ent = findRangedTargetForEnemy(ent);
+    is_ranged = true;
   }
 
   let ret = false;
   if (target_ent) {
-    attackPlayer(ent, target_ent, move);
+    attackPlayer(ent, target_ent, move, is_ranged);
     ent.monsterMovePick();
     ret = true;
   }
