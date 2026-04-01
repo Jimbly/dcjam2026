@@ -52,7 +52,13 @@ import {
 } from './crawler_play.js';
 import { crawlerRenderSetLODBiasRange } from './crawler_render';
 import { FONT_HEIGHT, game_height, game_width } from './globals';
-import { PAL_BLACK, PAL_BLACK_PURE, PAL_BLUE, PAL_GREY, palette, palette_font } from './palette';
+import {
+  PAL_BLACK,
+  PAL_BLACK_PURE,
+  PAL_GREY,
+  palette,
+  palette_font,
+} from './palette';
 import { playStartup } from './play';
 import { SOUND_DATA } from './sound_data';
 import { titleInit, titleStartup } from './title';
@@ -63,14 +69,14 @@ Z.BACKGROUND = 1;
 Z.CONTROLLER_FADE = 5;
 Z.SPRITES = 10;
 Z.PARTICLES = 20;
-Z.CHAT = 260;
+Z.CHAT = 1260;
 Z.UI = 100;
 Z.BORDERS = 120;
 Z.MAP = Z.UI + 5; // also minimap
 Z.FLOATERS = Z.MODAL + 20;
 Z.DIALOG = 140;
 Z.STATUS = 160;
-Z.CHAT_FOCUSED = 260;
+Z.CHAT_FOCUSED = 1260;
 
 let fonts: Font[] | undefined;
 
@@ -283,7 +289,7 @@ export function main(): void {
   uiSetPanelColor([1, 1, 1, 1]);
   ui.setFontStyles(
     fontStyleColored(null, palette_font[PAL_BLACK]),
-    fontStyleColored(null, palette_font[PAL_BLUE]),
+    fontStyleColored(null, palette_font[PAL_BLACK_PURE]),
     fontStyleColored(null, palette_font[PAL_BLACK]),
     fontStyleColored(null, palette_font[PAL_GREY[1]]),
   );

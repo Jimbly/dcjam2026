@@ -52,4 +52,6 @@ export const TEXT = {
   // misc
   RASA_NOEXIT_ON_WAY_IN: 'Did I give in to my fear?  No!  I did not go back, but ventured onward...',
   RASA_NOEXIT_ON_WAY_OUT: 'No need to go back down, off to the next adventure!',
+
+  RASA_UPON_DEATH: 'No, no, no!  That\'s not what happened.  Okay everybody, let\'s take five and then try this again.',
 };

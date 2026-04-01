@@ -1,11 +1,7 @@
 TODO - The Adventures of Draco Vacuus and the Chromatic Dragons
 ====
 
-Upon death, reset floor, try again (keeping gains), deduct a life?
-  story upon death
-    "No, no, no!  That's not what happened.  Okay everybody, let's take five and then try this again."
-
-track score - element, total friends (higher), damage dealt (lower)
+track score - element, deaths, total friends (higher), damage dealt (lower)
 
 tooltips everywhere - fixed screen location (per Action) for tooltips to show up?
   need tooltips on pool showing card + description
@@ -23,7 +19,7 @@ wandering cat
 floor title - top and center?
 different text color for all of Rasa's speech?
 
-try depixel scale up by 4, then do 2 bilinear filters down to get 16xMSAA
+walls: try depixel scale up by 4, then do 2 bilinear filters down to get 16xMSAA
 
 Level sizes
   ~4 enemies per level

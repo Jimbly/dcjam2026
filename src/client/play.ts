@@ -23,7 +23,7 @@ import {
   PAD,
   padButtonUpEdge,
 } from 'glov/client/input';
-import { localStorageSet } from 'glov/client/local_storage';
+import { localStorageGetJSON, localStorageSet, localStorageSetJSON } from 'glov/client/local_storage';
 import { markdownAuto } from 'glov/client/markdown';
 import { markdownImageRegisterAutoAtlas, markdownSetColorStyle } from 'glov/client/markdown_renderables';
 import { ClientChannelWorker, netSubs } from 'glov/client/net';
@@ -50,6 +50,7 @@ import {
   modalDialog,
   panel,
   playUISound,
+  uiButtonHeight,
   uiButtonWidth,
   uiGetFont,
   uiTextHeight,
@@ -60,7 +61,7 @@ import {
   EntityID,
   TSMap,
 } from 'glov/common/types';
-import { clamp, easeIn, easeOut, ridx } from 'glov/common/util';
+import { clamp, clone, easeIn, easeOut, ridx } from 'glov/common/util';
 import { unreachable } from 'glov/common/verify';
 import {
   JSVec2,
@@ -152,6 +153,7 @@ import {
   crawlerTurnBasedMovePreStart,
   crawlerTurnBasedScheduleStep,
   getScaledFrameDt,
+  SavedGameData,
   TurnBasedStepReason,
 } from './crawler_play';
 import {
@@ -170,7 +172,7 @@ import {
 import { crawlerScriptAPIDummyServer } from './crawler_script_api_client';
 import { crawlerOnScreenButton } from './crawler_ui';
 import { dialogNameRender, keyClear, keyGet, keySet, myElement } from './dialog_data';
-import { dialog, dialogFlag, dialogMoveLocked, dialogRun, dialogStartup } from './dialog_system';
+import { dialog, dialogActive, dialogFlag, dialogMoveLocked, dialogRun, dialogStartup } from './dialog_system';
 import {
   entitiesAt,
   EntityClient,
@@ -209,12 +211,13 @@ import {
   statusTick,
 } from './status';
 import { style_damage, style_floater, style_hotkey, style_label, style_text } from './styles';
+import { TEXT } from './text';
 import { uiActionClear, uiActionCurrent, uiActionTick } from './uiaction';
 import { pauseMenuActive, pauseMenuOpen } from './uiaction_pause_menu';
 import { pickChestOptions, shopOpen } from './uiaction_shop';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const { atan2, floor, max, min, random, round, sqrt, PI } = Math;
+const { atan2, ceil, floor, max, min, random, round, sqrt, PI } = Math;
 
 declare module 'glov/client/settings' {
   export let ai_pause: 0 | 1; // TODO: move to ai.ts
@@ -1678,6 +1681,10 @@ export function attackPlayer(source: Entity, target: Entity, attack: EnemyMove):
 function moveBlockDead(): boolean {
   controller.setFadeOverride(0.75);
 
+  if (autoResetSkippedFrames('moveBlockDead')) {
+    autosave();
+  }
+
   const BORDER_PAD = 32;
   let y = VIEWPORT_Y0;
   let w = render_width - BORDER_PAD * 2;
@@ -1685,21 +1692,81 @@ function moveBlockDead(): boolean {
   let h = render_height;
   let z = Z.UI + 20;
 
-  font.drawSizedAligned(null,
-    x + floor(w/2), y + floor(h/2) - 16, z,
-    uiTextHeight(), ALIGN.HCENTER|ALIGN.VBOTTOM,
-    0, 0, 'You have died.');
+  if (!dialogActive()) {
+    dialog('monologue', TEXT.RASA_UPON_DEATH);
+  }
 
-  if (buttonText({
-    x: x + floor(w/2 - uiButtonWidth()/2), y: y + floor(h/2), z,
-    text: 'Respawn',
-  })) {
-    myEnt().data.stats.hp = myEnt().data.stats.hp_max;
-    myEnt().resetDeck();
+  y += floor(h/2) - 100;
+  let y0 = y;
+  y += markdownAuto({
+    font_style: style_label,
+    x: x + floor(w/8),
+    w: ceil(w*3/4),
+    y, z,
+    align: ALIGN.HCENTER | ALIGN.HWRAP,
+    line_height: 10,
+    text: 'Your deck has been exhausted, and you have been defeated.' +
+      '\n\nYou can restart (keeping any earned cards and resources) at the' +
+      ' beginning of the floor or the dungeon.' +
+      '\n\nNote that you will earn a [img=black-skull scale=1.3] Black Skull, impacting your' +
+      ' final score, indicating a non-perfect run.',
+  }).h;
+  y += 8;
+
+  let me = myEnt();
+
+  let this_floor = me.data.floor;
+  function respawn(floor_id: number): void {
+    for (let check_floor_id = floor_id; check_floor_id <= this_floor; ++check_floor_id) {
+      keySet(`respawn_floor_${check_floor_id}`);
+    }
+
+    if (me.data.gold > 3 || me.data.respect > 3) {
+      keySet('needs_shop');
+    }
+    me.data.deaths = (me.data.deaths || 0) + 1;
+    me.data.stats.hp = me.data.stats.hp_max;
+    me.resetDeck();
     playUISound('reset_deck');
     combatStateReset();
-    controller.goToFloor(0, 'stairs_in', 'respawn');
+    controller.goToFloor(floor_id, 'stairs_in', 'respawn');
   }
+
+  let dungeon_start = this_floor - (this_floor % 10);
+
+  if (buttonText({
+    x: x + floor(w/2 - uiButtonWidth() - 4/2), y, z,
+    text: 'Retry Floor',
+  })) {
+    respawn(this_floor);
+  }
+
+  if (buttonText({
+    x: x + floor(w/2 + 4/2), y, z,
+    disabled: this_floor === dungeon_start,
+    text: 'Retry Dungeon',
+  })) {
+    respawn(dungeon_start);
+  }
+  y += uiButtonHeight() + 4;
+
+  let button_w = uiButtonWidth() * 2 + 4;
+  if (buttonText({
+    x: x + floor(w/2 - button_w/2), y, z,
+    w: button_w,
+    text: 'Exit to Title (new game)',
+  })) {
+    urlhash.go('');
+  }
+  y += uiButtonHeight() + 4;
+
+  panel({
+    x: x + floor(w/10),
+    y: y0 - 16,
+    w: ceil(w * 4/5),
+    h: y - y0 + 16 * 2,
+    z: Z.UI + 18,
+  });
 
   return true;
 }
@@ -1744,7 +1811,15 @@ function bumpEntityCallback(ent_id: EntityID): void {
 
 const RIGHT_BAR_W = 22;
 const RIGHT_BAR_X = game_width - 12 - RIGHT_BAR_W;
-const RIGHT_BAR_H = 120-12;
+//const RIGHT_BAR_H = 120-12;
+function rightBarH(): number {
+  let h = 120 - 12;
+  let me = myEntOptional();
+  if (me && me.data.deaths) {
+    h += 12;
+  }
+  return h;
+}
 function drawBorders(): void {
   [
     [0, 0],
@@ -1752,7 +1827,7 @@ function drawBorders(): void {
     [game_width - 12, 0],
     [game_width - 12, game_height - 12],
     [RIGHT_BAR_X - 12, 0],
-    [game_width - 12, RIGHT_BAR_H + 12],
+    [game_width - 12, rightBarH() + 12],
   ].forEach(function (pair) {
     autoAtlas('ui', 'border-corner').draw({
       x: pair[0],
@@ -1763,7 +1838,7 @@ function drawBorders(): void {
   });
   autoAtlas('ui', 'border-ll').draw({
     x: RIGHT_BAR_X - 12,
-    y: RIGHT_BAR_H + 12,
+    y: rightBarH() + 12,
     w: 12, h: 12,
     z: Z.BORDERS + 0.1,
   });
@@ -1771,7 +1846,7 @@ function drawBorders(): void {
   [
     [0, game_width - 24],
     [game_height - 12, game_width - 24],
-    [RIGHT_BAR_H + 12, RIGHT_BAR_W, RIGHT_BAR_X],
+    [rightBarH() + 12, RIGHT_BAR_W, RIGHT_BAR_X],
   ].forEach(function (pair) {
     autoAtlas('ui', 'bar-horiz').draw({
       x: pair[2] || 12, y: pair[0], z: Z.BORDERS,
@@ -1783,7 +1858,7 @@ function drawBorders(): void {
   [
     [0, game_height - 24],
     [game_width - 12, game_height - 24],
-    [RIGHT_BAR_X - 12, RIGHT_BAR_H],
+    [RIGHT_BAR_X - 12, rightBarH()],
   ].forEach(function (pair) {
     autoAtlas('ui', 'bar-vert').draw({
       x: pair[0], y: 12, z: Z.BORDERS,
@@ -1795,7 +1870,7 @@ function drawBorders(): void {
   drawRect2({
     x: RIGHT_BAR_X - 6, y: 6,
     w: RIGHT_BAR_W + 12,
-    h: RIGHT_BAR_H + 12,
+    h: rightBarH() + 12,
     z: Z.UI - 0.1,
     color: palette[PAL_GREY[1]],
   });
@@ -1873,6 +1948,11 @@ function drawHud(): void {
       '\n\n[c=note]Gain [c=gold]gold[/c] from defeated monsters[/c]', data.gold || 0],
     ['currency-respect', 'Respect (for [c=green]upgrading[/c] cards)' +
       '\n\n[c=note]Gain [c=respect]respect[/c] from yielded monsters[/c]', data.respect || 0],
+    ...(
+      data.deaths ? [[
+        'black-skull', 'Retries', data.deaths
+      ] as const] : []
+    )
   ] as const).forEach(function (pair, idx) {
     let [img, tooltip, value] = pair;
     let h = idx >= 4 ? 14 : 12;
@@ -2528,6 +2608,30 @@ cmd_parse.register({
 });
 
 cmd_parse.register({
+  cmd: 'save_backup',
+  help: 'Make a backup save to restore later',
+  func: function (str, resp_func) {
+    crawlerSaveGame('backup' as 'manual');
+    resp_func();
+  },
+});
+
+cmd_parse.register({
+  cmd: 'save_restore',
+  help: 'Copies from the backup save into the auto save slot',
+  func: function (str, resp_func) {
+    let slot = urlhash.get('slot') || '1';
+    let data = localStorageGetJSON<SavedGameData>(`savedgame_${slot}.backup`);
+    if (!data) {
+      return resp_func('No backup found');
+    }
+    data.timestamp = Date.now();
+    localStorageSetJSON<SavedGameData>(`savedgame_${slot}.auto`, data);
+    resp_func(null, 'Backup copied to auto, reload browser to reload save');
+  },
+});
+
+cmd_parse.register({
   cmd: 'wipesave',
   help: 'Delete this save slot (manual and auto)',
   func: function (str, resp_func) {
@@ -2603,6 +2707,35 @@ function initLevel(cem: ClientEntityManagerInterface<Entity>, floor_id: number, 
   ) {
     keySet(`did_healtro_${floor_elem}`);
     dialog('healtro');
+  }
+
+  if (keyGet(`respawn_floor_${floor_id}`)) {
+    keyClear(`respawn_floor_${floor_id}`);
+    // respawn - remove any entities except chests
+    let entity_manager = entityManager();
+    let { entities } = entity_manager;
+    for (let ent_id_str in entities) {
+      let ent_id = Number(ent_id_str);
+      let ent = entities[ent_id]!;
+      if (ent.data.floor === floor_id) {
+        if (/*ent.type_id === 'chest' || */ent.type_id === 'player') {
+          // do not touch
+        } else {
+          entity_manager.deleteEntity(ent_id, 'respawn');
+        }
+      }
+    }
+    if (level.initial_entities) {
+      let initial_entities = clone(level.initial_entities);
+      for (let ii = 0; ii < initial_entities.length; ++ii) {
+        let ent_json = initial_entities[ii];
+        ent_json.floor = floor_id;
+        // if (ent_json.type === 'chest') {
+        //   continue;
+        // }
+        entity_manager.addEntityFromSerialized(ent_json);
+      }
+    }
   }
 }
 

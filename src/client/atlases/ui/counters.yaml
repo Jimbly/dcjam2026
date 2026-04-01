@@ -5,3 +5,4 @@ tiles:
   counter-dead: [3, 0]
   counter-yield: [4, 0]
   counter-recov: [6, 0]
+  black-skull: [7, 0]

@@ -89,6 +89,7 @@ export type EntityDataClient = {
   respect: number;
   shop_options: CardID[];
   shop_state?: DataObject;
+  deaths?: number;
   // Monster:
   next_move: number;
   alert: boolean;
