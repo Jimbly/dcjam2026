@@ -121,4 +121,9 @@ export const SOUND_DATA = {
     volume: 1,
   },
 
+  poison: {
+    file: 'poison',
+    volume: 1,
+  },
+
 } satisfies Partial<Record<string, UISoundID | string | string[] | UISoundID[]>>;

@@ -58,6 +58,7 @@ import {
   modalDialog,
   panel,
   playUISound,
+  suppressNewDOMElemWarnings,
   uiButtonHeight,
   uiButtonWidth,
   uiGetFont,
@@ -519,6 +520,7 @@ function drawStatsOverViewport(): void {
   let blink = 1;
   let used_pos: undefined | TSMap<true>;
   for (let ii = incoming_damage.length - 1; ii >= 0; --ii) {
+    suppressNewDOMElemWarnings();
     let floater = incoming_damage[ii];
     const { from } = floater;
     let elapsed = engine.frame_timestamp - floater.start;
@@ -654,11 +656,11 @@ function calcAttackCameraOffs(): Vec3 {
   return attack_camera_offs;
 }
 
-function drawBlock(x: number, y: number, block: number): void {
+function drawBlock(x: number, y: number, block: number): number {
   if (!block) {
-    return;
+    return x;
   }
-  if (block <= 5) {
+  if (block <= 5 && false) {
     for (let ii = 0; ii < block; ++ii) {
       autoAtlas('ui', 'block').draw({
         x, y, w: 14, h: 14, z: Z.UI - 2,
@@ -675,7 +677,26 @@ function drawBlock(x: number, y: number, block: number): void {
       align: ALIGN.HVCENTERFIT,
       text: `${block}`,
     });
+    x += 14;
   }
+  return x + 1;
+}
+
+function drawPoison(x: number, y: number, value: number): number {
+  if (!value) {
+    return x;
+  }
+  autoAtlas('ui', 'poison').draw({
+    x, y, w: 14, h: 14, z: Z.UI - 2,
+  });
+  font.draw({
+    style: style_text,
+    x, y, w: 14, h: 14, z: Z.UI - 1.5,
+    align: ALIGN.HVCENTERFIT,
+    text: `${value}`,
+  });
+  x += 14;
+  return x + 1;
 }
 
 export function healMode(): boolean {
@@ -758,7 +779,9 @@ function drawEnemyStats(ent: Entity): void {
   let show_text = true;
   drawHealthBar(ENEMY_HP_BAR_X, ENEMY_HP_BAR_Y, Z.UI, ENEMY_HP_BAR_W, bar_h,
     blend(`enemyhp${ent.id}`, hp + 1), hp_max + 1, show_text);
-  drawBlock(ENEMY_HP_BAR_X + ENEMY_HP_BAR_W + 2, ENEMY_HP_BAR_Y + floor((bar_h - 14) / 2), ent.data.block);
+  let x = ENEMY_HP_BAR_X + ENEMY_HP_BAR_W + 2;
+  x = drawBlock(x, ENEMY_HP_BAR_Y + floor((bar_h - 14) / 2), ent.data.block);
+  drawPoison(x, ENEMY_HP_BAR_Y + floor((bar_h - 14) / 2), ent.data.poison || 0);
   let label_msg = ent.display_name;
   if (ent.is_boss && hp <= 0) {
     // no suffix
@@ -860,10 +883,12 @@ function drawInWorldHealthbar(
   }
 }
 
+let ranged_targetting_me = false;
 const INFRONT_ANIMATING_THRESHOLD = 0.75;
 function doHealthbars(): void {
   let game_state = crawlerGameState();
   let level = game_state.level;
+  ranged_targetting_me = false;
   if (!level) {
     return;
   }
@@ -912,6 +937,13 @@ function doHealthbars(): void {
       let ent = ents[ii];
       ent.draw_cb = drawInWorldHealthbar;
       ent.draw_cb_frame = engine.getFrameIndex();
+
+      if (!ranged_targetting_me && ent.monsterRangedGet()) {
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define
+        if (findRangedTargetForEnemy(ent)) {
+          ranged_targetting_me = true;
+        }
+      }
     }
   }
 }
@@ -1201,7 +1233,7 @@ function doReshuffle(): void {
     if (data.incoming_damage) {
       let amt = data.incoming_damage;
       data.incoming_damage = 0;
-      me.takeDamage(amt);
+      me.takeDamage(amt, false);
     }
   }
 }
@@ -1286,7 +1318,7 @@ let ranged_attack_range = 3;
 let ranged_incoming_attack_counter = 0;
 let ranged_incoming_attack_pos: JSVec2;
 
-function applyDamage(target_ent: Entity | null, value: number): void {
+function applyDamage(target_ent: Entity | null, value: number, bypass_block: boolean): void {
   let me = myEnt();
   let { data } = me;
   let { heal_mode } = data;
@@ -1317,7 +1349,7 @@ function applyDamage(target_ent: Entity | null, value: number): void {
     } else if (!heal_mode && target_ent.isAlive()) {
       let stats = target_ent.data.stats;
       let msg = [];
-      if (target_ent.data.block) {
+      if (target_ent.data.block && !bypass_block) {
         let blocked = min(target_ent.data.block, value);
         msg.push(`-${blocked}[img=block]`);
         value -= blocked;
@@ -1367,6 +1399,31 @@ function applyDamage(target_ent: Entity | null, value: number): void {
   }
 }
 
+export function tickDOTs(enemy: Entity): void {
+  let { data } = enemy;
+  if (data.poison) {
+    let damage = data.poison;
+    data.poison--;
+    applyDamage(enemy, damage, true);
+  }
+}
+
+export function tickPlayerDOTs(): void {
+  let me = myEnt();
+  let { data } = me;
+  if (data.poison) {
+    let damage = data.poison;
+    data.poison--;
+
+    me.takeDamage(damage, false);
+    incoming_damage.push({
+      start: engine.frame_timestamp,
+      msg: `-${damage}[img=cardicon]`,
+      from: 0,
+    });
+  }
+}
+
 function cardSound(
   no_target: boolean,
   no_ranged_target: boolean,
@@ -1399,6 +1456,8 @@ function cardSound(
       return 'hero_shoots';
     } else if (key === 'block') {
       return 'gain_block';
+    } else if (key === 'poison') {
+      return 'poison';
     } else if (key === 'heal') {
       assert(false); // TODO
     } else if (key === 'burn') {
@@ -1433,13 +1492,19 @@ function playCard(
   for (key in effects) {
     let value = effects[key]![tier];
     if (key === 'damage') {
-      applyDamage(target_ent, value);
+      applyDamage(target_ent, value, false);
     } else if (key === 'ranged') {
       ranged_attack_counter = RANGED_ANIM_TIME;
       ranged_attack_range = v2manhattanDist(ranged_target!.data.pos, myEnt().data.pos);
-      applyDamage(ranged_target, value);
+      applyDamage(ranged_target, value, false);
     } else if (key === 'block') {
       data.block = (data.block || 0) + value;
+    } else if (key === 'poison') {
+      if (target_ent) {
+        let target_data = target_ent.data;
+        target_data.poison = (target_data.poison || 0) + value;
+        addFloater(target_ent.id, `${value}[img=poison]`, undefined, true);
+      }
     } else if (key === 'heal') {
       assert(false); // TODO
     } else if (key === 'burn') {
@@ -1454,6 +1519,7 @@ function playCard(
   } else {
     discard_pile.push(uid);
   }
+  tickPlayerDOTs();
   data.combat_phase = 'enemy';
   crawlerTurnBasedScheduleStep(250, 'attack');
   let sound = cardSound(no_target, no_ranged_target, target_ent, ranged_target, card);
@@ -1468,6 +1534,7 @@ function discardCard(hand_index: number): void {
   let uid = hand[hand_index];
   hand.splice(hand_index, 1);
   discard_pile.push(uid);
+  tickPlayerDOTs();
   data.combat_phase = 'enemy';
   crawlerTurnBasedScheduleStep(250, 'attack');
   playUISound('card_discard');
@@ -1830,7 +1897,8 @@ function doHand(): void {
 
   x = DRAW_PILE_X;
   y = DRAW_PILE_Y - 16;
-  drawBlock(x, y, data.block);
+  x = drawBlock(x, y, data.block);
+  x = drawPoison(x, y, data.poison || 0);
 }
 
 function moveBlocked(): boolean {
@@ -1883,7 +1951,7 @@ export function attackPlayer(source: Entity, target: Entity, attack: EnemyMove, 
       let dss = (source as unknown as EntityDrawableSprite).drawable_sprite_state;
       dss.surge_at = engine.frame_timestamp;
       dss.surge_time = 250;
-      let blocked = myEnt().takeDamage(value);
+      let blocked = myEnt().takeDamage(value, false);
       let unblocked = value - blocked;
       let msg = [];
       if (blocked) {
@@ -1907,6 +1975,14 @@ export function attackPlayer(source: Entity, target: Entity, attack: EnemyMove, 
       });
     } else if (key === 'block') {
       source.data.block = (source.data.block || 0) + value;
+    } else if (key === 'poison') {
+      playSoundFromEnt(source, 'poison');
+      target.data.poison = (target.data.poison || 0) + value;
+      incoming_damage.push({
+        start: engine.frame_timestamp,
+        msg: `${value}[img=poison]`,
+        from: rot,
+      });
     } else if (key === 'heal') {
       assert(false); // TODO
     } else if (key === 'burn') {
@@ -2616,7 +2692,7 @@ function isCombat(): boolean {
   ents = ents.filter(function (e) {
     return e.isAlive() && e.isEnemy();
   });
-  return ents.length > 0;
+  return ents.length > 0 || ranged_targetting_me;
 }
 
 function isDefeatedBoss(): boolean {
@@ -2719,14 +2795,19 @@ export function play(dt: number): void {
 
   let overlay_menu_up = Boolean(uiActionCurrent()?.is_overlay_menu || dialogMoveLocked());
 
-  let is_combat = isCombat();
-  let element = myEntOptional()?.floorElement() || 'earth';
-  let music: string | null = `bgm_${element}_${healMode() ? 'heal' : is_combat ? 'combat' : 'explore'}`;
-  if (isDefeatedBoss()) {
-    music = null;
+  {
+    let is_combat = isCombat();
+    let element = myEntOptional()?.floorElement() || 'earth';
+    if (element === 'water') {
+      element = 'ice';
+    }
+    let music: string | null = `bgm_${element}_${healMode() ? 'heal' : is_combat ? 'combat' : 'explore'}`;
+    if (isDefeatedBoss()) {
+      music = null;
+    }
+    bgm_track = music;
+    tickMusic((game_state.level?.props.music as string) || music); // || 'default_music'
   }
-  bgm_track = music;
-  tickMusic((game_state.level?.props.music as string) || music); // || 'default_music'
   crawlerPlayTopOfFrame(overlay_menu_up, false);
 
   profilerStopStart('mid');
@@ -2907,7 +2988,7 @@ cmd_parse.register({
     let ent_in_front = crawlerEntInFront();
     if (ent_in_front) {
       let target_ent = entities[ent_in_front]!;
-      applyDamage(target_ent, damage);
+      applyDamage(target_ent, damage, false);
     }
     resp_func();
   },

@@ -3,7 +3,7 @@ import { TSMap } from 'glov/common/types';
 export const HAND_SIZE = 5;
 export const MAX_TIER = 3;
 
-export type CardEffect = 'damage' | 'heal' | 'block' | 'burn' | 'ranged';
+export type CardEffect = 'damage' | 'heal' | 'block' | 'burn' | 'ranged' | 'poison';
 export type NumberPerTier = [number, number, number, number];
 const ONES: NumberPerTier = [1,1,1,1];
 
@@ -29,10 +29,12 @@ export const EFFECT_TEMPLATE: Record<CardEffect, EffectVis> = {
   heal: { prefix: true, img: 'heal' },
   block: { prefix: true, img: 'block' },
   burn: { prefix: false, img: 'burn' },
+  poison: { prefix: true, img: 'poison' },
 };
 export const EFFECT_NEEDS_TARGET: Record<CardEffect, boolean | 'auto' | 'ranged'> = {
   damage: true,
   ranged: 'ranged',
+  poison: true,
   heal: true,
   block: false,
   burn: 'auto',
@@ -43,7 +45,8 @@ export const CARDS_RAW = {
     cost: 1,
     name: 'Jab',
     effect: {
-      damage: [2, 2+1, 2+2, 2+3],
+      // damage: [2, 2+1, 2+2, 2+3],
+      poison: [1, 1, 2, 2],
     },
     healeffect: {
       damage: [5, 5+1, 5+2, 5+3],

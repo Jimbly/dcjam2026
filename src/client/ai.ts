@@ -29,7 +29,7 @@ import {
 import { crawlerEntFactory } from './crawler_entity_client';
 import { TurnBasedStepReason } from './crawler_play';
 import { EntityClient } from './entity_game_client';
-import { attackPlayer, findRangedTargetForEnemy, myEnt, playSoundFromEnt } from './play';
+import { attackPlayer, findRangedTargetForEnemy, myEnt, playSoundFromEnt, tickDOTs } from './play';
 import { statusSet } from './status';
 
 const { abs, floor, random } = Math;
@@ -331,6 +331,12 @@ export function aiTraitsClientStartup(): void {
           return false;
         }
 
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define
+        if (aiDoEnemyRanged(this)) {
+          profilerStopFunc();
+          return true;
+        }
+
         let { target_pos } = this.hunter_state;
 
         // head towards target
@@ -502,24 +508,22 @@ function aiDoEnemy(
   payload: AIStepPayload,
 ): boolean {
   profilerStartFunc();
+
+  tickDOTs(ent);
+  if (!ent.isAlive()) {
+    profilerStopFunc();
+    return true;
+  }
+
   let target_ent = foeNear(game_state, ent, script_api);
   if (defines?.PEACE || defines?.AIPEACE) {
     target_ent = null;
   }
   // enemy attack logic goes here
-  let is_ranged = false;
-  let move;
-  if (!target_ent && ent.monsterRangedGet()) {
-    target_ent = findRangedTargetForEnemy(ent);
-    is_ranged = true;
-    move = ent.monsterRangedGet()!;
-  } else {
-    move = ent.monsterMoveGet();
-  }
 
   let ret = false;
   if (target_ent) {
-    attackPlayer(ent, target_ent, move, is_ranged);
+    attackPlayer(ent, target_ent, ent.monsterMoveGet(), false);
     ent.monsterMovePick();
     ret = true;
   }
@@ -528,6 +532,18 @@ function aiDoEnemy(
   return ret;
 }
 
+function aiDoEnemyRanged(ent: Entity): boolean {
+  // enemy attack logic goes here
+  let move = ent.monsterRangedGet();
+  if (move) {
+    let target_ent = findRangedTargetForEnemy(ent);
+    if (target_ent) {
+      attackPlayer(ent, target_ent, move, true);
+      return true;
+    }
+  }
+  return false;
+}
 
 export function aiDoFloor(params: {
   floor_id: number;
@@ -665,7 +681,7 @@ export function aiStepFloor(params: {
       no_move = true;
     }
 
-    if (!no_move) {
+    if (!no_move && ent.isAlive()) {
       let moved = false;
       if (!moved && (ent as EntityHunter).aiHunt && !defines?.PEACE) {
         moved = (ent as EntityHunter).aiHunt(game_state, script_api, payload);

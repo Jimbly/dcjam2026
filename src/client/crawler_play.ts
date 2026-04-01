@@ -139,7 +139,7 @@ import {
 } from './crawler_script_api_client';
 import { dialogReset } from './dialog_system';
 import { entityManager } from './entity_game_client';
-import { healMode } from './play';
+import { healMode, tickPlayerDOTs } from './play';
 
 const { PI, max, floor, round } = Math;
 
@@ -803,6 +803,7 @@ function crawlerTurnBasedMoveStart(pos: Vec2): void {
   if (turn_based_allowed?.() !== false) {
     executeStep();
   }
+  tickPlayerDOTs();
   need_turn_based_step = true;
   turn_based_step_reason = 'move';
   turn_based_step_countdown = 0; // fire as soon as we're done animating

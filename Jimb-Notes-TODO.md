@@ -66,6 +66,7 @@ pierce
 remove armor
 buff next attack (good for enemies - cancel upon kiting!)
 poison
+burn (on player) - 1 damage per turn until player moves
 clear debuffs (self)
 1 damage + 1 per time it was played this floor
 "charge" - gains one damage for each step while in hand

@@ -79,6 +79,7 @@ export type EntityDataClient = {
   heal_mode: boolean;
   incoming_damage: number;
   block: number;
+  poison?: number;
   deck: Record<number, Card>; // uid -> card
   picked: number[]; // array of uids in working set
   draw_pile: number[]; // array of uids
@@ -186,6 +187,7 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
         this.populateDrawPileFromDeck();
         this.drawHand();
         data.block = 0;
+        data.poison = 0;
       }
       if (!data.combat_phase) {
         data.combat_phase = 'player';
@@ -295,15 +297,18 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
     let { data } = this;
     // Reduce block each turn?
     data.block = data.block ? data.block - 1 : 0;
+    data.poison = data.poison ? data.poison - 1 : 0;
   }
 
-  takeDamage(amt: number): number {
+  takeDamage(amt: number, bypass_block: boolean): number {
     let { data } = this;
     let { hand, discard_pile, draw_pile } = data;
     let blocked = 0;
-    blocked = min(data.block || 0, amt);
-    data.block -= blocked;
-    amt -= blocked;
+    if (!bypass_block) {
+      blocked = min(data.block || 0, amt);
+      data.block -= blocked;
+      amt -= blocked;
+    }
     while (amt && (hand.length || draw_pile.length)) {
       --amt;
       let uid;
@@ -317,7 +322,7 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
       discard_pile.push(uid);
     }
     if (amt) {
-      data.incoming_damage = amt;
+      data.incoming_damage += amt;
     }
     return blocked;
   }
@@ -328,6 +333,9 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
 
   floorElement(): string {
     let dungeon = floor(this.data.floor / 10) - 2;
+    if (this.data.floor < 20) {
+      return 'earth';
+    }
     return ['earth', 'water', 'fire'][dungeon] || 'fire';
   }
   floorElementNumber(): 0 | 1 | 2 {
@@ -422,15 +430,20 @@ export function gameEntityTraitsClientStartup(
         },
       },
       moves: [{
-        name: 'Splat',
+        name: 'Infect',
         effect: {
-          damage: 3,
+          poison: 2,
         },
-      }, {
-        name: 'Defend',
-        effect: {
-          block: 2,
-        },
+
+      // name: 'Splat',
+      // effect: {
+      //   damage: 3,
+      // },
+      // }, {
+      //   name: 'Defend',
+      //   effect: {
+      //     block: 2,
+      //   },
       }],
     },
     properties: {
