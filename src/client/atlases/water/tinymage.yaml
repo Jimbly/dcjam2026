@@ -1,0 +1,16 @@
+---
+tile_res: [32, 32]
+tiles:
+  tinymage-idle0: [0, 0]
+  tinymage-idle1: [1, 0]
+  tinymage-idle2: [2, 0]
+  tinymage-idle3: [3, 0]
+
+  tinymage-death0: [0, 1]
+  tinymage-death1: [1, 1]
+  tinymage-death2: [2, 1]
+  tinymage-death3: [3, 1]
+  tinymage-death4: [4, 1]
+  tinymage-death5: [5, 1]
+
+  tinymage-uncon0: [1, 2]

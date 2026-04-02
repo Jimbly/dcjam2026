@@ -249,7 +249,6 @@ module.exports = function (opts) {
       const tile_regex = config_data?.tile_regex || null;
       const pad = config_data?.pad || 8;
       const max_tex_size = config_data?.max_tex_size || 1024;
-      console.log('!!!', name, config_data);
 
       let file_keys = Object.keys(file_data);
       file_keys.sort(cmpFileKeys);

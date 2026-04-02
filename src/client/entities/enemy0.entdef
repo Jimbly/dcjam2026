@@ -11,10 +11,174 @@ traits:
   # biasF: [0, -0.25]
   # biasR: [-0.25, 0.5]
 - id: drawable_sprite
+  sprite_data:
+    atlas: test-depixel
+    filter_min: LINEAR_MIPMAP_LINEAR
+    filter_mag: LINEAR
+    origin: [0.5, 1]
+  scale: 1
+  shadow:
+    atlas: main
+    name: shadow2
   anim_data:
     idle:
-      frames: [mushroom2]
+      frames: [beholder]
       times: 200
+  fire-special:
+    # scale: 1
+    # shadow:
+    #   atlas: main
+    #   name: shadow2
+    idle:
+      frames: [elemental-idle0, elemental-idle1, elemental-idle2, elemental-idle3]
+      times: 150
+    death:
+      frames: [elemental-death0, elemental-death1, elemental-death2, elemental-death3, elemental-death4, elemental-death5]
+      times: 200
+      loop: false
+    uncon:
+      frames: [elemental-aa0, elemental-aa1, elemental-aa2, elemental-aa3]
+      times: 300
+  fire-balanced:
+    # scale: 0.9
+    # no shadow
+    idle:
+      frames: [slime-idle0, slime-idle1, slime-idle2, slime-idle3, slime-idle4, slime-idle5]
+      times: 200
+    death:
+      frames: [slime-death0, slime-death1, slime-death2, slime-death3, slime-death4, slime-death5, slime-death6, slime-death7, slime-death8, slime-death9]
+      times: 120
+      transition_to: death_loop
+      loop: false
+    death_loop:
+      frames: [slime-death8, slime-death9, slime-death8, slime-death7, slime-death6, slime-death7, ]
+      times: 120
+      loop: true
+    uncon:
+      frames: [slime-uncon2, slime-uncon1, slime-uncon0, slime-uncon1]
+      times: 300
+  fire-hitter:
+    # scale: 1.2
+    # shadow:
+    #   atlas: main
+    #   name: shadow2
+    idle:
+      frames: [demonboss-idle2, demonboss-idle3, demonboss-idle4, demonboss-idle5, demonboss-idle4, demonboss-idle3, demonboss-idle2, demonboss-idle1]
+      times: 150
+    death:
+      frames: [demonboss-death0, demonboss-death1, demonboss-death2, demonboss-death3, demonboss-death4]
+      times: 400
+      loop: false
+    uncon:
+      frames: [demonboss-death5, demonboss-death3]
+      times: 300
+  fire-ranged:
+    # scale: 0.9
+    # shadow:
+    #   atlas: main
+    #   name: shadow2
+    idle:
+      frames: [tinyyellow-idle0, tinyyellow-idle1, tinyyellow-idle2, tinyyellow-idle3]
+      times: 180
+    death:
+      frames: [tinyyellow-death0, tinyyellow-death1, tinyyellow-death2, tinyyellow-death3, tinyyellow-death4, tinyyellow-death5]
+      times: 200
+      loop: false
+    uncon:
+      # frames: [tinyyellow-uncon0, tinyyellow-uncon2, tinyyellow-uncon1, tinyyellow-uncon2]
+      # times: [300, 100, 150, 250]
+      frames: [tinyyellow-death2, tinyyellow-death3]
+      times: [300, 700]
+  fire-blocker:
+    # scale: 1.3
+    # shadow:
+    #   atlas: main
+    #   name: shadow2
+    idle:
+      frames: [golem3-idle0, golem3-idle1, golem3-idle2, golem3-idle3]
+      times: 200
+    death:
+      frames: [golem3-death0, golem3-death1, golem3-death2, golem3-death3, golem3-death4, golem3-death5, golem3-death6, golem3-death7]
+      times: 180
+      loop: false
+    uncon:
+      frames: [golem3-uncon0, golem3-uncon1, golem3-uncon2, golem3-uncon3]
+      times: 400
+  water-special:
+    # could use vertical animation? could remove it from the sprites?
+    # scale: 1
+    # shadow:
+    #   atlas: main
+    #   name: shadow1
+    idle:
+      frames: [beholder-idle0, beholder-idle1, beholder-idle2, beholder-idle3]
+      times: 180
+    death:
+      frames: [beholder-death0, beholder-death1, beholder-death2, beholder-death3]
+      times: [400, 1000, 500, 500]
+      loop: true
+    uncon:
+      frames: [beholder-bb2, beholder-aa1, beholder-aa2, beholder-aa3, beholder-aa2, beholder-aa1]
+      times: 200
+  water-ranged:
+    # scale: 0.9
+    # shadow:
+    #   atlas: main
+    #   name: shadow2
+    idle:
+      frames: [tinymage-idle0, tinymage-idle1, tinymage-idle2, tinymage-idle3]
+      times: 180
+    death:
+      frames: [tinymage-death0, tinymage-death1, tinymage-death2, tinymage-death3, tinymage-death4, tinymage-death5]
+      times: 400
+      loop: false
+    uncon:
+      frames: [tinymage-uncon0, tinymage-death0, tinymage-death1]
+      times: [300, 200, 220]
+  water-hitter:
+    # scale: 1.25
+    # shadow:
+    #   atlas: main
+    #   name: shadow2
+    idle:
+      frames: [ooze-idle0, ooze-idle1, ooze-idle2, ooze-idle3]
+      times: 150
+    death:
+      frames: [ooze-death0, ooze-death1, ooze-death2, ooze-death3, ooze-death4, ooze-death5]
+      times: 400
+      loop: false
+    uncon:
+      # frames: [ooze-idleb0, ooze-idleb1, ooze-idleb2, ooze-idleb1, ooze-idleb0, ooze-idleb3]
+      frames: [ooze-death4, ooze-death3]
+      times: [600, 300]
+  water-blocker:
+    # scale: 1.4
+    # shadow:
+    #   atlas: main
+    #   name: shadow2
+    idle:
+      frames: [golem2-idle0, golem2-idle1, golem2-idle2, golem2-idle3]
+      times: 200
+    death:
+      frames: [golem2-death0, golem2-death1, golem2-death2, golem2-death3, golem2-death4, golem2-death5, golem2-death6, golem2-death7]
+      times: 180
+      loop: false
+    uncon:
+      frames: [golem2-uncon0, golem2-uncon1, golem2-uncon2, golem2-uncon3]
+      times: 400
+  water-balanced:
+    # scale: 0.75
+    # no shadow
+    idle:
+      frames: [slime-idle0, slime-idle1, slime-idle2, slime-idle3, slime-idle4, slime-idle5]
+      times: 200
+    death:
+      frames: [slime-death0, slime-death1, slime-death2, slime-death3, slime-death4, slime-death5, slime-death6, slime-death7, slime-death8, slime-death9]
+      times: 120
+      loop: true
+    uncon:
+      frames: [slime-uncon2, slime-uncon1, slime-uncon0, slime-uncon1]
+      times: 300
   earth-special:
     # scale: 0.8
     # shadow:
@@ -76,6 +240,7 @@ traits:
       frames: [golem1-uncon0, golem1-uncon1, golem1-uncon2, golem1-uncon3]
       times: 400
   earth-balanced:
+    # no shadow
     scale: 0.75
     idle:
       frames: [slime-idle0, slime-idle1, slime-idle2, slime-idle3, slime-idle4, slime-idle5]
@@ -87,16 +252,6 @@ traits:
     uncon:
       frames: [slime-uncon2, slime-uncon1, slime-uncon0, slime-uncon1]
       times: 300
-  sprite_data:
-    atlas: test-depixel
-    # atlas: water
-    filter_min: LINEAR_MIPMAP_LINEAR
-    filter_mag: LINEAR
-    origin: [0.5, 1]
-  scale: 0.8
-  shadow:
-    atlas: main
-    name: shadow2
   # simple_anim:
   #   - period: 5000
   #     scale: [1, 0.8]

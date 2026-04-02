@@ -1,0 +1,24 @@
+---
+tile_res: [64, 42]
+tiles:
+  slime-idle0: [0, 0]
+  slime-idle1: [1, 0]
+  slime-idle2: [2, 0]
+  slime-idle3: [3, 0]
+  slime-idle4: [4, 0]
+  slime-idle5: [5, 0]
+
+  slime-death0: [0, 1]
+  slime-death1: [1, 1]
+  slime-death2: [2, 1]
+  slime-death3: [3, 1]
+  slime-death4: [4, 1]
+  slime-death5: [5, 1]
+  slime-death6: [6, 1]
+  slime-death7: [7, 1]
+  slime-death8: [8, 1]
+  slime-death9: [9, 1]
+
+  slime-uncon0: [1, 2]
+  slime-uncon1: [2, 2]
+  slime-uncon2: [3, 2]

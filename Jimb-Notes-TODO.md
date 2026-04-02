@@ -10,19 +10,19 @@ add more enemy types with different action sets
       X blocker - golem1 - doesn't move
       X hitter - ent2
       X ranged - tiny bear?
-      special - poisoner - mushroom2
+      X special - poisoner - mushroom2
     water
-      balanced - slime (ice slime? crystal slime better)
-      blocker - golem2
-      hitter - ooze boss - maybe also moves 2 tiles?
-      ranged - tiny mage
-      special - freezer - beholder
+      X balanced - slime (ice slime? crystal slime better)
+      X blocker - golem2
+      X hitter - ooze boss - maybe also moves 2 tiles?
+      X ranged - tiny mage
+      X special - freezer - beholder
     fire
-      blocker - golem3
-      ranged - tiny yellow?
-      hitter - 2 demon_boss
-      balanced - fire slime
-      special - burn/poisoner - elemental
+      X blocker - golem3
+      X ranged - tiny yellow?
+      X hitter - 2 demon_boss
+      X balanced - fire slime
+      X special - burn/poisoner - elemental
 
 add unique boss abilities and tint the sprites
 

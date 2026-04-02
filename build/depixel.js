@@ -23,6 +23,8 @@ const scale_globs = {
   'test/*.png': 8,
   'main/*.png': 24,
   'earth/*.png': 8,
+  'water/*.png': 8,
+  'fire/*.png': 8,
   'dragon/*.png': 8,
   'rasa/*.png': 8,
 };

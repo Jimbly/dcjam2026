@@ -1,0 +1,21 @@
+---
+tile_res: [64, 64]
+tiles:
+  golem3-idle0: [0, 0]
+  golem3-idle1: [2, 0]
+  golem3-idle2: [4, 0]
+  golem3-idle3: [6, 0]
+
+  golem3-death0: [0, 2]
+  golem3-death1: [2, 2]
+  golem3-death2: [4, 2]
+  golem3-death3: [6, 2]
+  golem3-death4: [8, 2]
+  golem3-death5: [10, 2]
+  golem3-death6: [12, 2]
+  golem3-death7: [14, 2]
+
+  golem3-uncon0: [0, 1]
+  golem3-uncon1: [2, 1]
+  golem3-uncon2: [4, 1]
+  golem3-uncon3: [6, 1]

@@ -1,0 +1,27 @@
+---
+tile_res: [42, 42]
+tiles:
+  beholder-idle0: [0, 0]
+  beholder-idle1: [1, 0]
+  beholder-idle2: [2, 0]
+  beholder-idle3: [3, 0]
+
+  beholder-death0: [0, 2]
+  beholder-death1: [1, 2]
+  beholder-death2: [2, 2]
+  beholder-death3: [3, 2]
+
+  beholder-uncon0: [0, 1]
+  beholder-uncon1: [1, 1]
+  beholder-uncon2: [2, 1]
+  beholder-uncon3: [3, 1]
+
+  beholder-aa0: [0, 3]
+  beholder-aa1: [1, 3]
+  beholder-aa2: [2, 3]
+  beholder-aa3: [3, 3]
+
+  beholder-bb0: [0, 4]
+  beholder-bb1: [1, 4]
+  beholder-bb2: [2, 4]
+  beholder-bb3: [3, 4]

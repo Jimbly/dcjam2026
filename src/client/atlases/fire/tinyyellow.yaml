@@ -1,0 +1,18 @@
+---
+tile_res: [32, 32]
+tiles:
+  tinyyellow-idle0: [0, 0]
+  tinyyellow-idle1: [1, 0]
+  tinyyellow-idle2: [2, 0]
+  tinyyellow-idle3: [3, 0]
+
+  tinyyellow-death0: [0, 1]
+  tinyyellow-death1: [1, 1]
+  tinyyellow-death2: [2, 1]
+  tinyyellow-death3: [3, 1]
+  tinyyellow-death4: [4, 1]
+  tinyyellow-death5: [5, 1]
+
+  tinyyellow-uncon0: [0, 3]
+  tinyyellow-uncon1: [2, 3]
+  tinyyellow-uncon2: [3, 3]

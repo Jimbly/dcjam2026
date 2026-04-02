@@ -3278,6 +3278,8 @@ function applyAtlasSwaps(): void {
     'main',
     'ui',
     'earth',
+    'water',
+    'fire',
     'rasa',
     'dragon',
   ].forEach(function (base_name) {

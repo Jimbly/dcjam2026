@@ -1,0 +1,24 @@
+---
+tile_res: [80, 64]
+tiles:
+  ooze-idleb0: [0, 1]
+  ooze-idleb1: [1, 1]
+  ooze-idleb2: [2, 1]
+  ooze-idleb3: [3, 1]
+
+  ooze-idle0: [0, 2]
+  ooze-idle1: [1, 2]
+  ooze-idle2: [2, 2]
+  ooze-idle3: [3, 2]
+
+  ooze-death0: [0, 0]
+  ooze-death1: [1, 0]
+  ooze-death2: [2, 0]
+  ooze-death3: [3, 0]
+  ooze-death4: [4, 0]
+  ooze-death5: [5, 0]
+
+  ooze-uncon0: [0, 3]
+  ooze-uncon1: [1, 3]
+  ooze-uncon2: [2, 3]
+  ooze-uncon3: [3, 3]

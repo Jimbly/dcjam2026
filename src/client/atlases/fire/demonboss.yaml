@@ -1,0 +1,16 @@
+---
+tile_res: [64, 64]
+tiles:
+  demonboss-idle0: [0, 0]
+  demonboss-idle1: [1, 0]
+  demonboss-idle2: [2, 0]
+  demonboss-idle3: [3, 0]
+  demonboss-idle4: [4, 0]
+  demonboss-idle5: [5, 0]
+
+  demonboss-death0: [0, 1]
+  demonboss-death1: [1, 1]
+  demonboss-death2: [2, 1]
+  demonboss-death3: [3, 1]
+  demonboss-death4: [4, 1]
+  demonboss-death5: [5, 1]
