@@ -882,7 +882,7 @@
       "id": "solid",
       "walls": [
         "open",
-        "open",
+        "solid",
         "open",
         "open"
       ]
@@ -1041,12 +1041,12 @@
       ]
     },
     {
-      "id": "solid",
+      "id": "open",
       "walls": [
+        "solid",
         "open",
-        "open",
-        "open",
-        "open"
+        "solid",
+        "solid"
       ]
     },
     {
@@ -1054,7 +1054,7 @@
       "walls": [
         "solid",
         "solid",
-        "open",
+        "solid",
         "open"
       ]
     },
@@ -1215,11 +1215,11 @@
       ]
     },
     {
-      "id": "solid",
+      "id": "open",
       "walls": [
         "solid",
-        "solid",
         "open",
+        "solid",
         "open"
       ]
     },
@@ -1392,9 +1392,9 @@
       "id": "open",
       "walls": [
         "open",
-        "open",
         "solid",
-        "solid"
+        "solid",
+        "open"
       ]
     },
     {
@@ -1440,15 +1440,6 @@
         "open",
         "open",
         "open"
-      ]
-    },
-    {
-      "id": "solid",
-      "walls": [
-        "open",
-        "solid",
-        "solid",
-        "solid"
       ]
     },
     {
@@ -1456,6 +1447,15 @@
       "walls": [
         "open",
         "solid",
+        "solid",
+        "solid"
+      ]
+    },
+    {
+      "id": "solid",
+      "walls": [
+        "open",
+        "solid",
         "open",
         "solid"
       ]
@@ -1530,6 +1530,15 @@
         "open",
         "open",
         "open"
+      ]
+    },
+    {
+      "id": "solid",
+      "walls": [
+        "solid",
+        "solid",
+        "open",
+        "solid"
       ]
     },
     {
@@ -1538,15 +1547,6 @@
         "open",
         "open",
         "solid",
-        "open"
-      ]
-    },
-    {
-      "id": "open",
-      "walls": [
-        "open",
-        "open",
-        "open",
         "open"
       ]
     },
@@ -1685,7 +1685,7 @@
         "open",
         "secret_door",
         "solid",
-        "open"
+        "solid"
       ]
     },
     {
@@ -2437,19 +2437,11 @@
       ]
     },
     {
-      "type": "demo_shopkeeper",
+      "type": "enemy1",
       "pos": [
         0,
-        10,
-        0
-      ]
-    },
-    {
-      "type": "demo_wander",
-      "pos": [
-        0,
-        11,
-        0
+        7,
+        1
       ]
     },
     {
@@ -2459,11 +2451,21 @@
         11,
         2
       ]
+    },
+    {
+      "type": "enemy1",
+      "pos": [
+        0,
+        11,
+        0
+      ]
     }
   ],
   "state": {},
-  "vstyle": "",
+  "vstyle": "main",
   "seed": "32845502",
-  "props": {},
+  "props": {
+    "aipause": "1"
+  },
   "paths": {}
 }

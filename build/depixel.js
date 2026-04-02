@@ -23,6 +23,7 @@ const scale_globs = {
   'test/*.png': 8,
   'main/*.png': 24,
   'enemies/*.png': 8,
+  'dragon/*.png': 8,
   'rasa/*.png': 8,
 };
 const depixel_input = Object.keys(scale_globs);

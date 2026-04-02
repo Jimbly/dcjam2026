@@ -2,25 +2,25 @@ TODO - The Adventures of Rasa and the Chromatic Dragons
 ====
 
 add more enemy types with different action sets
-  sprites:
+  sprites: - atlas per zone
     earth
       balanced - slime
       blocker - golem1 - doesn't move
       hitter - ent2
       ranged - tiny bear?
-      poisoner - mushroom2
+      special - poisoner - mushroom2
     water
       balanced - slime (ice slime? crystal slime better)
       blocker - golem2
       hitter - ooze boss - maybe also moves 2 tiles?
       ranged - tiny mage
-      freezer - beholder
+      special - freezer - beholder
     fire
       blocker - golem3
       ranged - tiny yellow?
       hitter - 2 demon_boss
       balanced - fire slime
-      burn/poisoner - elemental
+      special - burn/poisoner - elemental
 
 add unique boss abilities and tint the sprites
 

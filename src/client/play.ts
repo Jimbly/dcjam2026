@@ -3279,6 +3279,7 @@ function applyAtlasSwaps(): void {
     'ui',
     'enemies',
     'rasa',
+    'dragon',
   ].forEach(function (base_name) {
     autoAtlasSwap(base_name, `${base_name}${suffix}`);
   });

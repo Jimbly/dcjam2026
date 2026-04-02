@@ -13,18 +13,18 @@ traits:
 - id: drawable_sprite
   anim_data:
     idle:
-      frames: [dragon-idle0, dragon-idle1, dragon-idle2, dragon-idle3, dragon-idle2, dragon-idle1]
+      frames: [earth-idle0, earth-idle1, earth-idle2, earth-idle3, earth-idle2, earth-idle1]
       times: 400
     death:
-      frames: [dragon-death0, dragon-death1, dragon-death2]
+      frames: [earth-death0, earth-death1, earth-death2]
       times: 400
       loop: false
   sprite_data:
-    atlas: enemies
+    atlas: dragon
     filter_min: LINEAR_MIPMAP_LINEAR
     filter_mag: LINEAR
     origin: [0.75, 1]
-  scale: 1
+  scale: 1.33
   # simple_anim:
   #   - period: 5000
   #     scale: [1, 0.8]
