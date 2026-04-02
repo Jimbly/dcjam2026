@@ -22,7 +22,7 @@ const scale_globs = {
   'font/*.png': 32,
   'test/*.png': 8,
   'main/*.png': 24,
-  'enemies/*.png': 8,
+  'earth/*.png': 8,
   'dragon/*.png': 8,
   'rasa/*.png': 8,
 };

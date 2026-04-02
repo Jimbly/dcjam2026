@@ -1,13 +1,15 @@
 TODO - The Adventures of Rasa and the Chromatic Dragons
 ====
 
+disable M hotkey
+
 add more enemy types with different action sets
   sprites: - atlas per zone
     earth
-      balanced - slime
-      blocker - golem1 - doesn't move
-      hitter - ent2
-      ranged - tiny bear?
+      X balanced - slime
+      X blocker - golem1 - doesn't move
+      X hitter - ent2
+      X ranged - tiny bear?
       special - poisoner - mushroom2
     water
       balanced - slime (ice slime? crystal slime better)
@@ -47,6 +49,7 @@ one-turn combat log in upper left? 50% alpha, solid on hover?
 
 walls: try depixel scale up by 4, then do 2 bilinear filters down to get 16xMSAA
 
+post-jam bug fix: changing an atlas's tex coords doesn't apply if swapped
 Level sizes
   ~4 enemies per level
   gain 1-2 cards per level on way in, 1 total on way out (but potentially lots of upgrade points)

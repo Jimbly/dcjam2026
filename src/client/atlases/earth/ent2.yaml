@@ -1,0 +1,25 @@
+---
+tile_res: [64, 68]
+tiles:
+  ent2-idle0: [0, 0]
+  ent2-idle1: [2, 0]
+  ent2-idle2: [4, 0]
+  ent2-idle3: [6, 0]
+
+  ent2-death0: [0, 2]
+  ent2-death1: [1, 2]
+  ent2-death2: [2, 2]
+  ent2-death3: [3, 2]
+  ent2-death4: [4, 2]
+  ent2-death5: [5, 2]
+  ent2-death6: [6, 2]
+  ent2-death7: [7, 2]
+  ent2-death8: [8, 2]
+  ent2-death9: [9, 2]
+  ent2-death10: [10, 2]
+  ent2-death11: [11, 2]
+
+  # ent2-uncon0: [0, 1]
+  ent2-uncon1: [2, 1]
+  ent2-uncon2: [4, 1]
+  # ent2-uncon3: [6, 1]

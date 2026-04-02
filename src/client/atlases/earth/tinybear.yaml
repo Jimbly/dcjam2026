@@ -1,0 +1,16 @@
+---
+tile_res: [40, 33]
+tiles:
+  tinybear-idle0: [0, 0]
+  tinybear-idle1: [1, 0]
+  tinybear-idle2: [2, 0]
+  tinybear-idle3: [3, 0]
+
+  tinybear-death0: [0, 1]
+  tinybear-death1: [1, 1]
+  tinybear-death2: [2, 1]
+  tinybear-death3: [3, 1]
+  tinybear-death4: [4, 1]
+  tinybear-death5: [5, 1]
+
+  tinybear-uncon0: [2, 2]

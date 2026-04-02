@@ -13,6 +13,71 @@ traits:
 - id: drawable_sprite
   anim_data:
     idle:
+      frames: [mushroom2]
+      times: 200
+  earth-special:
+    # scale: 0.8
+    # shadow:
+    #   atlas: main
+    #   name: shadow2
+    idle:
+      frames: [mushroom2-idle0, mushroom2-idle1, mushroom2-idle2, mushroom2-idle3]
+      times: 170
+    death:
+      frames: [mushroom2-death0, mushroom2-death1, mushroom2-death2, mushroom2-death3, mushroom2-death4, mushroom2-death5, mushroom2-death6, mushroom2-death7, mushroom2-death8]
+      times: 150
+      loop: false
+    uncon:
+      frames: [mushroom2-uncon0, mushroom2-uncon1, mushroom2-uncon2, mushroom2-uncon1]
+      times: [150, 250, 350, 250]
+  earth-ranged:
+    # scale: 0.8
+    # shadow:
+    #   atlas: main
+    #   name: shadow2
+    idle:
+      frames: [tinybear-idle0, tinybear-idle1, tinybear-idle2, tinybear-idle3]
+      times: 120
+    death:
+      frames: [tinybear-death0, tinybear-death1, tinybear-death2, tinybear-death3, tinybear-death4, tinybear-death5]
+      times: 400
+      loop: false
+    uncon:
+      frames: [tinybear-uncon0, tinybear-death2]
+      times: [400, 200]
+  earth-hitter:
+    # scale: 1.0
+    # shadow:
+    #   atlas: main
+    #   name: shadow2
+    idle:
+      frames: [ent2-idle0, ent2-idle1, ent2-idle2, ent2-idle3]
+      times: 300
+    death:
+      frames: [ent2-death0, ent2-death1, ent2-death2, ent2-death3, ent2-death4, ent2-death5, ent2-death6, ent2-death7, ent2-death8, ent2-death9, ent2-death10, ent2-death11]
+      times: 300
+      loop: false
+    uncon:
+      frames: [ent2-uncon1, ent2-uncon2]
+      times: [400, 600]
+  earth-blocker:
+    # scale: 1.4
+    # shadow:
+    #   atlas: main
+    #   name: shadow2
+    idle:
+      frames: [golem1-idle0, golem1-idle1, golem1-idle2, golem1-idle3]
+      times: 200
+    death:
+      frames: [golem1-death0, golem1-death1, golem1-death2, golem1-death3, golem1-death4, golem1-death5, golem1-death6, golem1-death7]
+      times: 180
+      loop: false
+    uncon:
+      frames: [golem1-uncon0, golem1-uncon1, golem1-uncon2, golem1-uncon3]
+      times: 400
+  earth-balanced:
+    scale: 0.75
+    idle:
       frames: [slime-idle0, slime-idle1, slime-idle2, slime-idle3, slime-idle4, slime-idle5]
       times: 200
     death:
@@ -23,11 +88,15 @@ traits:
       frames: [slime-uncon2, slime-uncon1, slime-uncon0, slime-uncon1]
       times: 300
   sprite_data:
-    atlas: enemies
+    atlas: test-depixel
+    # atlas: water
     filter_min: LINEAR_MIPMAP_LINEAR
     filter_mag: LINEAR
     origin: [0.5, 1]
-  scale: 0.75
+  scale: 0.8
+  shadow:
+    atlas: main
+    name: shadow2
   # simple_anim:
   #   - period: 5000
   #     scale: [1, 0.8]

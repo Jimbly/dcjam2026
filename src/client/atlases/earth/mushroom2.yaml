@@ -1,0 +1,22 @@
+---
+tile_res: [42, 34]
+tiles:
+  mushroom2-idle0: [0, 0]
+  mushroom2-idle1: [1, 0]
+  mushroom2-idle2: [2, 0]
+  mushroom2-idle3: [3, 0]
+
+  mushroom2-death0: [0, 1]
+  mushroom2-death1: [1, 1]
+  mushroom2-death2: [2, 1]
+  mushroom2-death3: [3, 1]
+  mushroom2-death4: [4, 1]
+  mushroom2-death5: [5, 1]
+  mushroom2-death6: [6, 1]
+  mushroom2-death7: [7, 1]
+  mushroom2-death8: [8, 1]
+
+  mushroom2-uncon0: [0, 2]
+  mushroom2-uncon1: [1, 2]
+  mushroom2-uncon2: [2, 2]
+  # mushroom2-uncon3: [3, 2]
