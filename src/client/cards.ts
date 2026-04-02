@@ -98,6 +98,15 @@ export const CARDS_RAW = {
     },
     ...heal(1),
   },
+  'finisher': {
+    cost: 6,
+    name: 'Fatality',
+    effect: {
+      damage: grow(9),
+      burn: ONES,
+    },
+    ...heal(1),
+  },
   'block2': {
     cost: 1,
     name: 'Dodge',

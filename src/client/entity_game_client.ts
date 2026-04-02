@@ -269,7 +269,11 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
   }
   monsterMovePick(): void {
     let opts = (this as unknown as EntityEnemy).enemy_opts;
-    this.data.next_move = randInt(opts.moves.length);
+    if (this.data.next_move === undefined) {
+      this.data.next_move = randInt(opts.moves.length);
+    } else {
+      this.data.next_move = (this.data.next_move + 1) %opts.moves.length;
+    }
   }
   monsterRangedGet(): EnemyMove | null {
     let opts = (this as unknown as EntityEnemy).enemy_opts;
@@ -441,20 +445,20 @@ export function gameEntityTraitsClientStartup(
         // effect: {
         //   freeze: 2,
         // },
-        name: 'Infect',
-        effect: {
-          poison: 2,
-        },
+        // name: 'Infect',
+        // effect: {
+        //   poison: 2,
+        // },
 
-      // name: 'Splat',
-      // effect: {
-      //   damage: 3,
-      // },
-      // }, {
-      //   name: 'Defend',
-      //   effect: {
-      //     block: 2,
-      //   },
+        name: 'Splat',
+        effect: {
+          damage: 3,
+        },
+      }, {
+        name: 'Defend',
+        effect: {
+          block: 2,
+        },
       }],
     },
     properties: {

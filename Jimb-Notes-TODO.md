@@ -1,17 +1,30 @@
-TODO - The Adventures of Draco Vacuus and the Chromatic Dragons
+TODO - The Adventures of Rasa and the Chromatic Dragons
 ====
 
 add more enemy types with different action sets
-  first:
-    pick 4 sprites per zone
-  unique bosses
-  1 generic balanced
-  1 generic hitter
-  1 generic blocker
-  1 elemental-specific (poison/freeze/burn)
-    1 earth guy just stands still and waits - the blocker
-    1 water guy moves two squares - the hitter
+  sprites:
+    earth
+      balanced - slime
+      blocker - golem1 - doesn't move
+      hitter - ent2
+      ranged - tiny bear?
+      poisoner - mushroom2
+    water
+      balanced - slime (ice slime? crystal slime better)
+      blocker - golem2
+      hitter - ooze boss - maybe also moves 2 tiles?
+      ranged - tiny mage
+      freezer - beholder
+    fire
+      blocker - golem3
+      ranged - tiny yellow?
+      hitter - 2 demon_boss
+      balanced - fire slime
+      burn/poisoner - elemental
 
+add unique boss abilities and tint the sprites
+
+title screen with high scores and credits
 highscore table: element, deaths, total friends (higher), damage dealt (lower)
 
 tooltips everywhere - fixed screen location (per Action) for tooltips to show up?
