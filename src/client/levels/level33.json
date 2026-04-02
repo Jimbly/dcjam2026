@@ -2340,7 +2340,7 @@
   ],
   "initial_entities": [
     {
-      "type": "enemy1",
+      "type": "boss-water",
       "pos": [
         5,
         8,

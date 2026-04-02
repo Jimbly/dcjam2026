@@ -2340,7 +2340,7 @@
   ],
   "initial_entities": [
     {
-      "type": "enemy1",
+      "type": "boss-earth",
       "pos": [
         5,
         8,

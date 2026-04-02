@@ -2339,7 +2339,7 @@
   ],
   "initial_entities": [
     {
-      "type": "enemy0",
+      "type": "enemy-earth-balanced",
       "pos": [
         3,
         13,
@@ -2347,15 +2347,15 @@
       ]
     },
     {
-      "type": "enemy0",
+      "type": "enemy-earth-ranged",
       "pos": [
         8,
         13,
-        2
+        1
       ]
     },
     {
-      "type": "enemy0",
+      "type": "enemy-earth-blocker",
       "pos": [
         5,
         14,
@@ -2363,7 +2363,7 @@
       ]
     },
     {
-      "type": "enemy0",
+      "type": "enemy-earth-hitter",
       "pos": [
         6,
         15,

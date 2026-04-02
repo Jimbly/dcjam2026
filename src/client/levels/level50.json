@@ -2346,7 +2346,7 @@
   ],
   "initial_entities": [
     {
-      "type": "enemy1",
+      "type": "boss-final",
       "pos": [
         5,
         8,
