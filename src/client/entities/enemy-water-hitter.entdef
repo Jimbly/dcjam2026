@@ -1,0 +1,37 @@
+---
+properties:
+  display_name: Snooze
+traits:
+- id: hunter
+- id: enemy
+  moves:
+  - effect:
+      damage: 5
+- id: stats_default
+  hp: 9
+- id: drawable
+  # biasL: [-0.25, 0.3]
+  # biasF: [0, -0.25]
+  # biasR: [-0.25, 0.5]
+- id: drawable_sprite
+  sprite_data:
+    atlas: water
+    filter_min: LINEAR_MIPMAP_LINEAR
+    filter_mag: LINEAR
+    origin: [0.5, 1]
+  scale: 1
+  shadow:
+    atlas: main
+    name: shadow2
+  anim_data:
+    idle:
+      frames: [ooze-idle0, ooze-idle1, ooze-idle2, ooze-idle3]
+      times: 150
+    death:
+      frames: [ooze-death0, ooze-death1, ooze-death2, ooze-death3, ooze-death4, ooze-death5]
+      times: 400
+      loop: false
+    uncon:
+      # frames: [ooze-idleb0, ooze-idleb1, ooze-idleb2, ooze-idleb1, ooze-idleb0, ooze-idleb3]
+      frames: [ooze-death4, ooze-death3]
+      times: [600, 300]

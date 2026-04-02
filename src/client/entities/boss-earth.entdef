@@ -2,9 +2,15 @@
 properties:
   display_name: Uncle Verde
   is_boss: true
-  build_hide: true
 traits:
 - id: enemy
+  moves:
+  - effect:
+      damage: 4
+  - effect:
+      damage: 3
+  - effect:
+      block: 2
 - id: stats_default
   hp: 19
 - id: drawable

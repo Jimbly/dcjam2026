@@ -1,39 +1,29 @@
 ---
 properties:
-  display_name: Slime
-  build_hide: true
+  display_name: Howling Fire Demon
 traits:
 - id: hunter
 - id: enemy
-  ranged_attack:
-    effect:
-      ranged: 3
   moves:
-  - name: Freeze
-    effect:
-      freeze: 2
-  - name: Infect
-    effect:
-      poison: 2
-  - name: Splat
-    effect:
-      damage: 3
-  - name: Defend
-    effect:
-      block: 2
+  - effect:
+      damage: 7
+  - effect:
+      damage: 6
+  - effect:
+      block: 6
 - id: stats_default
-  hp: 9
+  hp: 13
 - id: drawable
   # biasL: [-0.25, 0.3]
   # biasF: [0, -0.25]
   # biasR: [-0.25, 0.5]
 - id: drawable_sprite
   sprite_data:
-    atlas: earth
+    atlas: fire
     filter_min: LINEAR_MIPMAP_LINEAR
     filter_mag: LINEAR
     origin: [0.5, 1]
-  scale: 0.75
+  scale: 0.9
   anim_data:
     idle:
       frames: [slime-idle0, slime-idle1, slime-idle2, slime-idle3, slime-idle4, slime-idle5]
@@ -41,11 +31,12 @@ traits:
     death:
       frames: [slime-death0, slime-death1, slime-death2, slime-death3, slime-death4, slime-death5, slime-death6, slime-death7, slime-death8, slime-death9]
       times: 120
+      transition_to: death_loop
       loop: false
+    death_loop:
+      frames: [slime-death8, slime-death9, slime-death8, slime-death7, slime-death6, slime-death7, ]
+      times: 120
+      loop: true
     uncon:
       frames: [slime-uncon2, slime-uncon1, slime-uncon0, slime-uncon1]
       times: 300
-  # simple_anim:
-  #   - period: 5000
-  #     scale: [1, 0.8]
-  #     easing: 2

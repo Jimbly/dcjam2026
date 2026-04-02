@@ -1,30 +1,7 @@
 TODO - The Adventures of Rasa and the Chromatic Dragons
 ====
 
-disable M hotkey
-
-add more enemy types with different action sets
-  sprites: - atlas per zone
-    earth
-      X balanced - slime
-      X blocker - golem1 - doesn't move
-      X hitter - ent2
-      X ranged - tiny bear?
-      X special - poisoner - mushroom2
-    water
-      X balanced - slime (ice slime? crystal slime better)
-      X blocker - golem2
-      X hitter - ooze boss - maybe also moves 2 tiles?
-      X ranged - tiny mage
-      X special - freezer - beholder
-    fire
-      X blocker - golem3
-      X ranged - tiny yellow?
-      X hitter - 2 demon_boss
-      X balanced - fire slime
-      X special - burn/poisoner - elemental
-
-add unique boss abilities and tint the sprites
+add unique boss abilities
 
 finish story lines
   "amazing tales" "true stories"

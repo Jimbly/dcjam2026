@@ -18,7 +18,7 @@ tiles:
   elemental-aa2: [2, 2]
   elemental-aa3: [3, 2]
 
-  elemental-bb0: [0, 3]
-  elemental-bb1: [1, 3]
-  elemental-bb2: [2, 3]
-  elemental-bb3: [3, 3]
+  # elemental-bb0: [0, 3]
+  # elemental-bb1: [1, 3]
+  # elemental-bb2: [2, 3]
+  # elemental-bb3: [3, 3]

@@ -1,0 +1,41 @@
+---
+properties:
+  display_name: Fire Spitter
+traits:
+- id: hunter
+- id: enemy
+  ranged_attack:
+    effect:
+      ranged: 6
+  moves:
+  - effect:
+      ranged: 6
+- id: stats_default
+  hp: 13
+- id: drawable
+  # biasL: [-0.25, 0.3]
+  # biasF: [0, -0.25]
+  # biasR: [-0.25, 0.5]
+- id: drawable_sprite
+  sprite_data:
+    atlas: fire
+    filter_min: LINEAR_MIPMAP_LINEAR
+    filter_mag: LINEAR
+    origin: [0.5, 1]
+  scale: 0.9
+  shadow:
+    atlas: main
+    name: shadow2
+  anim_data:
+    idle:
+      frames: [tinyyellow-idle0, tinyyellow-idle1, tinyyellow-idle2, tinyyellow-idle3]
+      times: 180
+    death:
+      frames: [tinyyellow-death0, tinyyellow-death1, tinyyellow-death2, tinyyellow-death3, tinyyellow-death4, tinyyellow-death5]
+      times: 200
+      loop: false
+    uncon:
+      # frames: [tinyyellow-uncon0, tinyyellow-uncon2, tinyyellow-uncon1, tinyyellow-uncon2]
+      # times: [300, 100, 150, 250]
+      frames: [tinyyellow-death2, tinyyellow-death3]
+      times: [300, 700]

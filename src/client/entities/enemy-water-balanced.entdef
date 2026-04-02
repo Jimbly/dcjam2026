@@ -1,35 +1,25 @@
 ---
 properties:
-  display_name: Slime
-  build_hide: true
+  display_name: Ice Slime
 traits:
 - id: hunter
 - id: enemy
-  ranged_attack:
-    effect:
-      ranged: 3
   moves:
-  - name: Freeze
-    effect:
-      freeze: 2
-  - name: Infect
-    effect:
-      poison: 2
-  - name: Splat
-    effect:
-      damage: 3
-  - name: Defend
-    effect:
-      block: 2
+  - effect:
+      damage: 5
+  - effect:
+      damage: 4
+  - effect:
+      block: 4
 - id: stats_default
-  hp: 9
+  hp: 11
 - id: drawable
   # biasL: [-0.25, 0.3]
   # biasF: [0, -0.25]
   # biasR: [-0.25, 0.5]
 - id: drawable_sprite
   sprite_data:
-    atlas: earth
+    atlas: water
     filter_min: LINEAR_MIPMAP_LINEAR
     filter_mag: LINEAR
     origin: [0.5, 1]
@@ -41,11 +31,7 @@ traits:
     death:
       frames: [slime-death0, slime-death1, slime-death2, slime-death3, slime-death4, slime-death5, slime-death6, slime-death7, slime-death8, slime-death9]
       times: 120
-      loop: false
+      loop: true
     uncon:
       frames: [slime-uncon2, slime-uncon1, slime-uncon0, slime-uncon1]
       times: 300
-  # simple_anim:
-  #   - period: 5000
-  #     scale: [1, 0.8]
-  #     easing: 2

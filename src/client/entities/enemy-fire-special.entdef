@@ -1,0 +1,40 @@
+---
+properties:
+  display_name: Burn Elemental
+traits:
+- id: hunter
+- id: enemy
+  moves:
+  - effect:
+      damage: 6
+  - effect:
+      poison: 2
+  - effect:
+      poison: 2
+- id: stats_default
+  hp: 12
+- id: drawable
+  # biasL: [-0.25, 0.3]
+  # biasF: [0, -0.25]
+  # biasR: [-0.25, 0.5]
+- id: drawable_sprite
+  sprite_data:
+    atlas: fire
+    filter_min: LINEAR_MIPMAP_LINEAR
+    filter_mag: LINEAR
+    origin: [0.5, 1]
+  scale: 1
+  shadow:
+    atlas: main
+    name: shadow2
+  anim_data:
+    idle:
+      frames: [elemental-idle0, elemental-idle1, elemental-idle2, elemental-idle3]
+      times: 150
+    death:
+      frames: [elemental-death0, elemental-death1, elemental-death2, elemental-death3, elemental-death4, elemental-death5]
+      times: 200
+      loop: false
+    uncon:
+      frames: [elemental-aa0, elemental-aa1, elemental-aa2, elemental-aa3]
+      times: 300

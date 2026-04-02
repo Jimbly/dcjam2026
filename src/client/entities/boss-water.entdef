@@ -1,12 +1,18 @@
 ---
 properties:
-  display_name: Uncle Verde
+  display_name: Not Just My Uncle Azure
   is_boss: true
-  build_hide: true
 traits:
 - id: enemy
+  moves:
+  - effect:
+      damage: 5
+  - effect:
+      damage: 4
+  - effect:
+      block: 3
 - id: stats_default
-  hp: 19
+  hp: 23
 - id: drawable
   biasL: [0, 0.4]
   biasF: [0, -0.4]
@@ -14,10 +20,10 @@ traits:
 - id: drawable_sprite
   anim_data:
     idle:
-      frames: [earth-idle0, earth-idle1, earth-idle2, earth-idle3, earth-idle2, earth-idle1]
+      frames: [water-idle0, water-idle1, water-idle2, water-idle3, water-idle2, water-idle1]
       times: 400
     death:
-      frames: [earth-death0, earth-death1, earth-death2]
+      frames: [water-death0, water-death1, water-death2]
       times: 400
       loop: false
   sprite_data:

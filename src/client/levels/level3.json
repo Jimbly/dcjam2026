@@ -2377,6 +2377,14 @@
         13,
         2
       ]
+    },
+    {
+      "type": "enemy-water-special",
+      "pos": [
+        6,
+        10,
+        2
+      ]
     }
   ],
   "state": {},

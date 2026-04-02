@@ -1,0 +1,41 @@
+---
+properties:
+  display_name: Beicer
+traits:
+- id: hunter
+- id: enemy
+  moves:
+  - effect:
+      damage: 4
+  - effect:
+      freeze: 2
+  - effect:
+      freeze: 2
+- id: stats_default
+  hp: 10
+- id: drawable
+  # biasL: [-0.25, 0.3]
+  # biasF: [0, -0.25]
+  # biasR: [-0.25, 0.5]
+- id: drawable_sprite
+  sprite_data:
+    atlas: water
+    filter_min: LINEAR_MIPMAP_LINEAR
+    filter_mag: LINEAR
+    origin: [0.5, 1]
+  scale: 1
+  shadow:
+    atlas: main
+    name: shadow1
+  anim_data:
+    idle:
+      frames: [beholder-idle0, beholder-idle1, beholder-idle2, beholder-idle3]
+      times: 180
+    death:
+      frames: [beholder-death0, beholder-death1, beholder-death2, beholder-death3]
+      times: [400, 1000, 500, 500]
+      loop: true
+    uncon:
+      frames: [beholder-bb2, beholder-aa1, beholder-aa2, beholder-aa3, beholder-aa2, beholder-aa1]
+      times: 200
+    # could use vertical animation? could remove it from the sprites?

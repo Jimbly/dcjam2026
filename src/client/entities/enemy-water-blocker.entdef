@@ -1,0 +1,40 @@
+---
+properties:
+  display_name: Ice Golem
+traits:
+# - id: hunter
+- id: enemy
+  moves:
+  - effect:
+      damage: 4
+  - effect:
+      block: 4
+  - effect:
+      block: 4
+- id: stats_default
+  hp: 14
+- id: drawable
+  # biasL: [-0.25, 0.3]
+  # biasF: [0, -0.25]
+  # biasR: [-0.25, 0.5]
+- id: drawable_sprite
+  sprite_data:
+    atlas: water
+    filter_min: LINEAR_MIPMAP_LINEAR
+    filter_mag: LINEAR
+    origin: [0.5, 1]
+  scale: 1.0
+  shadow:
+    atlas: main
+    name: shadow2
+  anim_data:
+    idle:
+      frames: [golem2-idle0, golem2-idle1, golem2-idle2, golem2-idle3]
+      times: 200
+    death:
+      frames: [golem2-death0, golem2-death1, golem2-death2, golem2-death3, golem2-death4, golem2-death5, golem2-death6, golem2-death7]
+      times: 180
+      loop: false
+    uncon:
+      frames: [golem2-uncon0, golem2-uncon1, golem2-uncon2, golem2-uncon3]
+      times: 400

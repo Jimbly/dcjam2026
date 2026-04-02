@@ -1,0 +1,40 @@
+---
+properties:
+  display_name: Magma Golem
+traits:
+# - id: hunter
+- id: enemy
+  moves:
+  - effect:
+      damage: 6
+  - effect:
+      block: 6
+  - effect:
+      block: 6
+- id: stats_default
+  hp: 16
+- id: drawable
+  # biasL: [-0.25, 0.3]
+  # biasF: [0, -0.25]
+  # biasR: [-0.25, 0.5]
+- id: drawable_sprite
+  sprite_data:
+    atlas: fire
+    filter_min: LINEAR_MIPMAP_LINEAR
+    filter_mag: LINEAR
+    origin: [0.5, 1]
+  scale: 1.1
+  shadow:
+    atlas: main
+    name: shadow2
+  anim_data:
+    idle:
+      frames: [golem3-idle0, golem3-idle1, golem3-idle2, golem3-idle3]
+      times: 200
+    death:
+      frames: [golem3-death0, golem3-death1, golem3-death2, golem3-death3, golem3-death4, golem3-death5, golem3-death6, golem3-death7]
+      times: 180
+      loop: false
+    uncon:
+      frames: [golem3-uncon0, golem3-uncon1, golem3-uncon2, golem3-uncon3]
+      times: 400

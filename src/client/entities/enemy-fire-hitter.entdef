@@ -1,0 +1,36 @@
+---
+properties:
+  display_name: Satyrical
+traits:
+- id: hunter
+- id: enemy
+  moves:
+  - effect:
+      damage: 7
+- id: stats_default
+  hp: 11
+- id: drawable
+  # biasL: [-0.25, 0.3]
+  # biasF: [0, -0.25]
+  # biasR: [-0.25, 0.5]
+- id: drawable_sprite
+  sprite_data:
+    atlas: fire
+    filter_min: LINEAR_MIPMAP_LINEAR
+    filter_mag: LINEAR
+    origin: [0.5, 1]
+  scale: 1.2
+  shadow:
+    atlas: main
+    name: shadow2
+  anim_data:
+    idle:
+      frames: [demonboss-idle2, demonboss-idle3, demonboss-idle4, demonboss-idle5, demonboss-idle4, demonboss-idle3, demonboss-idle2, demonboss-idle1]
+      times: 150
+    death:
+      frames: [demonboss-death0, demonboss-death1, demonboss-death2, demonboss-death3, demonboss-death4]
+      times: 400
+      loop: false
+    uncon:
+      frames: [demonboss-death5, demonboss-death3]
+      times: 300

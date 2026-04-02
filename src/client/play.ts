@@ -25,7 +25,6 @@ import {
   KEYS,
   keyUpEdge,
   PAD,
-  padButtonUpEdge,
 } from 'glov/client/input';
 import { localStorageGetJSON, localStorageSet, localStorageSetJSON } from 'glov/client/local_storage';
 import { markdownAuto } from 'glov/client/markdown';
@@ -154,6 +153,7 @@ import {
   crawlerMyEnt,
   crawlerMyEntOptional,
   Floater,
+  isOnline,
 } from './crawler_entity_client';
 import {
   crawlerMapViewDraw,
@@ -874,7 +874,7 @@ function drawEnemyStats(ent: Entity): void {
       msg.push('stunned');
     } else {
       let next_move = ent.monsterMoveGet();
-      msg.push(`${next_move.name}:`);
+      msg.push('next turn:');
       let key: CardEffect;
       for (key in next_move.effect) {
         let value = next_move.effect[key]!;
@@ -2800,10 +2800,10 @@ function playCrawl(): void {
     }
   }
 
-  if (!overlay_menu_up && (keyDownEdge(KEYS.M) || padButtonUpEdge(PAD.BACK))) {
-    playUISound('button_click');
-    mapViewToggle();
-  }
+  // if (!overlay_menu_up && (keyDownEdge(KEYS.M) || padButtonUpEdge(PAD.BACK))) {
+  //   playUISound('button_click');
+  //   mapViewToggle();
+  // }
   let game_state = crawlerGameState();
   let script_api = crawlerScriptAPI();
   if (frame_map_view) {
@@ -3288,6 +3288,10 @@ function applyAtlasSwaps(): void {
 }
 
 function initLevel(cem: ClientEntityManagerInterface<Entity>, floor_id: number, level: CrawlerLevel): void {
+  if (!myEntOptional()) {
+    assert(isOnline());
+    return;
+  }
   // dialogReset();
   floaters.length = 0;
   combatStateReset();

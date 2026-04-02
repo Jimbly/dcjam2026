@@ -1,0 +1,40 @@
+---
+properties:
+  display_name: Earth Golem
+traits:
+# - id: hunter
+- id: enemy
+  moves:
+  - effect:
+      damage: 2
+  - effect:
+      block: 2
+  - effect:
+      block: 2
+- id: stats_default
+  hp: 12
+- id: drawable
+  # biasL: [-0.25, 0.3]
+  # biasF: [0, -0.25]
+  # biasR: [-0.25, 0.5]
+- id: drawable_sprite
+  sprite_data:
+    atlas: earth
+    filter_min: LINEAR_MIPMAP_LINEAR
+    filter_mag: LINEAR
+    origin: [0.5, 1]
+  scale: 1.1
+  shadow:
+    atlas: main
+    name: shadow2
+  anim_data:
+    idle:
+      frames: [golem1-idle0, golem1-idle1, golem1-idle2, golem1-idle3]
+      times: 200
+    death:
+      frames: [golem1-death0, golem1-death1, golem1-death2, golem1-death3, golem1-death4, golem1-death5, golem1-death6, golem1-death7]
+      times: 180
+      loop: false
+    uncon:
+      frames: [golem1-uncon0, golem1-uncon1, golem1-uncon2, golem1-uncon3]
+      times: 400

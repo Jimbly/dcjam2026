@@ -1,25 +1,15 @@
 ---
 properties:
-  display_name: Slime
-  build_hide: true
+  display_name: Green Slime
 traits:
 - id: hunter
 - id: enemy
-  ranged_attack:
-    effect:
-      ranged: 3
   moves:
-  - name: Freeze
-    effect:
-      freeze: 2
-  - name: Infect
-    effect:
-      poison: 2
-  - name: Splat
-    effect:
+  - effect:
       damage: 3
-  - name: Defend
-    effect:
+  - effect:
+      damage: 2
+  - effect:
       block: 2
 - id: stats_default
   hp: 9
@@ -45,7 +35,3 @@ traits:
     uncon:
       frames: [slime-uncon2, slime-uncon1, slime-uncon0, slime-uncon1]
       times: 300
-  # simple_anim:
-  #   - period: 5000
-  #     scale: [1, 0.8]
-  #     easing: 2

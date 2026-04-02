@@ -1,0 +1,40 @@
+---
+properties:
+  display_name: Podoserpula Pusio
+traits:
+- id: hunter
+- id: enemy
+  moves:
+  - effect:
+      damage: 2
+  - effect:
+      posion: 1
+  - effect:
+      posion: 1
+- id: stats_default
+  hp: 8
+- id: drawable
+  # biasL: [-0.25, 0.3]
+  # biasF: [0, -0.25]
+  # biasR: [-0.25, 0.5]
+- id: drawable_sprite
+  sprite_data:
+    atlas: earth
+    filter_min: LINEAR_MIPMAP_LINEAR
+    filter_mag: LINEAR
+    origin: [0.5, 1]
+  scale: 0.6
+  shadow:
+    atlas: main
+    name: shadow2
+  anim_data:
+    idle:
+      frames: [mushroom2-idle0, mushroom2-idle1, mushroom2-idle2, mushroom2-idle3]
+      times: 170
+    death:
+      frames: [mushroom2-death0, mushroom2-death1, mushroom2-death2, mushroom2-death3, mushroom2-death4, mushroom2-death5, mushroom2-death6, mushroom2-death7, mushroom2-death8]
+      times: 150
+      loop: false
+    uncon:
+      frames: [mushroom2-uncon0, mushroom2-uncon1, mushroom2-uncon2, mushroom2-uncon1]
+      times: [150, 250, 350, 250]
