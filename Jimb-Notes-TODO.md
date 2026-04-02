@@ -3,9 +3,6 @@ TODO - The Adventures of Rasa and the Chromatic Dragons
 
 add unique boss abilities
 
-finish story lines
-  "amazing tales" "true stories"
-
 title screen with high scores and credits
 highscore table: element, deaths, total friends (higher), damage dealt (lower)
 

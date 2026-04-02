@@ -447,6 +447,7 @@ crawlerScriptRegisterEvent({
             //   dialog('monologue', 'Oooh, boss fight!');
             // }
             keySet('needs_shop');
+            keySet('post_shop_story');
             // keySet('shop_decksize');
             shopOpen();
           }

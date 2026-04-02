@@ -20,7 +20,7 @@ import { ridx } from 'glov/common/util';
 import { blend } from './blend';
 import { Card, CardID, CARDS, MAX_TIER } from './cards';
 import { keyClear, keyGet, keySet } from './dialog_data';
-import { dialogPush } from './dialog_system';
+import { dialog, dialogPush } from './dialog_system';
 import {
   FONT_HEIGHT,
   game_height,
@@ -37,6 +37,7 @@ import {
   sameCard,
 } from './play';
 import { style_dialog_title, style_dialog_title_err, style_hotkey, style_label } from './styles';
+import { TEXT } from './text';
 import {
   uiAction,
   UIAction,
@@ -245,7 +246,8 @@ class ShopAction extends UIAction {
       keySet(`seendeck${deck_size}`);
       dialogPush({
         text: `Congratulations!  For obtaining the power of ${data.element},` +
-          ` your Deck Size Limit has increased to ${deck_size}!`,
+          ` your Deck Size Limit has increased to ${deck_size}!${data.element === 'fire' ?
+            '\n\nPrepare for the final battle!' : ''}`,
         buttons: [{
           label: 'Yay!',
         }],
@@ -379,7 +381,8 @@ class ShopAction extends UIAction {
           text = 'You have too many cards in your deck, please select cards on' +
             ' the left and move some from your DECK to your POOL.';
         } else {
-          text = 'Before beginning the next encounter, you may adjust your deck.' +
+          text = `Before beginning ${data.floor === 50 ? 'this final' : 'the next'} encounter,` +
+            ' you may adjust your deck.' +
             '\n\nIt is recommended to include as many cards as possible.';
         }
         font.draw({
@@ -402,6 +405,11 @@ class ShopAction extends UIAction {
         keyClear('shop_decksize');
         uiActionClear();
         me.resetDeck();
+
+        if (keyGet('post_shop_story')) {
+          keyClear('post_shop_story');
+          dialog('monologue', TEXT[`RASA_INTRO${me.data.floor === 50 ? 3 : me.floorElementNumber()}`]);
+        }
       }
 
     } else if (keyGet('shop_chest')) {

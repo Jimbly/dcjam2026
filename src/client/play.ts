@@ -1467,6 +1467,8 @@ function applyDamage(target_ent: Entity | null, value: number, bypass_block: boo
             pos: [pos[0], pos[1] + 2, pos[2]],
             last_pos: pos,
           }, undefined, aiIgnoreErrors);
+          // eslint-disable-next-line @typescript-eslint/no-use-before-define
+          setTimeout(autosave, MSG_STEP_DELAY);
         }
       } else {
         if (stats.hp < 0) {
@@ -3478,6 +3480,7 @@ export function playStartup(): void {
   markdownSetColorStyle('note', fontStyleColored(null, palette_font[PAL_GREY[2]]));
   markdownSetColorStyle('red', fontStyleColored(null, palette_font[PAL_RED - 1]));
   markdownSetColorStyle('green', fontStyleColored(null, palette_font[PAL_GREEN]));
+  markdownSetColorStyle('blue', fontStyleColored(null, palette_font[PAL_BLUE]));
   markdownSetColorStyle('gold', fontStyleColored(null, palette_font[PAL_YELLOW+1]));
   markdownSetColorStyle('respect', fontStyleColored(null, palette_font[PAL_BLUE]));
   markdownSetColorStyle('hotkey', style_hotkey);
