@@ -24,6 +24,9 @@ add more enemy types with different action sets
 
 add unique boss abilities and tint the sprites
 
+finish story lines
+  "amazing tales" "true stories"
+
 title screen with high scores and credits
 highscore table: element, deaths, total friends (higher), damage dealt (lower)
 
@@ -34,14 +37,13 @@ tooltips everywhere - fixed screen location (per Action) for tooltips to show up
   need tooltips on cards in hand showing descriptions
   need tooltips on cards in Reshuffle screen showing descriptions
 
-maybe: try choosing which cards to discard (and redrawing constantly)
-  this makes combat slower, but does it make it more fun / strategic / (discoverable)?
-
 wandering cat
+auto save upon enemy defeat
 floor title - top and center?
 different text color for all of Rasa's speech?
 in-world monologues for Rasa to say randomly?
 bug: keyboard not working on respawn dialog
+one-turn combat log in upper left? 50% alpha, solid on hover?
 
 walls: try depixel scale up by 4, then do 2 bilinear filters down to get 16xMSAA
 

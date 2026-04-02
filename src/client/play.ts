@@ -1134,6 +1134,10 @@ export function drawCard(param: {
     let line_w = prefix_w + (img ? 14 : 0);
     let xx = x + floor((CARD_W - line_w)/2);
 
+    if (key === 'pull' && !eff_no_target) {
+      no_target = false; // future melee effects now have a target
+    }
+
     if (prefix) {
       font.draw({
         x: xx, y, z,

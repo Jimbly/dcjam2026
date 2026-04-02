@@ -153,7 +153,7 @@ export const CARDS_RAW = {
     name: 'Pull',
     effect: {
       pull: ONES,
-      ranged: grow(0),
+      freeze: grow(0),
     },
     ...heal(2),
   },
