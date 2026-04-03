@@ -1604,7 +1604,9 @@ function doPushPull(ent: Entity, effect: 'push' | 'pull'): void {
       break;
     }
     v2iAdd(walk, delta);
-    if (entitiesAt(entityManager(), walk, floor_id, true).length) {
+    if (entitiesAt(entityManager(), walk, floor_id, true).length ||
+      level.getCell(walk[0], walk[1])?.events
+    ) {
       v2iAddScale(walk, delta, -1);
       break;
     }

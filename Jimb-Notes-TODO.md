@@ -1,8 +1,6 @@
 TODO - The Adventures of Rasa and the Chromatic Dragons
 ====
 
-shouldn't be able to push into stairwell, they don't come out (due to event) - or maybe he died?
-
 play through once
   don't buy fatality
 make 9 floors with better encounters
