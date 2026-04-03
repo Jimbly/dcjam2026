@@ -10,7 +10,7 @@ export const TEXT = {
   UNCLE0_NAME: 'Uncle Verde',
   UNCLE0_HELLO: '* *Yawns* * Oh, hi Rasa, how\'d you get in here?  I hope my sister is well?',
   RASA_UNCLE_RESPONSE: 'Unswayed by his taunts, I charged into the fray!',
-  RASA_BOSS0_VICTORY: 'You may rest easy knowing that I was not defeated by this foe.  We fought a battle that has been sung of far and wide!\n\nFinally, the power of [c=green]Earth[/c] was within my grasp!',
+  RASA_BOSS0_VICTORY: 'You may rest easy knowing that I was not defeated by this foe.  We fought a battle that has been sung far and wide!\n\nFinally, the power of [c=green]Earth[/c] was within my grasp!',
   UNCLE_BOSS0_POKE: 'Well played little one, but I\'m going back to my nap now.\n\nDo give your sister my salutations.',
   RASA_ORB0_ACQUIRED: 'At long last, I obtained the power of Earth, and now look like a dapper Green Dragon myself.  Though the change to my scales was clear, my heart remained steadfast.  I would not rest until I had claimed *all* of the colors.',
   // Note: RASA_HEAL0 and RASA_HEAL0_BUTTON should be recorded as one voice line
@@ -21,12 +21,12 @@ export const TEXT = {
     '\n\nWith the strength of the Earth flowing through my scales, I knew that there was no better time to assail the bastion of water!',
 
   RASA_INTRO1: 'Welcome back, dear listeners, to chapter 2 of this amazing tale!\n\n' +
-    'I shivered and gathered my wits about me, yearning for the scarf I\'d left at home.  It\'s cold here, but not as cold as my response will be to anyone who dare stands between me and the power of Ice!\n\nOr was it water...',
+    'I shivered and gathered my wits about me, yearning for the scarf I\'d left at home.  It\'s cold here, but not as cold as my response will be to anyone who dares stand between me and the power of Ice!\n\nOr was it water...',
   RASA_BOSS1: 'Suddenly, I had found myself in the den of a [c=blue]Blue Dragon[/c].  What do you expect I did?\n\nI nobly charged at the monster, of course!',
   UNCLE1_NAME: 'Not Just My Uncle Azure',
   UNCLE1_HELLO: 'Come to visit your second favorite uncle, I see?',
   RASA_BOSS1_VICTORY: 'Fear not, dear listeners, I did, in fact, triumph over the monster, though it was a battle that cost me much.',
-  UNCLE_BOSS1_POKE: 'If you\'ve tracked any of that green paint anywhere my in den, your allowance is going to be allocated toward the cleanup for months.',
+  UNCLE_BOSS1_POKE: 'If you\'ve tracked any of that green paint anywhere in my den, your allowance is going to be allocated toward the cleanup for months.',
   RASA_ORB1_ACQUIRED: 'I embraced the power of the Orb of [c=blue]Water[/c] and transformed into a magnificent blue dragon, and along with the scaly change of color came the knowledge that the forces of [c=red]Fire[/c] would now be unable to stand against me.',
   RASA_HEAL1: 'Upon my return to the icy halls, the wandering watery whelps who had previously stood arrayed against me now gave me great deference.\n\n' +
     'They all laid themselves at my feet.',

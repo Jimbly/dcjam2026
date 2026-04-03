@@ -6,6 +6,8 @@ add unique boss abilities
 title screen with high scores and credits
 highscore table: element, deaths, total friends (higher), damage dealt (lower)
 
+make 3 tilesets and 9 floors
+
 tooltips everywhere - fixed screen location (per Action) for tooltips to show up?
     - or, F1 to open help screen explaining all effects
   need tooltips on pool showing card + description
@@ -23,7 +25,6 @@ one-turn combat log in upper left? 50% alpha, solid on hover?
 
 walls: try depixel scale up by 4, then do 2 bilinear filters down to get 16xMSAA
 
-post-jam bug fix: changing an atlas's tex coords doesn't apply if swapped
 Level sizes
   ~4 enemies per level
   gain 1-2 cards per level on way in, 1 total on way out (but potentially lots of upgrade points)
@@ -39,8 +40,6 @@ Level sizes
   Dungeon #2: 4 floors@5 - 20
   Dungeon #3: 5 floors@6 - 30 - with a deck size of 14, need to get at least 16 yields!
 
-stretch: bosses / (later dungeons?) are multi-element and you can switch between elements during the fight (once every 4 actions or something)
-
 stretch: undo (to beginning of previous turn)
 
 animate: upon taking the orb, flip cards over, change element, probably a dialog
@@ -51,25 +50,19 @@ Card abilities
 pierce
 remove armor
 buff next attack (good for enemies - cancel upon kiting!)
-poison
-burn (on player) - 1 damage per turn until player moves
 clear debuffs (self)
 1 damage + 1 per time it was played this floor
 "charge" - gains one damage for each step while in hand
-
-Possible perks
-==============
-+1 damage vs [slime/minion/boss]
-+1 reward choice from chests
-critical chance?
-+1 damage on first attack per monster
-
 
 Elemental Plan
 ==============
 Earth - dirt/trees/nature/lightning
 Ice - ice/water
 Fire - fire/hell
+
+Post-jam fixes to do
+====================
+post-jam bug fix: changing an atlas's tex coords doesn't apply if swapped
 
 Notes / Brainstorming
 =====================
