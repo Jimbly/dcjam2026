@@ -2880,16 +2880,20 @@ function isCombat(): boolean {
   return ents.length > 0 || ranged_targetting_me;
 }
 
+function isBossFloor(): boolean {
+  let { level } = crawlerGameState();
+  if (!level) {
+    return false;
+  }
+  return Boolean(level.props.boss);
+}
+
 function isDefeatedBoss(): boolean {
   let me = myEntOptional();
   if (!me) {
     return false;
   }
-  let { level } = crawlerGameState();
-  if (!level) {
-    return false;
-  }
-  if (!level.props.boss) {
+  if (!isBossFloor()) {
     return false;
   }
   return keyGet(`killed_boss_${myEnt().floorElement()}`);
@@ -2986,7 +2990,8 @@ export function play(dt: number): void {
     if (element === 'water') {
       element = 'ice';
     }
-    let music: string | null = `bgm_${element}_${healMode() ? 'heal' : is_combat ? 'combat' : 'explore'}`;
+    let music: string | null = `bgm_${element}_${healMode() ? 'heal' :
+      isBossFloor() ? 'boss' : is_combat ? 'combat' : 'explore'}`;
     if (isDefeatedBoss()) {
       music = null;
     }
@@ -3307,7 +3312,7 @@ function initLevel(cem: ClientEntityManagerInterface<Entity>, floor_id: number, 
   let floor_elem = myEnt().floorElement();
   if (floor_elem === myElement() &&
     !keyGet(`did_healtro_${floor_elem}`) &&
-    !level.props.boss
+    !isBossFloor()
   ) {
     keySet(`did_healtro_${floor_elem}`);
     dialog('healtro');
