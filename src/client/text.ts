@@ -65,4 +65,7 @@ export const TEXT = {
   RASA_NOEXIT_ON_WAY_OUT: 'No need to go back down, off to the next adventure!',
 
   RASA_UPON_DEATH: 'No, no, no!  That\'s not what happened.  Okay everybody, let\'s take five and then try this again.',
+
+  RASA_BEFORE_STAIRS: 'Certain I was done here, I descended deeper into the depths, never to return here.',
+  RASA_BEFORE_STAIRS_MISTAKE: 'Apologies, dear listeners, I misremembered.  In fact, I retraced my steps to investigate something I may have missed...',
 };

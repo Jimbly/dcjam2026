@@ -2,6 +2,7 @@ TODO - The Adventures of Rasa and the Chromatic Dragons
 ====
 
 make 9 floors with better encounters
+  try 4/5/6 enemies/floor
 
 difficulty
   water/fire/finale pretty easy if bought either fatality or go in on poison

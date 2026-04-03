@@ -362,6 +362,20 @@ dialogRegister({
       }]
     });
   },
+  leave1: function () {
+    if (healMode()) {
+      return;
+    }
+    keySet(`seen_leave_${myEnt().data.floor}`);
+    dialog('monologue', TEXT.RASA_BEFORE_STAIRS);
+  },
+  leave2: function () {
+    if (!keyGet(`seen_leave_${myEnt().data.floor}`)) {
+      return;
+    }
+    dialog('monologue', TEXT.RASA_BEFORE_STAIRS_MISTAKE);
+    keyClear(`seen_leave_${myEnt().data.floor}`);
+  },
 });
 
 crawlerScriptRegisterEvent({
