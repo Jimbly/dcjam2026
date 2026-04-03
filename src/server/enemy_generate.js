@@ -123,7 +123,7 @@ let lookup = {
     death:
       frames: [beholder-death0, beholder-death1, beholder-death2, beholder-death3]
       times: [400, 1000, 500, 500]
-      loop: true
+      loop: false
     uncon:
       frames: [beholder-bb2, beholder-aa1, beholder-aa2, beholder-aa3, beholder-aa2, beholder-aa1]
       times: 200
@@ -190,7 +190,7 @@ let lookup = {
     death:
       frames: [slime-death0, slime-death1, slime-death2, slime-death3, slime-death4, slime-death5, slime-death6, slime-death7, slime-death8, slime-death9]
       times: 120
-      loop: true
+      loop: false
     uncon:
       frames: [slime-uncon2, slime-uncon1, slime-uncon0, slime-uncon1]
       times: 300
@@ -353,7 +353,7 @@ let lookup = {
 properties:
   display_name: ${name}
 traits:
-${mode === 'blocker' ? '# ' : ''}- id: hunter
+${mode === 'blocker' ? '# ' : ''}- id: hunter${mode === 'ranged' ? '\n  ranged_combat: true' : ''}
 - id: enemy
   ${moves}
 - id: stats_default

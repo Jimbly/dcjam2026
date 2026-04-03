@@ -2,6 +2,7 @@
 export const CARD_W = 64;
 export const CARD_H = 85;
 export const MONSTER_MAX_RANGE = 5; // for health bars and ranged attacks
+export const MAX_RANGE = 10;
 
 const ENEMY_DELAY = 400;
 
@@ -15,6 +16,7 @@ import { ClientEntityManagerInterface } from 'glov/client/entity_manager_client'
 import {
   ALIGN,
   Font,
+  fontStyle,
   fontStyleAlpha,
   fontStyleColored,
 } from 'glov/client/font';
@@ -1458,7 +1460,7 @@ function applyDamage(target_ent: Entity | null, value: number, bypass_block: boo
         target_ent.data.alert = true; // so hp bar shows up
         if (stats.hp <= 0) {
           target_ent.triggerAnimation!('death');
-          keySet(`killed_boss_${myEnt().floorElement()}`);
+          keySet(`killed_boss_${myEnt().floorIsFinalBoss() ? 'final' : myEnt().floorElement()}`);
           addFloater(target_ent.id, 'Argh...');
           setTimeout(playUISound.bind(null, 'death'), MSG_STEP_DELAY);
           setTimeout(dialog.bind(null, 'bossvictory'), MSG_STEP_DELAY * 2);
@@ -1701,7 +1703,6 @@ function discardCard(hand_index: number): void {
   playUISound('card_discard');
 }
 
-const MAX_RANGE = 10;
 function findRangedTarget(): Entity | null {
   let me = myEnt();
   let { data } = me;
@@ -2898,7 +2899,7 @@ function isDefeatedBoss(): boolean {
   if (!isBossFloor()) {
     return false;
   }
-  return keyGet(`killed_boss_${myEnt().floorElement()}`);
+  return keyGet(`killed_boss_${myEnt().floorIsFinalBoss() ? 'final' : myEnt().floorElement()}`);
 }
 
 function doVFX(dt: number): void {
@@ -2991,6 +2992,9 @@ export function play(dt: number): void {
     let element = myEntOptional()?.floorElement() || 'earth';
     if (element === 'water') {
       element = 'ice';
+    }
+    if (myEntOptional()?.floorIsFinalBoss()) {
+      element = 'earth';
     }
     let music: string | null = `bgm_${element}_${healMode() ? 'heal' :
       isBossFloor() ? 'boss' : is_combat ? 'combat' : 'explore'}`;
@@ -3487,6 +3491,15 @@ export function playStartup(): void {
   markdownSetColorStyle('note', fontStyleColored(null, palette_font[PAL_GREY[2]]));
   markdownSetColorStyle('red', fontStyleColored(null, palette_font[PAL_RED - 1]));
   markdownSetColorStyle('green', fontStyleColored(null, palette_font[PAL_GREEN]));
+  markdownSetColorStyle('white', fontStyleColored(null, palette_font[PAL_WHITE]));
+  markdownSetColorStyle('death', fontStyle(null, {
+    color: palette_font[PAL_BLACK_PURE],
+    glow_color: palette_font[PAL_BLACK_PURE],
+    glow_xoffs: 2,
+    glow_yoffs: 2,
+    glow_inner: -1,
+    glow_outer: 2,
+  }));
   markdownSetColorStyle('blue', fontStyleColored(null, palette_font[PAL_BLUE]));
   markdownSetColorStyle('gold', fontStyleColored(null, palette_font[PAL_YELLOW+1]));
   markdownSetColorStyle('respect', fontStyleColored(null, palette_font[PAL_BLUE]));

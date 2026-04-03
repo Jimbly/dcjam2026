@@ -46,7 +46,7 @@ export const EFFECT_NEEDS_TARGET: Record<CardEffect, boolean | 'auto' | 'ranged'
   freeze: true,
   heal: true,
   block: false,
-  delay: false,
+  delay: 'auto',
   burn: 'auto',
 };
 
@@ -102,7 +102,7 @@ export const CARDS_RAW = {
     cost: 6,
     name: 'Fatality',
     effect: {
-      damage: grow(9),
+      damage: [8,10,12,14],
       burn: ONES,
     },
     ...heal(1),

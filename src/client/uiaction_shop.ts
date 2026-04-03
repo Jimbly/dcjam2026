@@ -247,7 +247,7 @@ class ShopAction extends UIAction {
       dialogPush({
         text: `Congratulations!  For obtaining the power of ${data.element},` +
           ` your Deck Size Limit has increased to ${deck_size}!${data.element === 'fire' ?
-            '\n\nPrepare for the final battle!' : ''}`,
+            '\n\nPrepare for [c=red]the final battle[/c]!' : ''}`,
         buttons: [{
           label: 'Yay!',
         }],

@@ -364,6 +364,9 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
         return 2;
     }
   }
+  floorIsFinalBoss(): boolean {
+    return this.data.floor === 50;
+  }
 
   static AI_UPDATE_FIELD = 'seq_ai_update';
   applyAIUpdate(

@@ -3,6 +3,7 @@ properties:
   display_name: Ice Demon
 traits:
 - id: hunter
+  ranged_combat: true
 - id: enemy
   ranged_attack:
     effect:

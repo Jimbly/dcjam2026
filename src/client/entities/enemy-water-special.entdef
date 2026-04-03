@@ -34,7 +34,7 @@ traits:
     death:
       frames: [beholder-death0, beholder-death1, beholder-death2, beholder-death3]
       times: [400, 1000, 500, 500]
-      loop: true
+      loop: false
     uncon:
       frames: [beholder-bb2, beholder-aa1, beholder-aa2, beholder-aa3, beholder-aa2, beholder-aa1]
       times: 200

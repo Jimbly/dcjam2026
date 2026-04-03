@@ -1,15 +1,18 @@
 TODO - The Adventures of Rasa and the Chromatic Dragons
 ====
 
-add unique boss abilities
-hook up boss floor music (earth again for final boss)
-
 title screen with high scores and credits
 highscore table: element, deaths, total friends (higher), damage dealt (lower)
 
-
 play through once
+  don't buy fatality
 make 9 floors with better encounters
+
+need tiers on cards so first chest doesn't have Fatality in it, shop can, as it's more expensive
+  so, just by cost
+  starting 2-attack, 2-block should never appear in chests/shop
+when moving onto a yielded/dying enemy, should swap places with them if possible (not through a door)
+shouldn't be able to push into stairwell, they don't come out (due to event) - or maybe he died?
 
 tooltips everywhere - fixed screen location (per Action) for tooltips to show up?
     - or, F1 to open help screen explaining all effects

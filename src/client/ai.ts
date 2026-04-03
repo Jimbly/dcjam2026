@@ -29,7 +29,7 @@ import {
 import { crawlerEntFactory } from './crawler_entity_client';
 import { TurnBasedStepReason } from './crawler_play';
 import { EntityClient } from './entity_game_client';
-import { attackPlayer, findRangedTargetForEnemy, myEnt, playSoundFromEnt, tickDOTs } from './play';
+import { attackPlayer, findRangedTargetForEnemy, MAX_RANGE, myEnt, playSoundFromEnt, tickDOTs } from './play';
 import { statusSet } from './status';
 
 const { abs, floor, random } = Math;
@@ -104,6 +104,7 @@ export type EntityPatrol = Entity & {
 export type HunterOpts = {
   radius: number;
   see_through_walls: boolean;
+  ranged_combat: boolean; // try to line up on the grid
 };
 export type HunterState = {
   has_target: boolean;
@@ -273,6 +274,7 @@ export function aiTraitsClientStartup(): void {
     default_opts: {
       radius: 3,
       see_through_walls: false,
+      ranged_combat: false,
     },
     methods: {
       aiHunt: function (
@@ -298,6 +300,7 @@ export function aiTraitsClientStartup(): void {
         let { radius, see_through_walls } = this.hunter_opts;
         if (this.data.alert) {
           see_through_walls = true;
+          radius = MAX_RANGE;
         }
         if (distance <= radius) {
 
@@ -448,6 +451,10 @@ export function aiTraitsClientStartup(): void {
           if (this.hunter_state.preferred_axis) {
             do_x = this.hunter_state.preferred_axis === 'x';
           } // else, we've never been close, just randomize based on major distance
+
+          if (this.hunter_opts.ranged_combat && abs(dx) !== abs(dy)) {
+            do_x = abs(dx) < abs(dy);
+          }
         }
         let dir = do_x ? xdir! : ydir!;
         let new_pos: JSVec3 = [pos[0] + DX[dir], pos[1] + DY[dir], pos[2]];
