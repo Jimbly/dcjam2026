@@ -1,0 +1,12 @@
+---
+tile_res: [56, 51]
+tiles:
+  rasa-trans-idle0: [0, 0]
+  rasa-trans-idle1: [1, 0]
+  rasa-trans-idle2: [2, 0]
+  rasa-trans-idle3: [3, 0]
+  rasa-trans-idle4: [4, 0]
+  rasa-trans-idle5: [5, 0]
+  rasa-trans-idle6: [6, 0]
+  rasa-trans-idle7: [7, 0]
+  rasa-trans-idle8: [8, 0]

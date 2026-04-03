@@ -1,9 +1,6 @@
 TODO - The Adventures of Rasa and the Chromatic Dragons
 ====
 
-title screen with high scores and credits
-highscore table: element, deaths, total friends (higher), damage dealt (lower)
-
 play through once
   don't buy fatality
 make 9 floors with better encounters
@@ -22,6 +19,7 @@ tooltips everywhere - fixed screen location (per Action) for tooltips to show up
   need tooltips on cards in Reshuffle screen showing descriptions
 
 wandering cat
+F11 for fullscreen hint (and on menu?)
 auto save upon enemy defeat
 floor title - top and center?
 different text color for all of Rasa's speech?

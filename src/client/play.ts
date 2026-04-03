@@ -250,6 +250,7 @@ import {
 } from './status';
 import { style_damage, style_floater, style_hotkey, style_label, style_text } from './styles';
 import { TEXT } from './text';
+import { setScore } from './title';
 import { uiActionClear, uiActionCurrent, uiActionTick } from './uiaction';
 import { pauseMenuActive, pauseMenuOpen } from './uiaction_pause_menu';
 import { pickChestOptions, shopOpen } from './uiaction_shop';
@@ -1439,6 +1440,7 @@ function applyDamage(target_ent: Entity | null, value: number, bypass_block: boo
           addFloater(target_ent.id, '+1[img=currency-respect scale=1.5]');
           data.respect += 1;
         }
+        setScore();
         playUISound('restored');
       }
     } else if (!heal_mode && target_ent.isAlive()) {
@@ -1473,6 +1475,7 @@ function applyDamage(target_ent: Entity | null, value: number, bypass_block: boo
           }, undefined, aiIgnoreErrors);
           // eslint-disable-next-line @typescript-eslint/no-use-before-define
           setTimeout(autosave, MSG_STEP_DELAY);
+          setScore();
         }
       } else {
         if (stats.hp < 0) {
@@ -2305,6 +2308,7 @@ function bumpEntityCallback(ent_id: EntityID): void {
         addFloater(target_ent.id, '+1[img=currency-respect scale=1.5]');
         data.respect += 1;
       }
+      setScore();
       playUISound('befriended');
     } else if (target_ent.is_goal) {
       entityManager().deleteEntity(target_ent.id, 'removed');
@@ -2891,7 +2895,7 @@ function isBossFloor(): boolean {
   return Boolean(level.props.boss);
 }
 
-function isDefeatedBoss(): boolean {
+export function isDefeatedBoss(): boolean {
   let me = myEntOptional();
   if (!me) {
     return false;
@@ -3352,6 +3356,7 @@ function initLevel(cem: ClientEntityManagerInterface<Entity>, floor_id: number, 
       }
     }
   }
+  setScore();
 }
 
 export function playStartup(): void {
