@@ -52,6 +52,9 @@ function pickCardShopOptions(): void {
   const { data } = me;
   let { gold } = data;
   let options = Object.keys(CARDS) as CardID[];
+  options = options.filter(function (card_id) {
+    return CARDS[card_id].cost > 0;
+  });
   data.shop_options = [];
   while (data.shop_options.length < 4) {
     let idx = randInt(options.length);
@@ -73,6 +76,17 @@ export function pickChestOptions(): void {
   const me = myEnt();
   const { data } = me;
   let opts = Object.keys(CARDS) as CardID[];
+  let floor_num = myEnt().floorElementNumber();
+  opts = opts.filter(function (card_id) {
+    let cost = CARDS[card_id].cost;
+    if (!cost) {
+      return false;
+    }
+    if (cost >= 6 && floor_num <= 1) {
+      return false;
+    }
+    return true;
+  });
   data.shop_options = [];
   for (let ii = 0; ii < 2; ++ii) {
     let idx = randInt(opts.length);

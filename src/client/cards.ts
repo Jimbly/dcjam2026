@@ -67,7 +67,7 @@ function heal(v: number): {
 
 export const CARDS_RAW = {
   'attack2': {
-    cost: 1,
+    cost: 0,
     name: 'Claw',
     effect: {
       damage: grow(2),
@@ -108,7 +108,7 @@ export const CARDS_RAW = {
     ...heal(1),
   },
   'block2': {
-    cost: 1,
+    cost: 0,
     name: 'Dodge',
     effect: {
       block: grow(2),

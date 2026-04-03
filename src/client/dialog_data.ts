@@ -26,6 +26,7 @@ import {
 } from '../common/crawler_script';
 import { CrawlerCell } from '../common/crawler_state';
 import { crawlerController, crawlerScriptAPI } from './crawler_play';
+import { creditsGo } from './credits';
 import {
   dialog,
   dialogActive,
@@ -353,8 +354,7 @@ dialogRegister({
             buttons: [{
               label: 'You win!  Thanks for playing!',
               cb: function () {
-                // TODO: send to high score screen
-                urlhash.go('');
+                creditsGo();
               },
             }]
           });

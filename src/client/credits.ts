@@ -67,10 +67,10 @@ let clicked = false;
 function exit(): void {
   urlhash.go('');
   engine.setState(titleInit);
-  tickMusic('bgm_ice_explore');
 }
 function doCredits(): void {
   gl.clearColor(palette[PAL_BLACK_PURE][0], palette[PAL_BLACK_PURE][1], palette[PAL_BLACK_PURE][2], 1);
+  tickMusic('bgm_ice_explore');
 
   if (mouseDownAnywhere()) {
     clicked = true;
