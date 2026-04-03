@@ -300,7 +300,7 @@ dialogRegister({
     });
   },
   bosspoke: function () {
-    let elemnum = elementNumber();
+    let elemnum = myEnt().floorElementNumber();
     dialogPush({
       name: TEXT[`UNCLE${elemnum}_NAME`],
       text: TEXT[`UNCLE_BOSS${elemnum}_POKE`],
@@ -386,6 +386,9 @@ crawlerScriptRegisterEvent({
       let { element } = me.data;
       // note: monologues won't be seen here
       me.data.heal_mode = false;
+      if (!me.data.hand.length) {
+        me.populateDrawPileFromDeck(); // prevent immediate death
+      }
       dialog('outtro');
       api.floorDelta(10, 'stairs_in', false);
     } else {

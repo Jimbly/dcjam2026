@@ -1642,7 +1642,7 @@ export class CrawlerController {
   }
 
   forceMove(dir: DirType): void {
-    this.player_controller.cancelAllMoves?.(false);
+    this.player_controller.cancelAllMoves?.(true); // DCJAM
     this.player_controller.startMove(dir);
   }
 
@@ -2447,6 +2447,13 @@ export class CrawlerController {
     }
     this.freecam_pitch += dp * 0.004;
     this.freecam_pitch = clamp(this.freecam_pitch, -PI/2 + 0.001, PI/2 - 0.001);
+  }
+
+  turnTo(dir: DirType): void {
+    let cur_rot = this.getEffRot();
+    if (cur_rot !== dir) {
+      this.startTurn(dir);
+    }
   }
 
   force_face_dir: DirType | null = null;

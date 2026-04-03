@@ -12,7 +12,7 @@ traits:
   - effect:
       ranged: 4
 - id: stats_default
-  hp: 11
+  hp: 13
 - id: drawable
   # biasL: [-0.25, 0.3]
   # biasF: [0, -0.25]

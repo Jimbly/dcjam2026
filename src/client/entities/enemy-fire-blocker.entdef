@@ -12,7 +12,7 @@ traits:
   - effect:
       block: 6
 - id: stats_default
-  hp: 16
+  hp: 20
 - id: drawable
   # biasL: [-0.25, 0.3]
   # biasF: [0, -0.25]

@@ -1,6 +1,6 @@
 ---
-fog_color: '#181425'
-background_color: '#181425'
+fog_color: '#412d37'
+background_color: '#412d37'
 # background_img: backdrop_demo
 fog_params:
 - 0.003

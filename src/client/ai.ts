@@ -272,7 +272,7 @@ export function aiTraitsClientStartup(): void {
       ai_move_rand_time: 100,
     },
     default_opts: {
-      radius: 3,
+      radius: 4,
       see_through_walls: false,
       ranged_combat: false,
     },

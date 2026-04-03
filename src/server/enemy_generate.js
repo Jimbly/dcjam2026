@@ -337,7 +337,7 @@ let lookup = {
       moves,
     ] = mpair;
     let filename = `src/client/entities/enemy-${element}-${mode}.entdef`;
-    let hp = 9 + hpbonus + mhp;
+    let hp = 9 + hpbonus * 2 + mhp;
     let body = lookup[`${element}-${mode}`];
     assert(body, `${element}-${mode}`);
     let name = names[`${element}-${mode}`];

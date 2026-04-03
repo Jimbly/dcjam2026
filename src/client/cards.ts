@@ -153,7 +153,7 @@ export const CARDS_RAW = {
     name: 'Pull',
     effect: {
       pull: ONES,
-      freeze: grow(0),
+      freeze: [0, 1, 1, 2],
     },
     ...heal(2),
   },
@@ -179,7 +179,7 @@ export const CARDS_RAW = {
     cost: 5,
     name: 'Wither',
     effect: {
-      poison: [1,1,2,2],
+      poison: [1,1,2,3],
       delay: ONES,
     },
     ...heal(1),
@@ -204,7 +204,7 @@ export const CARDS_RAW = {
     name: 'Daze',
     cost: 5,
     effect: {
-      freeze: [2, 2, 3, 3],
+      freeze: [2, 2, 2, 3],
     },
     ...heal(1),
   },

@@ -12,13 +12,13 @@ export const TEXT = {
   RASA_UNCLE_RESPONSE: 'Unswayed by his taunts, I charged into the fray!',
   RASA_BOSS0_VICTORY: 'You may rest easy knowing that I was not defeated by this foe.  We fought a battle that has been sung far and wide!\n\nFinally, the power of [c=green]Earth[/c] was within my grasp!',
   UNCLE_BOSS0_POKE: 'Well played little one, but I\'m going back to my nap now.\n\nDo pass on my salutations to your mother.',
-  RASA_ORB0_ACQUIRED: 'At long last, I obtained the [c=green]Power of Earth[/c], and now look like a dapper Green Dragon myself.  Though the change to my scales was clear, my heart remained steadfast.  I would not rest until I had claimed *all* of the colors.',
+  RASA_ORB0_ACQUIRED: 'At long last, I obtained the [c=green]Power of Earth[/c], and now looked like a dapper Green Dragon myself.  Though the change to my scales was clear, my heart remained steadfast.  I would not rest until I had claimed *all* of the colors.',
   // Note: RASA_HEAL0 and RASA_HEAL0_BUTTON should be recorded as one voice line
   RASA_HEAL0: 'All of my Earthen enemies now had no choice but to bow to my will.\n\n' +
     '...\n\n\nWell, except the ones who laid bleeding on the floor as a testament to my earlier excesses.',
   RASA_HEAL0_BUTTON: 'Those, I magnanimously healed with my new attunement to the powers of Earth.',
   RASA_OUTTRO0: 'After many trials I had finally escaped!  Should I have stopped here, gentle listeners?  Perhaps, but I did not.' +
-    '\n\nWith the strength of the Earth flowing through my scales, I knew that there was no better time to assail the [c=blue]bastion of water[/c]!',
+    '\n\nWith the [c=green]strength of the Earth[/c] flowing through my scales, I knew that there was no better time to assail the [c=blue]bastion of water[/c]!',
 
   RASA_INTRO1: 'Welcome back, dear listeners, to chapter 2 of this **amazing** tale!\n\n' +
     'I shivered and gathered my wits about me, yearning for the scarf I\'d left at home.  It\'s cold here, but not as cold as my response will be to anyone who dares stand between me and the power of [c=blue]Ice[/c]!\n\nOr was it water...',

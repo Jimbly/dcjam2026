@@ -1,9 +1,11 @@
 TODO - The Adventures of Rasa and the Chromatic Dragons
 ====
 
-play through once
-  don't buy fatality
 make 9 floors with better encounters
+
+difficulty
+  water/fire/finale pretty easy if bought either fatality or go in on poison
+  try a ranged run next
 
 tooltips everywhere - fixed screen location (per Action) for tooltips to show up?
     - or, F1 to open help screen explaining all effects
@@ -14,7 +16,6 @@ tooltips everywhere - fixed screen location (per Action) for tooltips to show up
 
 wandering cat
 F11 for fullscreen hint (and on menu?)
-auto save upon enemy defeat
 floor title - top and center?
 different text color for all of Rasa's speech?
 in-world monologues for Rasa to say randomly?

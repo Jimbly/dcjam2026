@@ -581,7 +581,7 @@ class ShopAction extends UIAction {
       // });
       // y += FONT_HEIGHT + PAD;
 
-      y += 24;
+      y += 0;
 
       let { shop_options } = data;
       x += floor((w2 - (shop_options.length * (CARD_W + PAD) - PAD))/2);
@@ -632,6 +632,24 @@ class ShopAction extends UIAction {
         }
         x += CARD_W + PAD;
       }
+
+      y += CARD_H + PAD + 12 + PAD * 2;
+
+      let reroll_cost = 3 + (data.shop_rerolls || 0);
+      if (buttonText({
+        x: x0 + (w0 - uiButtonWidth()) / 2,
+        y, z,
+        hotkey: KEYS.R,
+        disabled: gold < reroll_cost,
+        markdown: true,
+        text: `Reroll (${reroll_cost}[img=currency-gold scale=1.75])`,
+      })) {
+        data.gold -= reroll_cost;
+        data.shop_rerolls = (data.shop_rerolls || 0) + 1;
+        pickCardShopOptions();
+        autosave();
+      }
+
 
       y = y0 + h - uiButtonHeight() - PAD * 2;
       if (buttonText({
@@ -808,6 +826,7 @@ class ShopAction extends UIAction {
         keySet('shop_gold');
         data.shop_state = {};
         pickCardShopOptions();
+        data.shop_rerolls = 0;
         autosave();
       }
       markdownAuto({

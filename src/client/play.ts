@@ -82,8 +82,8 @@ import {
   JSVec3,
   ROVec3,
   v2add,
+  v2copy,
   v2iAdd,
-  v2iAddScale,
   v2iScale,
   v2length,
   v2manhattanDist,
@@ -402,7 +402,7 @@ export function renderFloaters(): void {
         font_style: style_floater,
         alpha,
         x,
-        y: y + h/2 - float - 400 + (floater.yoffs || 0) * text_height,
+        y: y + h*0.25 - float - 400 + (floater.yoffs || 0) * text_height,
         z: Z.FLOATERS,
         w, h: 400,
         text_height,
@@ -1115,6 +1115,12 @@ export function drawCard(param: {
     if (needs_target === 'ranged') {
       needs_target = true;
       eff_no_target = no_ranged_target;
+      if (key === 'push' || key === 'pull') {
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define
+        if (target_ent && !canPushPull(target_ent, key)) {
+          eff_no_target = true;
+        }
+      }
       if (key === 'pull') {
         if (!no_target) {
           // have a melee target
@@ -1485,12 +1491,16 @@ function applyDamage(target_ent: Entity | null, value: number, bypass_block: boo
           setTimeout(playUISound.bind(null, 'death'), MSG_STEP_DELAY);
           addFloater(target_ent.id, `+${REWARD_KILL_GOLD}[img=currency-gold scale=1.5]`);
           data.gold += REWARD_KILL_GOLD;
+          // eslint-disable-next-line @typescript-eslint/no-use-before-define
+          autosave();
         } else if (!stats.hp) {
           target_ent.triggerAnimation!('uncon');
           addFloater(target_ent.id, 'I yield!');
           setTimeout(playUISound.bind(null, 'yield'), MSG_STEP_DELAY);
           addFloater(target_ent.id, `+${REWARD_YIELD_RESPECT}[img=currency-respect scale=1.5]`);
           data.respect += REWARD_YIELD_RESPECT;
+          // eslint-disable-next-line @typescript-eslint/no-use-before-define
+          autosave();
         } else {
           if (!target_ent.data.alert) {
             target_ent.data.alert = true;
@@ -1585,7 +1595,7 @@ function cardSound(
   }
 }
 
-function doPushPull(ent: Entity, effect: 'push' | 'pull'): void {
+function pushPullTarget(ent: Entity, effect: 'push' | 'pull'): JSVec2 {
   let level = crawlerGameState().level!;
   let floor_id = crawlerGameState().floor_id;
   let my_pos = myEnt().data.pos;
@@ -1599,25 +1609,48 @@ function doPushPull(ent: Entity, effect: 'push' | 'pull'): void {
   }
   let walk: JSVec2 = [pos[0], pos[1]];
   let dir = dirFromDelta(delta);
+  let last_valid_target = walk.slice(0) as JSVec2;
   while (true) {
     if (level.wallsBlock(walk, dir, crawlerScriptAPI()) & BLOCK_MOVE) {
       break;
     }
     v2iAdd(walk, delta);
-    if (entitiesAt(entityManager(), walk, floor_id, true).length ||
-      level.getCell(walk[0], walk[1])?.events
-    ) {
-      v2iAddScale(walk, delta, -1);
+    let events = level.getCell(walk[0], walk[1])?.events;
+    if (events && events[0].id.includes('stairs')) {
       break;
     }
+    let ents = entitiesAt(entityManager(), walk, floor_id, true);
+    if (ents.length && ents[0].isPlayer()) {
+      break;
+    }
+    if (!ents.length) {
+      v2copy(last_valid_target, walk);
+    }
   }
-  if (!v2same(walk, pos)) {
+  return last_valid_target;
+}
+
+function doPushPull(ent: Entity, effect: 'push' | 'pull'): void {
+  let pos = ent.data.pos;
+  let target = pushPullTarget(ent, effect);
+  if (!v2same(target, pos)) {
     ent.applyAIUpdate('ai_move', {
-      pos: [walk[0], walk[1], pos[2]],
+      pos: [target[0], target[1], pos[2]],
       last_pos: pos,
     }, undefined, aiIgnoreErrors);
   }
 }
+
+
+function canPushPull(ent: Entity, effect: 'push' | 'pull'): boolean {
+  let pos = ent.data.pos;
+  let target = pushPullTarget(ent, effect);
+  if (!v2same(target, pos)) {
+    return true;
+  }
+  return false;
+}
+
 
 function playCard(
   no_target: boolean,
@@ -1669,6 +1702,9 @@ function playCard(
     } else if (key === 'push' || key === 'pull') {
       if (ranged_target && !ranged_target.is_boss) {
         doPushPull(ranged_target, key);
+        if (key === 'pull' && !target_ent) {
+          target_ent = ranged_target;
+        }
       }
     } else if (key === 'delay') {
       should_end_turn = false;
@@ -1686,7 +1722,7 @@ function playCard(
   } else {
     discard_pile.push(uid);
   }
-  if (should_end_turn) {
+  if (should_end_turn || !hand.length) {
     tickPlayerDOTs();
     data.combat_phase = 'enemy';
     crawlerTurnBasedScheduleStep(ENEMY_DELAY, 'attack');
@@ -1845,8 +1881,12 @@ function doHand(): void {
         me.startPlayerPhase();
       } else {
         // need to reshuffle and choose to burn a card
-        me.reshufflePrep();
-        combat_state.countdown = 0;
+        if (me.data.heal_mode) {
+          data.combat_phase = 'player';
+        } else {
+          me.reshufflePrep();
+          combat_state.countdown = 0;
+        }
       }
     } else {
       me.startPlayerPhase();
@@ -3079,31 +3119,32 @@ function onPlayerMove(old_pos: Vec2, new_pos: Vec2): void {
   // aiOnPlayerMoved(game_state, myEnt(), old_pos, new_pos,
   //   settings.ai_pause || engine.defines.LEVEL_GEN, script_api);
 
-  let entity_manager = entityManager();
-  let game_state = crawlerGameState();
-  let { level } = game_state;
-  if (!v2same(old_pos, new_pos) && v2manhattanDist(old_pos, new_pos) === 1) {
-    let { floor_id } = game_state;
-    let ents = entitiesAt(entity_manager, new_pos, floor_id, true).filter(function (ent) {
-      return ent.isEnemy();
-    });
-    let old_ents = entitiesAt(entity_manager, old_pos, floor_id, true).filter(function (ent) {
-      return ent.isEnemy();
-    });
-    if (ents.length && !old_ents.length &&
-      !level!.wallsBlock(new_pos, dirFromDelta(v2sub(vec2(), old_pos, new_pos)), crawlerScriptAPI())
-    ) {
-      ents.forEach(function (ent) {
-        ent.applyAIUpdate('ai_move', {
-          pos: [old_pos[0], old_pos[1], ent.data.pos[2]],
-          last_pos: new_pos,
-        }, undefined, aiIgnoreErrors);
+  if (!isOnline()) {
+    let entity_manager = entityManager();
+    let game_state = crawlerGameState();
+    let { level } = game_state;
+    if (!v2same(old_pos, new_pos) && v2manhattanDist(old_pos, new_pos) === 1) {
+      let { floor_id } = game_state;
+      let ents = entitiesAt(entity_manager, new_pos, floor_id, true).filter(function (ent) {
+        return ent.isEnemy();
       });
-    } else if (ents.length) {
-      enemyVacate(ents[0].id);
+      let old_ents = entitiesAt(entity_manager, old_pos, floor_id, true).filter(function (ent) {
+        return ent.isEnemy();
+      });
+      if (ents.length && !old_ents.length &&
+        !level!.wallsBlock(new_pos, dirFromDelta(v2sub(vec2(), old_pos, new_pos)), crawlerScriptAPI())
+      ) {
+        ents.forEach(function (ent) {
+          ent.applyAIUpdate('ai_move', {
+            pos: [old_pos[0], old_pos[1], ent.data.pos[2]],
+            last_pos: new_pos,
+          }, undefined, aiIgnoreErrors);
+        });
+      } else if (ents.length) {
+        enemyVacate(ents[0].id);
+      }
     }
   }
-
 
   crawlerTurnBasedMovePreStart();
 }
@@ -3194,6 +3235,19 @@ cmd_parse.register({
   func: function (str, resp_func) {
     myEnt().resetDeck();
     playUISound('reset_deck');
+    resp_func();
+  },
+});
+
+cmd_parse.register({
+  cmd: 'burncards',
+  help: 'Burn all cards',
+  func: function (str, resp_func) {
+    myEnt().data.draw_pile.length = 0;
+    myEnt().data.hand.length = str ? 1 : 0;
+    myEnt().data.combat_phase = 'enemy';
+    crawlerTurnBasedScheduleStep(ENEMY_DELAY, 'attack');
+    playUISound('card_discard');
     resp_func();
   },
 });
@@ -3343,6 +3397,9 @@ function initLevel(cem: ClientEntityManagerInterface<Entity>, floor_id: number, 
   // dialogReset();
   floaters.length = 0;
   combatStateReset();
+  // if (!myEnt().data.hand.length) {
+  //   myEnt().populateDrawPileFromDeck(); // don't die if we ran out of cards while healing
+  // }
   if (keyGet('needs_shop') && !buildModeActive()) {
     shopOpen();
   }
@@ -3388,6 +3445,10 @@ function initLevel(cem: ClientEntityManagerInterface<Entity>, floor_id: number, 
     }
   }
   setScore();
+
+  if (myEnt().data.combat_phase === 'enemy') {
+    crawlerTurnBasedScheduleStep(ENEMY_DELAY, 'attack');
+  }
 }
 
 export function playStartup(): void {

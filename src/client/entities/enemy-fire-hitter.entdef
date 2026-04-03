@@ -8,7 +8,7 @@ traits:
   - effect:
       damage: 7
 - id: stats_default
-  hp: 11
+  hp: 15
 - id: drawable
   # biasL: [-0.25, 0.3]
   # biasF: [0, -0.25]

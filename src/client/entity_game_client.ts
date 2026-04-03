@@ -91,6 +91,7 @@ export type EntityDataClient = {
   gold: number;
   respect: number;
   shop_options: CardID[];
+  shop_rerolls?: number;
   shop_state?: DataObject;
   deaths?: number;
   score_friends: number;
@@ -393,7 +394,8 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
 
   isAlive(): boolean {
     if (this.isPlayer()) {
-      return Boolean(this.data.hand.length || this.data.discard_pile.length || this.data.draw_pile.length);
+      return Boolean(this.data.hand.length || this.data.discard_pile.length || this.data.draw_pile.length ||
+        this.data.heal_mode);
     }
     return this.data.stats ? this.getData('stats.hp', 0) > 0 : true;
   }
