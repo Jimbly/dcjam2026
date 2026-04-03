@@ -1,0 +1,20 @@
+---
+tile_res: 12
+tiles:
+  dun2fire-solid1: [0, 0]
+  dun2fire-solid2: [1, 0]
+  dun2fire-window: [2, 0]
+  dun2fire-secret: [3, 0]
+
+  dun2fire-door: [0, 1]
+  dun2fire-stairs_in: [1, 1]
+  dun2fire-stairs_out: [2, 1]
+  # dun2fire-arch: [3, 1]
+
+  # dun2fire-detail1: [0, 2]
+  # dun2fire-detail2: [1, 2]
+  dun2fire-ceiling: [2, 2]
+  dun2fire-floor: [3, 2]
+
+  dun2fire-goalceiling: [0, 2]
+  dun2fire-goalfloor: [1, 2]

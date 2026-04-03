@@ -1197,6 +1197,12 @@
         "open",
         "solid",
         "stairs_in"
+      ],
+      "events": [
+        {
+          "id": "section_intro",
+          "param": ""
+        }
       ]
     },
     {
@@ -1483,7 +1489,7 @@
       "walls": [
         "solid",
         "open",
-        "main_dun1-solid2",
+        "solid",
         "open"
       ]
     },
@@ -1771,7 +1777,7 @@
       "walls": [
         "open",
         "open",
-        "main_dun1-solid2",
+        "solid",
         "open"
       ]
     },
@@ -1781,7 +1787,7 @@
         "open",
         "open",
         "open",
-        "main_dun1-solid2"
+        "solid"
       ]
     },
     {
@@ -1938,7 +1944,7 @@
       "id": "open",
       "walls": [
         "solid",
-        "main_dun1-solid2",
+        "solid",
         "open",
         "open"
       ]
@@ -2333,15 +2339,15 @@
   ],
   "initial_entities": [
     {
-      "type": "chest",
+      "type": "enemy-earth-balanced",
       "pos": [
-        4,
+        3,
         13,
         2
       ]
     },
     {
-      "type": "enemy-earth-balanced",
+      "type": "enemy-earth-ranged",
       "pos": [
         8,
         13,
@@ -2349,7 +2355,7 @@
       ]
     },
     {
-      "type": "enemy-earth-ranged",
+      "type": "enemy-earth-blocker",
       "pos": [
         5,
         14,
@@ -2357,24 +2363,24 @@
       ]
     },
     {
-      "type": "enemy-earth-special",
+      "type": "enemy-earth-hitter",
       "pos": [
         6,
         15,
-        0
+        2
       ]
     },
     {
-      "type": "enemy-earth-hitter",
+      "type": "chest",
       "pos": [
-        3,
+        4,
         13,
         2
       ]
     }
   ],
   "state": {},
-  "vstyle": "main",
+  "vstyle": "dun10",
   "seed": "32845502",
   "props": {
     "element": ""

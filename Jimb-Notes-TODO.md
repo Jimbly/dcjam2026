@@ -6,7 +6,10 @@ add unique boss abilities
 title screen with high scores and credits
 highscore table: element, deaths, total friends (higher), damage dealt (lower)
 
-make 3 tilesets and 9 floors
+hook up boss floor music (earth again for final boss)
+
+play through once
+make 9 floors with better encounters
 
 tooltips everywhere - fixed screen location (per Action) for tooltips to show up?
     - or, F1 to open help screen explaining all effects

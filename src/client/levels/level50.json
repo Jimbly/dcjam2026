@@ -1239,7 +1239,7 @@
       ]
     },
     {
-      "id": "main_dun1-opennoroof",
+      "id": "open",
       "walls": [
         "open",
         "solid",
@@ -2355,7 +2355,7 @@
     }
   ],
   "state": {},
-  "vstyle": "main",
+  "vstyle": "dun2fire",
   "seed": "32845502",
   "props": {
     "boss": "1"

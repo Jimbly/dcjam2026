@@ -1,0 +1,24 @@
+---
+fog_color: '#181425'
+background_color: '#181425'
+# background_img: backdrop_demo
+fog_params:
+- 0.003
+- 0.005
+- 800.0
+cell_swaps:
+  open: main_dun2fire-floor
+  # floorswitch: demo_floorswitch
+  # floorswitch_on: demo_floorswitch_on
+wall_swaps:
+  # open: main_dun2fire-open
+  door: main_dun2fire-door
+  door_oneway: main_dun2fire-door
+  door_locked: demo_door_locked
+  door_locked_unlocked: demo_door_locked_unlocked
+  entrance: demo_entrance
+  secret_door: main_dun2fire-secret
+  secret_door_unvisited: main_dun2fire-secret
+  solid: main_dun2fire-solid1
+  stairs_in: main_dun2fire-stairs_in
+  stairs_out: main_dun2fire-stairs_out

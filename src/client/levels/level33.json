@@ -1257,7 +1257,7 @@
       ]
     },
     {
-      "id": "main_dun1-goal",
+      "id": "main_dun9-goalfloor",
       "walls": [
         "solid",
         "open",
@@ -2357,7 +2357,7 @@
     }
   ],
   "state": {},
-  "vstyle": "main",
+  "vstyle": "dun9",
   "seed": "32845502",
   "props": {
     "boss": "1"

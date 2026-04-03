@@ -1489,7 +1489,7 @@
       "walls": [
         "solid",
         "open",
-        "main_dun1-solid2",
+        "solid",
         "open"
       ]
     },
@@ -1777,7 +1777,7 @@
       "walls": [
         "open",
         "open",
-        "main_dun1-solid2",
+        "solid",
         "open"
       ]
     },
@@ -1787,7 +1787,7 @@
         "open",
         "open",
         "open",
-        "main_dun1-solid2"
+        "solid"
       ]
     },
     {
@@ -1944,7 +1944,7 @@
       "id": "open",
       "walls": [
         "solid",
-        "main_dun1-solid2",
+        "solid",
         "open",
         "open"
       ]
@@ -2380,7 +2380,7 @@
     }
   ],
   "state": {},
-  "vstyle": "main",
+  "vstyle": "dun10",
   "seed": "32845502",
   "props": {
     "element": ""
