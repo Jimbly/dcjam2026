@@ -462,6 +462,7 @@ export function crawlerTextureWizard(): void {
           '    height: 0.5',
           '    offs: [0, 0, 0]',
           '    face_camera: false # Otherwise faces frustum',
+          '    do_alpha: true',
         );
 
       } else {

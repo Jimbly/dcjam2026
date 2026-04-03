@@ -8,9 +8,9 @@ traits:
   - effect:
       damage: 2
   - effect:
-      posion: 1
+      poison: 1
   - effect:
-      posion: 1
+      poison: 1
 - id: stats_default
   hp: 8
 - id: drawable

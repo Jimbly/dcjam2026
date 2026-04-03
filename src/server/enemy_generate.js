@@ -280,7 +280,7 @@ let lookup = {
 };
 
 [
-  ['earth', 0, 'posion: 1'],
+  ['earth', 0, 'poison: 1'],
   ['water', 2, 'freeze: 2'],
   ['fire', 4, 'poison: 2'],
 ].forEach(function (epair) {

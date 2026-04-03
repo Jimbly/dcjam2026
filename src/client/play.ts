@@ -1421,12 +1421,13 @@ let ranged_attack_range = 3;
 let ranged_incoming_attack_counter = 0;
 let ranged_incoming_attack_pos: JSVec2;
 
-function applyDamage(target_ent: Entity | null, value: number, bypass_block: boolean): void {
+function applyDamage(target_ent: Entity | null, value: number, bypass_block: boolean): boolean {
   let me = myEnt();
   let { data } = me;
   let { heal_mode } = data;
   let dir = data.pos[2] as DirType;
   attackSurgeAdd(DX[dir], DY[dir], target_ent ? 0.5 : 0.25);
+  let want_save = false;
   if (target_ent) {
     if (heal_mode) {
       let stats = target_ent.data.stats;
@@ -1491,16 +1492,14 @@ function applyDamage(target_ent: Entity | null, value: number, bypass_block: boo
           setTimeout(playUISound.bind(null, 'death'), MSG_STEP_DELAY);
           addFloater(target_ent.id, `+${REWARD_KILL_GOLD}[img=currency-gold scale=1.5]`);
           data.gold += REWARD_KILL_GOLD;
-          // eslint-disable-next-line @typescript-eslint/no-use-before-define
-          autosave();
+          want_save = true;
         } else if (!stats.hp) {
           target_ent.triggerAnimation!('uncon');
           addFloater(target_ent.id, 'I yield!');
           setTimeout(playUISound.bind(null, 'yield'), MSG_STEP_DELAY);
           addFloater(target_ent.id, `+${REWARD_YIELD_RESPECT}[img=currency-respect scale=1.5]`);
           data.respect += REWARD_YIELD_RESPECT;
-          // eslint-disable-next-line @typescript-eslint/no-use-before-define
-          autosave();
+          want_save = true;
         } else {
           if (!target_ent.data.alert) {
             target_ent.data.alert = true;
@@ -1510,6 +1509,7 @@ function applyDamage(target_ent: Entity | null, value: number, bypass_block: boo
       }
     }
   }
+  return want_save;
 }
 
 export function tickDOTs(enemy: Entity): void {
@@ -1674,17 +1674,18 @@ function playCard(
   let effects = heal_mode ? card_def.healeffect : card_def.effect;
   let should_burn = false;
   let should_end_turn = true;
+  let should_save = false;
   for (key in effects) {
     let value = effects[key]![tier];
     if (!value) {
       continue;
     }
     if (key === 'damage') {
-      applyDamage(target_ent, value, false);
+      should_save = applyDamage(target_ent, value, false) || should_save;
     } else if (key === 'ranged') {
       ranged_attack_counter = RANGED_ANIM_TIME;
       ranged_attack_range = v2manhattanDist(ranged_target!.data.pos, myEnt().data.pos);
-      applyDamage(ranged_target, value, false);
+      should_save = applyDamage(ranged_target, value, false) || should_save;
     } else if (key === 'block') {
       data.block = (data.block || 0) + value;
     } else if (key === 'poison') {
@@ -1725,6 +1726,10 @@ function playCard(
   if (should_end_turn || !hand.length) {
     tickPlayerDOTs();
     data.combat_phase = 'enemy';
+    if (should_save) {
+      // eslint-disable-next-line @typescript-eslint/no-use-before-define
+      autosave();
+    }
     crawlerTurnBasedScheduleStep(ENEMY_DELAY, 'attack');
   }
   let sound = cardSound(no_target, no_ranged_target, target_ent, ranged_target, card);
