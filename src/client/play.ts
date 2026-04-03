@@ -1462,6 +1462,8 @@ function applyDamage(target_ent: Entity | null, value: number, bypass_block: boo
           addFloater(target_ent.id, 'Argh...');
           setTimeout(playUISound.bind(null, 'death'), MSG_STEP_DELAY);
           setTimeout(dialog.bind(null, 'bossvictory'), MSG_STEP_DELAY * 2);
+          me.data.poison = 0;
+          me.data.incoming_damage = 0;
           let pos = target_ent.data.pos;
           target_ent.applyAIUpdate('ai_move', {
             pos: [pos[0], pos[1] + 2, pos[2]],

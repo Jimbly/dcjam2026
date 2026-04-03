@@ -232,6 +232,10 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
     this.populateDrawPileFromDeck();
     //this.drawHand();
     this.data.combat_phase = 'redraw';
+    this.data.block = 0;
+    this.data.poison = 0;
+    this.data.freeze = 0;
+    this.data.incoming_damage = 0;
   }
 
   reshufflePrep(): void {

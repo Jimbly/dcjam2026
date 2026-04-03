@@ -2,11 +2,11 @@ TODO - The Adventures of Rasa and the Chromatic Dragons
 ====
 
 add unique boss abilities
+hook up boss floor music (earth again for final boss)
 
 title screen with high scores and credits
 highscore table: element, deaths, total friends (higher), damage dealt (lower)
 
-hook up boss floor music (earth again for final boss)
 
 play through once
 make 9 floors with better encounters

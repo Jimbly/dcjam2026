@@ -11,7 +11,7 @@ export const TEXT = {
   UNCLE0_HELLO: '* *Yawns* * Oh, hi Rasa, how\'d you get in here?  I hope my sister is well?',
   RASA_UNCLE_RESPONSE: 'Unswayed by his taunts, I charged into the fray!',
   RASA_BOSS0_VICTORY: 'You may rest easy knowing that I was not defeated by this foe.  We fought a battle that has been sung far and wide!\n\nFinally, the power of [c=green]Earth[/c] was within my grasp!',
-  UNCLE_BOSS0_POKE: 'Well played little one, but I\'m going back to my nap now.\n\nDo give your sister my salutations.',
+  UNCLE_BOSS0_POKE: 'Well played little one, but I\'m going back to my nap now.\n\nDo pass on my salutations to your mother.',
   RASA_ORB0_ACQUIRED: 'At long last, I obtained the power of Earth, and now look like a dapper Green Dragon myself.  Though the change to my scales was clear, my heart remained steadfast.  I would not rest until I had claimed *all* of the colors.',
   // Note: RASA_HEAL0 and RASA_HEAL0_BUTTON should be recorded as one voice line
   RASA_HEAL0: 'All of my Earthen enemies now had no choice but to bow to my will.\n\n' +

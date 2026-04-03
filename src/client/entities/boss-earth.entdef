@@ -10,9 +10,11 @@ traits:
   - effect:
       damage: 3
   - effect:
-      block: 2
+      poison: 3
+  - effect:
+      block: 4
 - id: stats_default
-  hp: 19
+  hp: 23
 - id: drawable
   biasL: [0, 0.4]
   biasF: [0, -0.4]
