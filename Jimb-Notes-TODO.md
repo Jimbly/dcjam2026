@@ -13,7 +13,6 @@ tooltips everywhere - fixed screen location (per Action) for tooltips to show up
   need tooltips on cards in Reshuffle screen showing descriptions
 
 wandering cat
-icon
 F11 for fullscreen hint (and on menu?)
 auto save upon enemy defeat
 floor title - top and center?
