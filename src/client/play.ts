@@ -96,6 +96,7 @@ import {
   v3iScale,
   v3set,
   v4set,
+  vec2,
   Vec2,
   vec3,
   Vec3,
@@ -3075,6 +3076,33 @@ function onPlayerMove(old_pos: Vec2, new_pos: Vec2): void {
   // let game_state = crawlerGameState();
   // aiOnPlayerMoved(game_state, myEnt(), old_pos, new_pos,
   //   settings.ai_pause || engine.defines.LEVEL_GEN, script_api);
+
+  let entity_manager = entityManager();
+  let game_state = crawlerGameState();
+  let { level } = game_state;
+  if (!v2same(old_pos, new_pos) && v2manhattanDist(old_pos, new_pos) === 1) {
+    let { floor_id } = game_state;
+    let ents = entitiesAt(entity_manager, new_pos, floor_id, true).filter(function (ent) {
+      return ent.isEnemy();
+    });
+    let old_ents = entitiesAt(entity_manager, old_pos, floor_id, true).filter(function (ent) {
+      return ent.isEnemy();
+    });
+    if (ents.length && !old_ents.length &&
+      !level!.wallsBlock(new_pos, dirFromDelta(v2sub(vec2(), old_pos, new_pos)), crawlerScriptAPI())
+    ) {
+      ents.forEach(function (ent) {
+        ent.applyAIUpdate('ai_move', {
+          pos: [old_pos[0], old_pos[1], ent.data.pos[2]],
+          last_pos: new_pos,
+        }, undefined, aiIgnoreErrors);
+      });
+    } else if (ents.length) {
+      enemyVacate(ents[0].id);
+    }
+  }
+
+
   crawlerTurnBasedMovePreStart();
 }
 
@@ -3086,7 +3114,8 @@ function onEnterCell(pos: Vec2): void {
   let entity_manager = entityManager();
   let game_state = crawlerGameState();
   let { floor_id } = game_state;
-  let chests = entitiesAt(entity_manager, pos, floor_id, true).filter(function (ent) {
+  let ents = entitiesAt(entity_manager, pos, floor_id, true);
+  let chests = ents.filter(function (ent) {
     return ent.type_id === 'chest';
   });
   chests.forEach(function (chest) {

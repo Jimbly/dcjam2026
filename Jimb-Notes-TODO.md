@@ -1,7 +1,6 @@
 TODO - The Adventures of Rasa and the Chromatic Dragons
 ====
 
-when moving onto a yielded/dying enemy, should swap places with them if possible (not through a door)
 shouldn't be able to push into stairwell, they don't come out (due to event) - or maybe he died?
 
 play through once
