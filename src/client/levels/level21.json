@@ -1578,8 +1578,7 @@
       ],
       "events": [
         {
-          "id": "dialog",
-          "param": "leave1"
+          "id": "leave1"
         }
       ]
     },
@@ -1678,7 +1677,7 @@
       "walls": [
         "open",
         "solid",
-        "main_dun1-solid1",
+        "solid",
         "solid"
       ]
     },

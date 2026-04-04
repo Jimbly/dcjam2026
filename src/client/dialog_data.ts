@@ -362,13 +362,6 @@ dialogRegister({
       }]
     });
   },
-  leave1: function () {
-    if (healMode()) {
-      return;
-    }
-    keySet(`seen_leave_${myEnt().data.floor}`);
-    dialog('monologue', TEXT.RASA_BEFORE_STAIRS);
-  },
   leave2: function () {
     if (!keyGet(`seen_leave_${myEnt().data.floor}`) || healMode()) {
       return;
@@ -377,6 +370,20 @@ dialogRegister({
     keyClear(`seen_leave_${myEnt().data.floor}`);
   },
 });
+
+crawlerScriptRegisterEvent({
+  key: 'leave1',
+  when: CrawlerScriptWhen.PRE,
+  map_icon: CrawlerScriptEventMapIcons.NONE,
+  func: (api: CrawlerScriptAPI, cell: CrawlerCell, param: string) => {
+    if (healMode()) {
+      return;
+    }
+    keySet(`seen_leave_${myEnt().data.floor}`);
+    dialog('monologue', TEXT.RASA_BEFORE_STAIRS);
+  },
+});
+
 
 crawlerScriptRegisterEvent({
   key: 'stairs_up',
@@ -423,7 +430,12 @@ crawlerScriptRegisterEvent({
     // TODO: final victory text here (too?)
     if (healMode()) {
       crawlerController().forceMoveBackwards();
-      dialog('monologue', TEXT.RASA_NOEXIT_ON_WAY_OUT);
+      dialogPush({
+        ...MONO,
+        transient: true,
+        transient_dist: 1,
+        text: TEXT.RASA_NOEXIT_ON_WAY_OUT,
+      });
       return;
     } else {
       keySet('needs_shop');
@@ -451,8 +463,9 @@ crawlerScriptRegisterEvent({
       } else {
         // on our way in
         if (!element) {
-          dialog('monologue', TEXT.RASA_INTRO0);
-          onetimeEvent(); // Clear this so we don't get an event on the way out though
+          if (onetimeEvent()) {
+            dialog('monologue', TEXT.RASA_INTRO0);
+          }
         } else {
           if (onetimeEvent()) {
             // note: messages not seen, shop dialog about deck size overrides it:

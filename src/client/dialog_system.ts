@@ -50,6 +50,7 @@ import { buildModeActive } from './crawler_build_mode';
 import { crawlerMyEnt } from './crawler_entity_client';
 import { crawlerScriptAPI } from './crawler_play';
 import { FONT_HEIGHT } from './globals';
+import { isCombat } from './play';
 
 const { ceil, min, round } = Math;
 
@@ -246,7 +247,10 @@ export function dialogRun(
   if (transient && !active_state.fade_time) {
     let my_pos = crawlerMyEnt().getData<JSVec3>('pos')!;
     transient_dist = transient_dist || 0;
-    if (v2manhattanDist(my_pos, active_state.pos) > transient_dist) {
+    if (
+      v2manhattanDist(my_pos, active_state.pos) > transient_dist ||
+      isCombat() // DCJAM
+    ) {
       active_state.fade_time = transient_long ? 3000 : FADE_TIME;
     }
   }

@@ -20,8 +20,9 @@ tooltips everywhere - fixed screen location (per Action) for tooltips to show up
 one details object per region
 
 wandering cat
-F11 for fullscreen hint (and on menu?)
 floor title - top and center?
+cover/share image
+put damage number over the icon
 different text color for all of Rasa's speech?
 in-world monologues for Rasa to say randomly?
 bug: keyboard not working on respawn dialog

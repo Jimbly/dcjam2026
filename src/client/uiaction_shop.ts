@@ -205,6 +205,7 @@ function doCardPool(param: UIBox & {
               card_id,
               tier,
             };
+            data.shop_state!.did_something = true;
           }
           y += uiButtonHeight();
         }
@@ -651,9 +652,9 @@ class ShopAction extends UIAction {
       }
 
 
-      y = y0 + h - uiButtonHeight() - PAD * 2;
+      y = y0 + h - uiButtonHeight() - PAD;
       if (buttonText({
-        x: x0 + (w0 - uiButtonWidth()) / 2,
+        x: x0 + w0 - uiButtonWidth() - PAD * 2,
         y, z,
         hotkey: KEYS.ESC,
         text: 'Done Shopping',
@@ -750,7 +751,7 @@ class ShopAction extends UIAction {
             let done = false;
             for (let uid in deck) {
               let card = deck[uid];
-              if (sameCard(card, pool_selected)) {
+              if (sameCard(card, pool_selected) && picked.includes(Number(uid))) {
                 card.tier = (card.tier || 0) + 1;
                 done = true;
                 pool_selected = {
@@ -758,6 +759,20 @@ class ShopAction extends UIAction {
                   tier: card.tier,
                 };
                 break;
+              }
+            }
+            if (!done) {
+              for (let uid in deck) {
+                let card = deck[uid];
+                if (sameCard(card, pool_selected)) {
+                  card.tier = (card.tier || 0) + 1;
+                  done = true;
+                  pool_selected = {
+                    card_id: card.card_id,
+                    tier: card.tier,
+                  };
+                  break;
+                }
               }
             }
             assert(done);
@@ -775,11 +790,12 @@ class ShopAction extends UIAction {
         }
       }
 
-      y = y0 + h - uiButtonHeight() - PAD * 2;
+      y = y0 + h - uiButtonHeight() - PAD;
       if (buttonText({
-        x: x0 + (w0 - uiButtonWidth()) / 2,
+        x: x0 + w0 - uiButtonWidth() - PAD * 2,
         y, z,
         hotkey: KEYS.ESC,
+        disabled: !data.shop_state!.did_something,
         text: 'Done Upgrading',
       })) {
         closeShopAndCheckDeck();

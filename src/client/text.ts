@@ -48,7 +48,7 @@ export const TEXT = {
   RASA_OUTTRO2: 'And so we\'ve reached the end of this telling of my adventures...\n\n' +
     'Or so you might think!  Alas, one more challenge stood before me, I must prove myself worthy of my newfound power by defeating the [c=death]most fearsome foe[/c] I had ever encountered.',
 
-  RASA_INTRO3: 'He stood before me, the enormous beast I have feared all of my life.  I would not be lulled into thinking this would be an easy fight, just because he was a[c=white] (Blank) Slate Dragon[/c], for, alas, I, too had been a [c=white]Draco Vacuus[/c] just a few short weeks before.',
+  RASA_INTRO3: 'He stood before me, the enormous beast I have feared all of my life.  I would not be lulled into thinking this would be an easy fight, just because he was a[c=white] (Blank) Slate Dragon[/c], for, alas, I, too, had been a [c=white]Draco Vacuus[/c] just a few short weeks before.',
   UNCLE3_NAME: 'Paternal Paternus Patterson',
   UNCLE3_HELLO: 'Are you a Sparkle Dragon again today?',
   RASA_BOSS3_VICTORY: 'I limped away from the fight, just as surprised as you surely are, that I was the victor.\n\n' +
@@ -62,7 +62,7 @@ export const TEXT = {
 
   // misc
   RASA_NOEXIT_ON_WAY_IN: 'Did I give in to my fear?  No!  I did not go back, but ventured onward...',
-  RASA_NOEXIT_ON_WAY_OUT: 'No need to go back down, off to the next adventure!',
+  RASA_NOEXIT_ON_WAY_OUT: 'There was no need to go back down, I was off to my next adventure... after cleaning up this mess!',
 
   RASA_UPON_DEATH: 'No, no, no!  That\'s not what happened.  Okay everybody, let\'s take five and then try this again.',
 

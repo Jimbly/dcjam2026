@@ -2281,7 +2281,7 @@ function moveBlockDead(): boolean {
       keySet(`respawn_floor_${check_floor_id}`);
     }
 
-    if (me.data.gold > 3 || me.data.respect > 3) {
+    if (floor_id > 20 && (me.data.gold > 3 || me.data.respect > 3)) {
       keySet('needs_shop');
     }
     me.data.deaths = (me.data.deaths || 0) + 1;
@@ -2914,7 +2914,7 @@ function playCrawl(): void {
   profilerStopFunc();
 }
 
-function isCombat(): boolean {
+export function isCombat(): boolean {
   let me = myEntOptional();
   if (!me) {
     return false;

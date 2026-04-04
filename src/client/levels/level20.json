@@ -987,8 +987,7 @@
       ],
       "events": [
         {
-          "id": "dialog",
-          "param": "leave1"
+          "id": "leave1"
         }
       ]
     },
@@ -1059,6 +1058,12 @@
         "open",
         "solid",
         "open"
+      ],
+      "events": [
+        {
+          "id": "dialog",
+          "param": "kbhint HINT: Press F11 for fullscreen!"
+        }
       ]
     },
     {
@@ -2385,9 +2390,9 @@
     {
       "type": "enemy-earth-balanced",
       "pos": [
-        2,
+        4,
         5,
-        1
+        2
       ]
     }
   ],

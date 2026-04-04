@@ -828,8 +828,7 @@
       ],
       "events": [
         {
-          "id": "dialog",
-          "param": "leave1"
+          "id": "leave1"
         }
       ]
     },
@@ -1218,8 +1217,7 @@
       ],
       "events": [
         {
-          "id": "section_intro",
-          "param": "leave1"
+          "id": "section_intro"
         }
       ]
     },

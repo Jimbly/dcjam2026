@@ -1734,8 +1734,7 @@
       ],
       "events": [
         {
-          "id": "dialog",
-          "param": "leave1"
+          "id": "leave1"
         }
       ]
     },
