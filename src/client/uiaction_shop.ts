@@ -746,7 +746,10 @@ class ShopAction extends UIAction {
       let margin = floor((w2 - CARD_W * 2 - MID_W) / 4);
 
       if (pool_selected) {
-        let cost = 3 + pool_selected.tier * 2;
+        let card_def = CARDS[pool_selected.card_id];
+        let upgrade_cost = card_def.upgrade_cost || [3, 5, 7];
+        let max_tier = upgrade_cost.length;
+        let cost = upgrade_cost[pool_selected.tier];
         let disabled = respect < cost;
         let card_rect = {
           x: x + margin,
@@ -793,7 +796,7 @@ class ShopAction extends UIAction {
           text: '>',
         });
 
-        if (pool_selected.tier < MAX_TIER) {
+        if (pool_selected.tier < max_tier) {
           markdownAuto({
             ...center_rect,
             y: center_rect.y + FONT_HEIGHT * 3,

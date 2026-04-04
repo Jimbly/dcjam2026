@@ -1,8 +1,6 @@
 TODO - The Adventures of Rasa and the Chromatic Dragons
 ====
 
-bile's final upgrade should cost more, but still grow 1 each time
-
 
 difficulty
   water/fire/finale pretty easy if bought either fatality or go in on poison

@@ -14,6 +14,7 @@ export type CardDef = {
   name: string;
   effect: Partial<Record<CardEffect, NumberPerTier>>;
   healeffect: Partial<Record<CardEffect, NumberPerTier>>;
+  upgrade_cost?: number[]; // default 3,5,7,9
 };
 export type EnemyMove = {
   name: string;
@@ -162,9 +163,10 @@ export const CARDS_RAW = {
   'pull': {
     cost: 3,
     name: 'Pull',
+    upgrade_cost: [3, 14],
     effect: {
       pull: ONES,
-      freeze: [0, 1, 1, 2],
+      freeze: [0, 1, 2, 2],
     },
     ...healgrow(1),
   },
@@ -189,8 +191,9 @@ export const CARDS_RAW = {
   'repeatpoison1': {
     cost: 5,
     name: 'Wither',
+    upgrade_cost: [8, 10],
     effect: {
-      poison: [1,1,2,3],
+      poison: [1,2,3, 3],
       delay: ONES,
     },
     ...heal(1),
@@ -198,26 +201,29 @@ export const CARDS_RAW = {
   'poison2': {
     name: 'Bile',
     cost: 4,
+    upgrade_cost: [6, 12],
     effect: {
-      poison: [2, 2, 3, 4],
+      poison: [2, 3, 4, 4],
     },
-    ...healgrow(1),
+    ...heal(1),
   },
   'poison3': {
     name: 'Infect',
     cost: 6,
+    upgrade_cost: [7, 13],
     effect: {
-      poison: [3, 4, 4, 5],
+      poison: [3, 4, 5, 5],
     },
     ...heal(1),
   },
   'stun2': {
     name: 'Daze',
     cost: 5,
+    upgrade_cost: [15],
     effect: {
-      freeze: [2, 2, 2, 3],
+      freeze: [2, 3, 3, 3],
     },
-    ...healgrow(1),
+    ...heal(1),
   },
   'attackstun': {
     cost: 5,

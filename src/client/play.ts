@@ -1231,7 +1231,7 @@ const CARD_TOOLTIP_W = 96;
 const CARD_TOOLTIP_POS = [
   [12, 12], // hand
   [12, 12], // shop
-  [125, 12], // shop left pool
+  [125, 140], // shop left pool
 ];
 const CARD_TOOLTIP_H = 96;
 export function cardTooltip(pos: number, card: Card): void {
