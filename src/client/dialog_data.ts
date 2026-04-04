@@ -41,6 +41,7 @@ import {
 import { FONT_HEIGHT } from './globals';
 import {
   healMode,
+  musicOverride,
   myEnt,
   myEntOptional,
   queueTransition,
@@ -344,6 +345,7 @@ dialogRegister({
   },
   victory: function () {
     queueTransition(false);
+    musicOverride('credits');
     dialogPush({
       ...MONO,
       flags: { cutscene: true },

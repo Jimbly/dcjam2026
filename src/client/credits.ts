@@ -35,7 +35,7 @@ Created in 9 days for [c=green]Dungeon Crawler Jam 2026[/c]
 [c=yellow]Music * Sound FX[/c]
 [c=blue]Niki Yeracaris[/c]
 
-[c=yellow]Brainstorming Consultant[/c]
+[c=yellow]Brainstorming Consultant * A Capella[/c]
 [c=blue]Siena Merlin Moraff[/c]
 
 [c=yellow]Some Art Sourced From[/c]
@@ -72,7 +72,7 @@ function exit(): void {
 }
 function doCredits(): void {
   gl.clearColor(palette[PAL_BORDER][0], palette[PAL_BORDER][1], palette[PAL_BORDER][2], 1);
-  tickMusic('bgm_ice_explore');
+  tickMusic('credits');
 
   if (mouseDownAnywhere()) {
     clicked = true;

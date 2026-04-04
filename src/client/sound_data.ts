@@ -31,6 +31,49 @@ export const SOUND_DATA = {
     volume: 0.5,
   }],
 
+  footstep_fire: [{
+    file: 'footstep/footstep_fire_1',
+    volume: 1,
+  }, {
+    file: 'footstep/footstep_fire_2',
+    volume: 1,
+  }, {
+    file: 'footstep/footstep_fire_3',
+    volume: 1,
+  }, {
+    file: 'footstep/footstep_fire_4',
+    volume: 1,
+  }],
+
+
+  footstep_earth: [{
+    file: 'footstep/footstep_earth_1',
+    volume: 1,
+  }, {
+    file: 'footstep/footstep_earth_2',
+    volume: 1,
+  }, {
+    file: 'footstep/footstep_earth_3',
+    volume: 1,
+  }, {
+    file: 'footstep/footstep_earth_4',
+    volume: 1,
+  }],
+
+  footstep_water: [{
+    file: 'footstep/footstep_ice_1',
+    volume: 1,
+  }, {
+    file: 'footstep/footstep_ice_2',
+    volume: 1,
+  }, {
+    file: 'footstep/footstep_ice_3',
+    volume: 1,
+  }, {
+    file: 'footstep/footstep_ice_4',
+    volume: 1,
+  }],
+
   // Games sounds to be implemented
   hunter_alert: { // one-time when monster sees you and goes into alert
     file: 'hunter_alert',
@@ -94,25 +137,43 @@ export const SOUND_DATA = {
   },
 
   hit_monster: [{
-    file: 'hit_monster',
+    file: 'hit_monster_1',
+    volume: 1,
+  },{
+    file: 'hit_monster_2',
+    volume: 1,
+  },{
+    file: 'hit_monster_3',
     volume: 1,
   }],
   hit_hero: [{
-    file: 'hit_hero/1',
+    file: 'hit_hero_1',
+    volume: 1,
+  },{
+    file: 'hit_hero_2',
+    volume: 1,
+  },{
+    file: 'hit_hero_3',
     volume: 1,
   }],
   gain_block: {
     file: 'gain_block',
     volume: 1,
   },
-  hero_blocked: {
-    file: 'hero_blocked',
+  hero_blocked: [{
+    file: 'hero_blocked_1',
     volume: 1,
-  },
-  monster_blocked: {
-    file: 'monster_blocked',
+  },{
+    file: 'hero_blocked_2',
     volume: 1,
-  },
+  }],
+  monster_blocked: [{
+    file: 'monster_blocked_1',
+    volume: 1,
+  },{
+    file: 'monster_blocked_2',
+    volume: 1,
+  }],
   hero_shoots: {
     file: 'hero_shoots',
     volume: 1,

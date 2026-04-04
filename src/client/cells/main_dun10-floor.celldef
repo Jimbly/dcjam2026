@@ -2,6 +2,7 @@
 open_move: true
 open_vis: true
 default_wall: solid
+sound_id: footstep_earth
 visuals:
 - pass: bg
   type: simple_floor

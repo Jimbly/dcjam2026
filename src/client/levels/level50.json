@@ -6,7 +6,7 @@
       0
     ],
     "stairs_out": [
-      9,
+      10,
       8,
       2
     ]
@@ -963,7 +963,7 @@
       "id": "solid",
       "walls": [
         "open",
-        "open",
+        "solid",
         "open",
         "open"
       ]
@@ -1086,7 +1086,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2-firedetail",
       "walls": [
         "open",
         "open",
@@ -1095,7 +1095,16 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2-river",
+      "walls": [
+        "open",
+        "open",
+        "open",
+        "solid"
+      ]
+    },
+    {
+      "id": "main_dun2-earthdetail",
       "walls": [
         "solid",
         "open",
@@ -1107,17 +1116,8 @@
       "id": "solid",
       "walls": [
         "open",
-        "open",
         "solid",
-        "open"
-      ]
-    },
-    {
-      "id": "solid",
-      "walls": [
-        "open",
-        "open",
-        "open",
+        "solid",
         "open"
       ]
     },
@@ -1253,12 +1253,21 @@
     {
       "id": "open",
       "walls": [
-        "stairs_out",
+        "open",
         "open",
         "open",
         "open"
       ],
       "props": {}
+    },
+    {
+      "id": "open",
+      "walls": [
+        "stairs_out",
+        "open",
+        "open",
+        "open"
+      ]
     },
     {
       "id": "stairs_out",
@@ -1281,15 +1290,6 @@
         "open",
         "open",
         "solid",
-        "open"
-      ]
-    },
-    {
-      "id": "solid",
-      "walls": [
-        "open",
-        "open",
-        "open",
         "open"
       ]
     },
@@ -1405,7 +1405,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2-firedetail",
       "walls": [
         "open",
         "solid",
@@ -1414,7 +1414,16 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2-river",
+      "walls": [
+        "open",
+        "solid",
+        "open",
+        "open"
+      ]
+    },
+    {
+      "id": "main_dun2-earthdetail",
       "walls": [
         "solid",
         "solid",
@@ -1482,15 +1491,6 @@
         "open",
         "open",
         "open",
-        "open"
-      ]
-    },
-    {
-      "id": "solid",
-      "walls": [
-        "open",
-        "open",
-        "open",
         "solid"
       ]
     },
@@ -1509,15 +1509,6 @@
         "solid",
         "open",
         "open",
-        "solid"
-      ]
-    },
-    {
-      "id": "main_dun1-opennoroof",
-      "walls": [
-        "open",
-        "solid",
-        "solid",
         "solid"
       ]
     },
@@ -1526,6 +1517,15 @@
       "walls": [
         "open",
         "solid",
+        "solid",
+        "solid"
+      ]
+    },
+    {
+      "id": "main_dun1-opennoroof",
+      "walls": [
+        "open",
+        "solid",
         "open",
         "solid"
       ]
@@ -1572,7 +1572,7 @@
         "open",
         "open",
         "open",
-        "open"
+        "solid"
       ]
     },
     {

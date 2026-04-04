@@ -3305,6 +3305,11 @@ export function renderBGHook(): void {
   }
 }
 
+let music_override: string | null = null;
+export function musicOverride(str: string): void {
+  music_override = str;
+}
+
 export function play(dt: number): void {
   profilerStartFunc();
   crawlerRenderSetUIClearColor(palette[PAL_BORDER]);
@@ -3329,10 +3334,20 @@ export function play(dt: number): void {
     if (myEntOptional()?.floorIsFinalBoss()) {
       element = 'earth';
     }
-    let music: string | null = `bgm_${element}_${healMode() ? 'heal' :
-      isBossFloor() ? 'boss' : is_combat ? 'combat' : 'explore'}`;
+    let mode = healMode() ? 'heal' :
+      isBossFloor() ? 'boss' : is_combat ? 'combat' : 'explore';
+    if (mode === 'heal' && (element=== 'fire' || element === 'ice')) {
+      mode = 'explore';
+    }
+    let music: string | null = `bgm_${element}_${mode}`;
     if (isDefeatedBoss()) {
       music = null;
+    }
+    if (myEntOptional()?.floorIsFinalBoss()) {
+      music = 'bgm_final_boss';
+    }
+    if (music_override) {
+      music = music_override;
     }
     bgm_track = music;
     tickMusic((game_state.level?.props.music as string) || music); // || 'default_music'
@@ -3709,6 +3724,7 @@ function initLevel(cem: ClientEntityManagerInterface<Entity>, floor_id: number, 
     assert(isOnline());
     return;
   }
+  music_override = null;
   // dialogReset();
   floaters.length = 0;
   combatStateReset();

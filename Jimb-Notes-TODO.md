@@ -3,7 +3,7 @@ TODO - The Adventures of Rasa and the Chromatic Dragons
 
 make itch page
 
-final play through, balance audio
+final play through, balance audio, ensure all music
 
 bug: keyboard not working on respawn dialog
 controller support?

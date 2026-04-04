@@ -1,7 +1,8 @@
 ---
-open_move: true
+open_move: false
 open_vis: true
 default_wall: solid
+sound_id: footstep_fire
 visuals:
 - pass: bg
   type: simple_floor
