@@ -13,7 +13,6 @@ floor title - top and center?
 put damage number over the icon
 bug: keyboard not working on respawn dialog
 
-walls: try depixel scale up by 4, then do 2 bilinear filters down to get 16xMSAA
 different text color for all of Rasa's speech?
 
 stretch: undo (to beginning of previous turn)

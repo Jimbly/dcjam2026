@@ -7,7 +7,7 @@ const alphafix = require('./alphafix.js');
 const asyncHashed = require('./asynchashed.js');
 const autoatlas = require('./autoatlas_build.js');
 const {
-  drawImageBilinear,
+  // drawImageBilinear,
   pngAlloc,
   pngRead,
   pngWrite,
@@ -16,6 +16,8 @@ const {
   tilingContract,
   tilingExpand,
 } = require('./tiling');
+
+const { floor, round } = Math;
 
 const scale_globs = {
   'ui/*.png': 8,
@@ -98,11 +100,38 @@ gb.task({
   ...alphafix(depixel_input),
 });
 
+function reduceByAverage(dst, src) {
+  let ddata = dst.data;
+  let dw = dst.width;
+  let dh = dst.height;
+  let sdata = src.data;
+  let sw = src.width;
+  let sh = src.height;
+  for (let yy = 0; yy < dh; ++yy) {
+    let y0 = floor(yy/dh * sh);
+    let y1 = floor((yy + 1)/dh * sh);
+    for (let xx = 0; xx < dw; ++xx) {
+      let x0 = floor(xx/dw * sw);
+      let x1 = floor((xx + 1)/dw * sw);
+      let c = (y1 - y0) * (x1 - x0);
+      for (let channel = 0; channel < 4; ++channel) {
+        let v = 0;
+        for (let sy = y0; sy < y1; ++sy) {
+          for (let sx = x0; sx < x1; ++sx) {
+            v += sdata[(sy * sw + sx) * 4 + channel];
+          }
+        }
+        ddata[(yy * dw + xx) * 4 + channel] = round(v / c);
+      }
+    }
+  }
+}
+
 gb.task(asyncHashed(8, {
   name: 'depixel-proc',
   input: ['depixel-alphafix:**'],
   type: gb.SINGLE,
-  version: [depixelScale, scale_globs],
+  version: [depixelScale, scale_globs, reduceByAverage],
   async: gb.ASYNC_FORK,
   func: function (job, done) {
     let file = job.getFile();
@@ -128,7 +157,7 @@ gb.task(asyncHashed(8, {
       }
     }
     assert(scale !== -1);
-    let intermed_scale = scale < 32 ? 2 : 1;
+    let intermed_scale = scale < 32 ? 4 : 1;
     let scale1 = scale * intermed_scale;
     let intermed = depixelScale(img, {
       height: img.height * scale1,
@@ -139,8 +168,9 @@ gb.task(asyncHashed(8, {
     let dst = pngAlloc({ width: img.width * scale, height: img.height * scale, byte_depth: 4,
       comment: 'depixel' });
     if (intermed_scale !== 1) {
-      drawImageBilinear(
-        dst, 4, 0, 0, dst.width, dst.height, intermed, 4, 0, 0, intermed.width, intermed.height, 0xf);
+      reduceByAverage(dst, intermed);
+      // drawImageBilinear(
+      //   dst, 4, 0, 0, dst.width, dst.height, intermed, 4, 0, 0, intermed.width, intermed.height, 0xf);
     } else {
       assert.equal(intermed.data.length, dst.data.length);
       intermed.data.copy(dst.data);
