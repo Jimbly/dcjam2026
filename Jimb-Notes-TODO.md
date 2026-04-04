@@ -1,8 +1,6 @@
 TODO - The Adventures of Rasa and the Chromatic Dragons
 ====
 
-chests will give cards of invalidly high tiers
-
 make itch page
 
 final play through, balance audio

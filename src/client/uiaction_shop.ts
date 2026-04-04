@@ -523,7 +523,10 @@ class ShopAction extends UIAction {
       for (let ii = 0; ii < shop_options.length; ++ii) {
         if (!data.shop_state![`bought${ii}`]) {
           let card_id = shop_options[ii];
-          let tier = myEnt().floorElementNumber();
+          let card_def = CARDS[card_id];
+          let upgrade_cost = card_def.upgrade_cost || [3, 5, 7];
+          let max_tier = upgrade_cost.length;
+          let tier = Math.min(max_tier, myEnt().floorElementNumber());
           let rect = {
             x, y, z: z + 5,
             w: CARD_W,
