@@ -1,7 +1,6 @@
 TODO - The Adventures of Rasa and the Chromatic Dragons
 ====
 
-pop up explaining getting hit the first time
 show chest in entity counters
 bile's final upgrade should cost more, but still grow 1 each time
 modal if you try to leave without a full deck

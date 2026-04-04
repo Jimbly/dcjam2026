@@ -2252,7 +2252,7 @@ function doHand(): void {
   });
 
   pile = is_reshuffle ? discard_pile.slice(2) : discard_pile;
-  if (pile.length) {
+  if (pile.length || true) {
     x = DISCARD_PILE_X;
     drawBox({
       x, y, z,
@@ -2327,6 +2327,7 @@ export function attackPlayer(source: Entity, target: Entity, attack: EnemyMove, 
 
   let { effect } = attack;
   let key: CardEffect;
+  let unblocked_total = 0;
   for (key in effect) {
     let value = effect[key]!;
     if (key === 'damage' || key === 'ranged') {
@@ -2341,6 +2342,7 @@ export function attackPlayer(source: Entity, target: Entity, attack: EnemyMove, 
         msg.push(`-${blocked}[img=block]`);
       }
       if (unblocked) {
+        unblocked_total += unblocked;
         msg.push(`-${unblocked}[img=cardicon]`);
         if (key === 'ranged') {
           playSoundFromEnt(source, 'monster_shoots');
@@ -2402,6 +2404,22 @@ export function attackPlayer(source: Entity, target: Entity, attack: EnemyMove, 
   if (is_ranged) {
     ranged_incoming_attack_counter = RANGED_ANIM_TIME_INCOMING;
     ranged_incoming_attack_pos = source.data.pos.slice(0) as JSVec2;
+  }
+
+  if (unblocked_total) {
+    if (!keyGet('tutorial_damage')) {
+      keySet('tutorial_damage');
+      dialogPush({
+        instant: true,
+        text: 'Combat Explained!\n\n' +
+          `**Ouch!**  You just took [c=red]${unblocked_total} damage[/c].  Damage moves random cards` +
+          ' [c=red]from your hand[/c] (or your draw pile, if your hand is empty) to your [c=red]discard pile[/c].\n\n' +
+          'Once your hand and draw pile are empty, you\'ll [c=red]reshuffle[/c] and draw a new hand.',
+        buttons: [{
+          label: 'Okie dokie',
+        }]
+      });
+    }
   }
 }
 
