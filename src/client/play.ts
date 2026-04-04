@@ -2796,7 +2796,7 @@ function playCrawl(): void {
     input.eatAllInput();
   }
   if (cutscene_alpha) {
-    let c = palette[PAL_BLACK_PURE];
+    let c = palette[PAL_BORDER];
     drawRect(-1, -1, game_width + 2, game_height + 2, Z.MODAL - 1, [c[0], c[1], c[2], cutscene_alpha]);
   }
 

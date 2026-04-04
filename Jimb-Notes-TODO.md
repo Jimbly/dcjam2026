@@ -5,6 +5,7 @@ difficulty
   water/fire/finale pretty easy if bought either fatality or go in on poison
   try a ranged run next
 
+transitions
 one details object per region
 floor title - top and center?
 put damage number over the icon
