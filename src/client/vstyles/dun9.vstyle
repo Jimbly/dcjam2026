@@ -4,7 +4,7 @@ background_color: '#181425'
 # background_img: backdrop_demo
 fog_params:
 - 0.003
-- 0.005
+- 0.003
 - 800.0
 cell_swaps:
   open: main_dun9-floor

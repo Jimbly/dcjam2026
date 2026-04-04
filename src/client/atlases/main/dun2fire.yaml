@@ -18,3 +18,6 @@ tiles:
 
   dun2fire-goalceiling: [0, 2]
   dun2fire-goalfloor: [1, 2]
+
+  fire1: [0, 5]
+  fire2: [1, 5]

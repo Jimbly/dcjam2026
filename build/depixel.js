@@ -64,6 +64,7 @@ gb.task({
       'main/dun1-*solid*:hwrap,vwrap',
       'main/dun1-*stairs*:hwrap,vwrap',
       'main/dun1-*door*:hwrap,vwrap',
+      'main/fire*:balpha',
       'ui/block.png:balpha',
       'ui/bar-frame*:balpha',
       'ui/border-corner.png:balpha',
