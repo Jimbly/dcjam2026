@@ -2,7 +2,6 @@ TODO - The Adventures of Rasa and the Chromatic Dragons
 ====
 
 bile's final upgrade should cost more, but still grow 1 each time
-level 21 - better design so ranged guy does something
 
 
 difficulty

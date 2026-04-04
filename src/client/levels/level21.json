@@ -1248,7 +1248,7 @@
       ]
     },
     {
-      "id": "main_dun10-detail1",
+      "id": "open",
       "walls": [
         "open",
         "open",
@@ -1257,7 +1257,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun10-detail1",
       "walls": [
         "open",
         "open",
@@ -1610,15 +1610,6 @@
       ]
     },
     {
-      "id": "main_dun10-detail1",
-      "walls": [
-        "open",
-        "open",
-        "open",
-        "open"
-      ]
-    },
-    {
       "id": "open",
       "walls": [
         "open",
@@ -1629,6 +1620,15 @@
     },
     {
       "id": "main_dun10-detail1",
+      "walls": [
+        "open",
+        "open",
+        "open",
+        "open"
+      ]
+    },
+    {
+      "id": "open",
       "walls": [
         "open",
         "open",
@@ -1808,7 +1808,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun10-detail1",
       "walls": [
         "solid",
         "solid",
