@@ -4,7 +4,7 @@ export const CARD_H = 85;
 export const MONSTER_MAX_RANGE = 5; // for health bars and ranged attacks
 export const MAX_RANGE = 10;
 
-const ENEMY_DELAY = 400;
+const ENEMY_DELAY = [750, 450, 350];
 
 import assert from 'assert';
 import { autoResetSkippedFrames } from 'glov/client/auto_reset';
@@ -266,6 +266,7 @@ declare module 'glov/client/settings' {
   export let show_fps: 0 | 1;
   export let turn_toggle: 0 | 1;
   export let depixel: 0 | 1;
+  export let gamespeed: 0 | 1 | 2;
 }
 
 const REWARD_YIELD_RESPECT = 3;
@@ -385,7 +386,7 @@ export function renderFloaters(): void {
     if (elapsed < 0) {
       continue;
     }
-    const FLOATER_TIME = 750; // not including fade
+    const FLOATER_TIME = [1750, 1500, 1000][settings.gamespeed]; // not including fade
     const FLOATER_FADE = 250;
     let alpha = 1;
     if (elapsed > FLOATER_TIME) {
@@ -539,7 +540,7 @@ function drawStatsOverViewport(): void {
     let floater = incoming_damage[ii];
     const { from } = floater;
     let elapsed = engine.frame_timestamp - floater.start;
-    const FLOATER_TIME = 1250; // not including fade
+    const FLOATER_TIME = [2000, 2000, 1250][settings.gamespeed]; // not including fade
     const FLOATER_FADE = 250;
     const BLINK_TIME = 250;
     let alpha = 1;
@@ -1732,7 +1733,7 @@ function playCard(
       // eslint-disable-next-line @typescript-eslint/no-use-before-define
       autosave();
     }
-    crawlerTurnBasedScheduleStep(ENEMY_DELAY, 'attack');
+    crawlerTurnBasedScheduleStep(ENEMY_DELAY[settings.gamespeed], 'attack');
   }
   let sound = cardSound(no_target, no_ranged_target, target_ent, ranged_target, card);
   playUISound(sound || 'card_discard');
@@ -1748,7 +1749,7 @@ function discardCard(hand_index: number): void {
   discard_pile.push(uid);
   tickPlayerDOTs();
   data.combat_phase = 'enemy';
-  crawlerTurnBasedScheduleStep(ENEMY_DELAY, 'attack');
+  crawlerTurnBasedScheduleStep(ENEMY_DELAY[settings.gamespeed], 'attack');
   playUISound('card_discard');
 }
 
@@ -2973,7 +2974,7 @@ export function isCombat(): boolean {
   if (!me) {
     return false;
   }
-  if (healMode()) {
+  if (healMode() || !me.isAlive()) {
     return false;
   }
   let { level } = crawlerGameState();
@@ -3287,6 +3288,11 @@ settingsRegister({
       }
     },
   },
+  gamespeed: {
+    default_value: 1,
+    type: cmd_parse.TYPE_INT,
+    range: [0, 2],
+  },
 });
 
 cmd_parse.register({
@@ -3306,7 +3312,7 @@ cmd_parse.register({
     myEnt().data.draw_pile.length = 0;
     myEnt().data.hand.length = str ? 1 : 0;
     myEnt().data.combat_phase = 'enemy';
-    crawlerTurnBasedScheduleStep(ENEMY_DELAY, 'attack');
+    crawlerTurnBasedScheduleStep(ENEMY_DELAY[settings.gamespeed], 'attack');
     playUISound('card_discard');
     resp_func();
   },
@@ -3507,7 +3513,7 @@ function initLevel(cem: ClientEntityManagerInterface<Entity>, floor_id: number, 
   setScore();
 
   if (myEnt().data.combat_phase === 'enemy') {
-    crawlerTurnBasedScheduleStep(ENEMY_DELAY, 'attack');
+    crawlerTurnBasedScheduleStep(ENEMY_DELAY[settings.gamespeed], 'attack');
   }
 }
 

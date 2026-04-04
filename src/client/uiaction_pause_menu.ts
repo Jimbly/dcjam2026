@@ -62,6 +62,11 @@ class PauseMenuAction extends UIAction {
       cb: () => {
         settingsSet('turn_toggle', 1 - settings.turn_toggle);
       },
+    }, {
+      name: `Game Speed: ${['SLOW', 'MEDIUM', 'FAST'][settings.gamespeed]}`,
+      cb: () => {
+        settingsSet('gamespeed', (settings.gamespeed + 1) % 3);
+      },
     }];
     if (isLocal() && MODE_DEVELOPMENT) {
       items.push({
