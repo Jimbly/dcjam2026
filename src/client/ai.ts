@@ -525,6 +525,7 @@ function aiDoEnemy(
   }
 
   if (was_frozen) {
+    ent.monsterMovePick();
     profilerStopFunc();
     return true;
   }

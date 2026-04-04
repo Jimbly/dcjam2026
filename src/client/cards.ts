@@ -59,6 +59,17 @@ function heal(v: number): {
 } {
   return {
     healeffect: {
+      damage: [v,v,v,v],
+      burn: ONES,
+    },
+  };
+}
+
+function healgrow(v: number): {
+  healeffect: Partial<Record<CardEffect, NumberPerTier>>;
+} {
+  return {
+    healeffect: {
       damage: grow(v),
       burn: ONES,
     },
@@ -80,7 +91,7 @@ export const CARDS_RAW = {
     effect: {
       damage: grow(3),
     },
-    ...heal(2),
+    ...heal(1),
   },
   'attack4': {
     cost: 5,
@@ -109,17 +120,17 @@ export const CARDS_RAW = {
   },
   'block2': {
     cost: 0,
-    name: 'Dodge',
+    name: 'Gird',
     effect: {
-      block: grow(2),
+      block: grow(3),
     },
     ...heal(2),
   },
   'block3': {
     cost: 4,
-    name: 'Shield',
+    name: 'Scales',
     effect: {
-      block: grow(3),
+      block: grow(4),
     },
     ...heal(1),
   },
@@ -129,7 +140,7 @@ export const CARDS_RAW = {
     effect: {
       ranged: grow(2),
     },
-    ...heal(1),
+    ...heal(2),
   },
   'ranged3': {
     cost: 5,
@@ -146,7 +157,7 @@ export const CARDS_RAW = {
       damage: grow(1),
       push: ONES
     },
-    ...heal(3),
+    ...heal(2),
   },
   'pull': {
     cost: 3,
@@ -155,7 +166,7 @@ export const CARDS_RAW = {
       pull: ONES,
       freeze: [0, 1, 1, 2],
     },
-    ...heal(2),
+    ...healgrow(1),
   },
   'repeatdam1': {
     cost: 4,
@@ -164,16 +175,16 @@ export const CARDS_RAW = {
       damage: grow(1),
       delay: ONES,
     },
-    ...heal(2),
+    ...heal(1),
   },
   'repeatblock1': {
     cost: 4,
     name: 'Weave',
     effect: {
-      block: grow(1),
+      block: grow(2),
       delay: ONES,
     },
-    ...heal(2),
+    ...heal(1),
   },
   'repeatpoison1': {
     cost: 5,
@@ -190,7 +201,7 @@ export const CARDS_RAW = {
     effect: {
       poison: [2, 2, 3, 4],
     },
-    ...heal(3),
+    ...healgrow(1),
   },
   'poison3': {
     name: 'Infect',
@@ -206,7 +217,16 @@ export const CARDS_RAW = {
     effect: {
       freeze: [2, 2, 2, 3],
     },
-    ...heal(1),
+    ...healgrow(1),
+  },
+  'attackstun': {
+    cost: 5,
+    name: 'Distract',
+    effect: {
+      damage: grow(2),
+      freeze: ONES,
+    },
+    ...healgrow(1),
   },
 
 } as const satisfies TSMap<CardDef>;

@@ -684,7 +684,7 @@ function calcAttackCameraOffs(): Vec3 {
 }
 
 function drawBlock(is_player: boolean, x: number, y: number, block: number): number {
-  if (!block) {
+  if (!block && !is_player) {
     return x;
   }
   const w = 14;
@@ -709,8 +709,9 @@ function drawBlock(is_player: boolean, x: number, y: number, block: number): num
     label({
       x, y, w, h,
       text: '',
-      tooltip: 'Block cancels incoming physical damage, getting removed if it blocks damage.' +
-        (is_player ? '\nBlock is decreased by 1 when moving.' : ''),
+      tooltip: 'Block cancels incoming physical damage, getting removed as it blocks damage.' +
+        (is_player ? '\n\nBlock is decreased by 1 when moving, but otherwise ' +
+          '[c=green]persists between turns[/c].' : ''),
     });
     x += w;
   }
@@ -762,7 +763,7 @@ function drawFreeze(is_player: boolean, x: number, y: number, value: number): nu
     x, y, w, h,
     text: '',
     tooltip: (is_player ? 'Freeze reduces your maximum hand size.' : 'Stun causes a monster to skip its turn.') +
-      '\nIt is reduced by 1 each turn.',
+      '\nFreeze is reduced by 1 each turn.',
   });
   x += w;
   return x + 1;
@@ -1181,45 +1182,47 @@ export function drawCard(param: {
     y += 15;
   }
 
-  effects = healMode() ? card_def.effect : card_def.healeffect;
-  y = y0 + CARD_H - CARD_PAD;
-  for (key in effects) {
-    let value = effects[key]![tier];
-    let vis = EFFECT_TEMPLATE[key];
-    let { img } = vis;
-    if (key === 'damage' && !healMode()) {
-      let element = myEnt().data.element;
-      img = `element-${element || 'null'}`;
-    }
-    let alpha = disabled || !for_shop || no_target ? 0.5 : 1;
-    let prefix = vis.prefix ? `${value} ` : '';
-    let prefix_w = (prefix ? font.getStringWidth(style_label, FONT_HEIGHT, prefix) : 0);
-    let line_w = prefix_w + (img ? 14 : 0);
-    let xx = x + CARD_W - floor((CARD_W - line_w)/2);
+  if (myElement()) {
+    effects = healMode() ? card_def.effect : card_def.healeffect;
+    y = y0 + CARD_H - CARD_PAD;
+    for (key in effects) {
+      let value = effects[key]![tier];
+      let vis = EFFECT_TEMPLATE[key];
+      let { img } = vis;
+      if (key === 'damage' && !healMode()) {
+        let element = myEnt().data.element;
+        img = `element-${element || 'null'}`;
+      }
+      let alpha = disabled || !for_shop || no_target ? 0.5 : 1;
+      let prefix = vis.prefix ? `${value} ` : '';
+      let prefix_w = (prefix ? font.getStringWidth(style_label, FONT_HEIGHT, prefix) : 0);
+      let line_w = prefix_w + (img ? 14 : 0);
+      let xx = x + CARD_W - floor((CARD_W - line_w)/2);
 
-    if (prefix) {
-      font.draw({
-        x: xx, y, z,
-        style: style_label,
-        alpha,
-        size: FONT_HEIGHT,
-        h: 14,
-        align: ALIGN.VCENTER,
-        text: prefix,
-        rot: PI,
-      });
-      xx -= prefix_w;
+      if (prefix) {
+        font.draw({
+          x: xx, y, z,
+          style: style_label,
+          alpha,
+          size: FONT_HEIGHT,
+          h: 14,
+          align: ALIGN.VCENTER,
+          text: prefix,
+          rot: PI,
+        });
+        xx -= prefix_w;
+      }
+      if (img) {
+        autoAtlas('ui', img).draw({
+          x: xx, y, z,
+          w: 14,
+          h: 14,
+          color: [1,1,1,alpha],
+          rot: PI,
+        });
+      }
+      y -= 15;
     }
-    if (img) {
-      autoAtlas('ui', img).draw({
-        x: xx, y, z,
-        w: 14,
-        h: 14,
-        color: [1,1,1,alpha],
-        rot: PI,
-      });
-    }
-    y -= 15;
   }
   return any_usable;
 }
@@ -1289,7 +1292,7 @@ export function cardTooltip(pos: number, card: Card): void {
             'Poison does non-physical damage each turn and then decrements.';
           break;
         case 'freeze':
-          line = `Adjacent target loses ${value} ${plural(value, 'turn')}.`;
+          line = `Adjacent target skips ${value} ${plural(value, 'turn')}.`;
           break;
         case 'push':
           line = 'Push adjacent target away from you.';
@@ -1358,6 +1361,9 @@ function doReshuffle(): void {
   let y = BORDER_PAD + FONT_HEIGHT;
   let z = Z.MODAL;
   let w = game_width - BORDER_PAD * 2;
+
+  x += 32;
+  w -= 32 * 2;
 
   font.draw({
     color: palette_font[0],
@@ -1440,8 +1446,10 @@ function doReshuffle(): void {
 
   if (burn_card !== -1) {
     // let burnt = discard_pile[burn_card];
-    discard_pile.splice(burn_card, 1);
+    let not_burnt = discard_pile[1 - burn_card];
+    discard_pile.splice(0, 2);
     me.reshuffle();
+    data.draw_pile.push(not_burnt);
     playUISound('reset_deck');
     data.combat_phase = 'redraw';
     if (data.incoming_damage) {
@@ -1457,7 +1465,7 @@ export function sameCard(a: Pick<Card, 'card_id' | 'tier'>, b: Pick<Card, 'card_
 }
 
 const PANEL_PAD = 6;
-function showCardList(title: string, x: number, y: number, pile: number[]): void {
+function showCardList(title: string, x: number, y: number, pile: number[], hint?: string): void {
   let me = myEnt();
   let { data } = me;
   let { deck } = data;
@@ -1485,6 +1493,20 @@ function showCardList(title: string, x: number, y: number, pile: number[]): void
   }
   y -= PANEL_PAD;
   let ystart = y;
+
+  if (hint) {
+    y -= 4;
+    y -= font.draw({
+      color: palette_font[PAL_GREY[2]],
+      x, y, z,
+      w: w - PANEL_PAD * 2,
+      h: 0,
+      align: ALIGN.HCENTER | ALIGN.HWRAP | ALIGN.VBOTTOM,
+      text: hint,
+    });
+    y -= 4;
+  }
+
   for (let ii = list.length - 1; ii >= 0; --ii) {
     let uid = list[ii];
     let card = deck[uid];
@@ -2240,7 +2262,8 @@ function doHand(): void {
       def: SPOT_DEFAULT_LABEL,
       x, y, w, h,
     }).focused) {
-      showCardList('Discard Pile', x, y0, pile);
+      showCardList('Discard Pile', x, y0, pile,
+        'Hint: Right-click to discard a card and skip your turn.');
     }
     font.draw({
       style: style_label,
@@ -2710,6 +2733,10 @@ function drawHud(): void {
         }
       }
     }
+  }
+
+  if (myEnt().data.combat_phase === 'reshuffle') {
+    z = Z.MODAL + 1;
   }
 
   let me = myEnt();

@@ -241,7 +241,7 @@ function title(dt: number): void {
     horiz = 2 - t * 2;
     chase = autoAtlas('fire', `slime-idle${frame}`);
   }
-  let rasax = -rasaw * 4 + (game_width + rasaw * 8) * horiz;
+  let rasax = camera2d.x0() -rasaw * 4 + (camera2d.w() + rasaw * 8) * horiz;
   sprite.draw({
     x: rasax, y, w: effw, h: rasah,
   });

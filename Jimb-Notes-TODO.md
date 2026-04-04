@@ -1,20 +1,25 @@
 TODO - The Adventures of Rasa and the Chromatic Dragons
 ====
 
+pop up explaining getting hit the first time
+show chest in entity counters
+bile's final upgrade should cost more, but still grow 1 each time
+modal if you try to leave without a full deck
+level 21 - better design so ranged guy does something
+
+
 difficulty
   water/fire/finale pretty easy if bought either fatality or go in on poison
   try a ranged run next
 
-play through
-
 one details object per region
+
+play through, add details
+
 bug: keyboard not working on respawn dialog
 controller support?
 try: put damage number over the icon, multiple icons per row, room for image?
-
-different text color for all of Rasa's speech?
-
-stretch: undo (to beginning of previous turn)
+touch up tiling on all tilesets
 
 animate: upon taking the orb, flip cards over, change element, probably a dialog
 
@@ -42,6 +47,8 @@ Discarded ideas
 ===============
 in-world monologues for Rasa to say randomly?
 one-turn combat log in upper left? 50% alpha, solid on hover?
+stretch: undo (to beginning of previous turn)
+different text color for all of Rasa's speech?
 
 Notes / Brainstorming
 =====================
