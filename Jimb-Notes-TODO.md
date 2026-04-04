@@ -1,14 +1,13 @@
 TODO - The Adventures of Rasa and the Chromatic Dragons
 ====
 
-
 difficulty
   water/fire/finale pretty easy if bought either fatality or go in on poison
   try a ranged run next
 
-one details object per region
+play through, balance gameplay
 
-play through, add details
+final play through, balance audio
 
 bug: keyboard not working on respawn dialog
 controller support?

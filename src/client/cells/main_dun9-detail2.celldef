@@ -22,3 +22,43 @@ visuals:
     offs: [0, 0, 0]
     face_camera: false # Otherwise faces frustum
     do_alpha: true
+- pass: celldetails
+  type: simple_billboard
+  opts:
+    atlas: main
+    tile: dun9-detail1
+    width: 0.25
+    height: 0.25
+    offs: [0.3, 0.25, 0]
+    face_camera: false # Otherwise faces frustum
+    do_alpha: true
+- pass: celldetails
+  type: simple_billboard
+  opts:
+    atlas: main
+    tile: dun9-detail2
+    width: 0.25
+    height: 0.25
+    offs: [0.29, -0.22, 0]
+    face_camera: false # Otherwise faces frustum
+    do_alpha: true
+- pass: celldetails
+  type: simple_billboard
+  opts:
+    atlas: main
+    tile: dun9-detail2
+    width: 0.25
+    height: 0.25
+    offs: [-0.28, -0.27, 0]
+    face_camera: false # Otherwise faces frustum
+    do_alpha: true
+- pass: celldetails
+  type: simple_billboard
+  opts:
+    atlas: main
+    tile: dun9-detail1
+    width: 0.25
+    height: 0.25
+    offs: [-0.29, 0.26, 0]
+    face_camera: false # Otherwise faces frustum
+    do_alpha: true

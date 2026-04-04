@@ -168,7 +168,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2fire-detail2",
       "walls": [
         "open",
         "open",
@@ -186,7 +186,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2fire-detail1",
       "walls": [
         "solid",
         "open",
@@ -204,7 +204,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2fire-detail2",
       "walls": [
         "open",
         "open",
@@ -222,7 +222,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2fire-detail2",
       "walls": [
         "solid",
         "open",
@@ -276,7 +276,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2fire-detail1",
       "walls": [
         "open",
         "open",
@@ -375,7 +375,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2fire-detail2",
       "walls": [
         "solid",
         "open",
@@ -465,7 +465,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2fire-detail2",
       "walls": [
         "solid",
         "open",
@@ -609,7 +609,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2fire-detail1",
       "walls": [
         "open",
         "solid",
@@ -672,7 +672,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2fire-detail1",
       "walls": [
         "open",
         "open",
@@ -681,7 +681,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2fire-detail2",
       "walls": [
         "open",
         "open",
@@ -717,7 +717,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2fire-detail2",
       "walls": [
         "solid",
         "open",
@@ -798,7 +798,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2fire-detail1",
       "walls": [
         "open",
         "open",
@@ -834,7 +834,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2fire-detail1",
       "walls": [
         "open",
         "solid",
@@ -921,7 +921,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2fire-detail2",
       "walls": [
         "open",
         "solid",
@@ -993,7 +993,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2fire-detail1",
       "walls": [
         "open",
         "door_oneway",
@@ -1122,7 +1122,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2fire-detail2",
       "walls": [
         "solid",
         "open",
@@ -1269,7 +1269,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2fire-detail2",
       "walls": [
         "open",
         "solid",
@@ -1314,7 +1314,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2fire-detail1",
       "walls": [
         "solid",
         "solid",
@@ -1350,7 +1350,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2fire-detail1",
       "walls": [
         "open",
         "solid",
@@ -1521,7 +1521,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2fire-detail1",
       "walls": [
         "open",
         "secret_door",

@@ -783,7 +783,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun9-detail1",
       "walls": [
         "solid",
         "open",
@@ -920,7 +920,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun9-detail1",
       "walls": [
         "solid",
         "river-edge",
@@ -1196,7 +1196,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun9-detail1",
       "walls": [
         "open",
         "open",
@@ -1241,7 +1241,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun9-detail1",
       "walls": [
         "solid",
         "river-edge",
@@ -1268,7 +1268,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun9-detail1",
       "walls": [
         "solid",
         "river-edge",
@@ -1286,7 +1286,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun9-detail1",
       "walls": [
         "solid",
         "river-edge-open",
@@ -1520,7 +1520,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun9-detail1",
       "walls": [
         "open",
         "solid",
@@ -1574,7 +1574,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun9-detail1",
       "walls": [
         "solid",
         "solid",
@@ -1664,7 +1664,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun9-detail1",
       "walls": [
         "solid",
         "open",
@@ -1691,7 +1691,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun9-detail1",
       "walls": [
         "solid",
         "solid",
@@ -1781,7 +1781,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun9-detail1",
       "walls": [
         "door",
         "solid",
@@ -1826,7 +1826,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun9-detail1",
       "walls": [
         "solid",
         "solid",

@@ -897,7 +897,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun9-detail1",
       "walls": [
         "open",
         "open",
@@ -942,7 +942,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun9-detail1",
       "walls": [
         "solid",
         "open",
@@ -1399,7 +1399,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun9-detail1",
       "walls": [
         "river-edge",
         "solid",

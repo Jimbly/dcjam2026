@@ -951,7 +951,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2fire-detail2",
       "walls": [
         "open",
         "solid",
@@ -978,7 +978,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2fire-detail1",
       "walls": [
         "main_dun2-solid1",
         "open",
@@ -1059,7 +1059,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2fire-detail1",
       "walls": [
         "open",
         "open",
@@ -1212,7 +1212,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2fire-detail2",
       "walls": [
         "open",
         "open",
@@ -1230,7 +1230,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2fire-detail2",
       "walls": [
         "door_oneway",
         "open",
@@ -1257,7 +1257,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2fire-detail2",
       "walls": [
         "solid",
         "open",
@@ -1266,7 +1266,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2fire-detail2",
       "walls": [
         "main_dun2-solid1",
         "open",
@@ -1383,7 +1383,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2fire-detail1",
       "walls": [
         "open",
         "solid",
@@ -1512,7 +1512,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2fire-detail1",
       "walls": [
         "open",
         "solid",
@@ -1530,7 +1530,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2fire-detail2",
       "walls": [
         "open",
         "solid",
@@ -1779,7 +1779,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2fire-detail1",
       "walls": [
         "open",
         "main_dun2-solid1",
@@ -1797,7 +1797,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2fire-detail2",
       "walls": [
         "solid",
         "open",
@@ -1893,12 +1893,6 @@
         "solid",
         "solid",
         "open"
-      ],
-      "events": [
-        {
-          "id": "leave1",
-          "param": ""
-        }
       ]
     },
     {
@@ -1953,7 +1947,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2fire-detail1",
       "walls": [
         "open",
         "main_dun2-solid1",
@@ -1989,7 +1983,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun2fire-detail1",
       "walls": [
         "open",
         "main_dun2-solid1",

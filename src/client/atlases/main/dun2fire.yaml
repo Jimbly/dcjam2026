@@ -11,8 +11,6 @@ tiles:
   dun2fire-stairs_out: [2, 1]
   # dun2fire-arch: [3, 1]
 
-  # dun2fire-detail1: [0, 2]
-  # dun2fire-detail2: [1, 2]
   dun2fire-ceiling: [2, 2]
   dun2fire-floor: [3, 2]
 
@@ -21,3 +19,6 @@ tiles:
 
   fire1: [0, 5]
   fire2: [1, 5]
+
+  dun2fire-detail1: [3, 4]
+  dun2fire-detail2: [3, 5]

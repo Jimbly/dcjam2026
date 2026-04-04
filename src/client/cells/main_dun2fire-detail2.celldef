@@ -6,19 +6,19 @@ visuals:
   type: simple_floor
   opts:
     atlas: main
-    tile: dun9-floor
+    tile: dun2fire-floor
 - pass: bg
   type: simple_ceiling
   opts:
     atlas: main
-    tile: dun9-ceiling
+    tile: dun2fire-ceiling
 - pass: celldetails
   type: simple_billboard
   opts:
     atlas: main
-    tile: dun9-detail1
-    width: 0.25
-    height: 0.25
-    offs: [0.2, 0.1, 0]
+    tile: dun2fire-detail2
+    width: 0.40
+    height: 0.40
+    offs: [0.25, -0.27, 0]
     face_camera: false # Otherwise faces frustum
     do_alpha: true

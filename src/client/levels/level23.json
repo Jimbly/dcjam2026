@@ -897,7 +897,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun10-detail2",
       "walls": [
         "open",
         "open",
@@ -924,7 +924,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun10-detail2",
       "walls": [
         "open",
         "solid",
@@ -1095,7 +1095,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun10-detail2",
       "walls": [
         "solid",
         "open",
@@ -1399,7 +1399,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun10-detail2",
       "walls": [
         "open",
         "solid",
@@ -1408,7 +1408,7 @@
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun10-detail2",
       "walls": [
         "solid",
         "solid",
