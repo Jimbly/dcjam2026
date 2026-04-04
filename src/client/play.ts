@@ -3,6 +3,12 @@ export const CARD_W = 64;
 export const CARD_H = 85;
 export const MONSTER_MAX_RANGE = 5; // for health bars and ranged attacks
 export const MAX_RANGE = 10;
+export const TIERLABEL = [
+  '',
+  '[img=tier1]',
+  '[img=tier2]',
+  '[img=tier3]',
+];
 
 const ENEMY_DELAY = [750, 450, 350];
 
@@ -17,7 +23,6 @@ import {
   ALIGN,
   Font,
   fontStyle,
-  fontStyleAlpha,
   fontStyleColored,
 } from 'glov/client/font';
 import * as input from 'glov/client/input';
@@ -75,7 +80,7 @@ import {
   EntityID,
   TSMap,
 } from 'glov/common/types';
-import { clamp, clone, easeIn, easeOut, ridx, sign } from 'glov/common/util';
+import { clamp, clone, easeIn, easeOut, plural, ridx, sign } from 'glov/common/util';
 import { unreachable } from 'glov/common/verify';
 import {
   half_vec,
@@ -1045,13 +1050,6 @@ function doEngagedEnemy(): void {
   }
 }
 
-const TIERLABEL = [
-  '',
-  '*',
-  '**',
-  '***',
-];
-
 function cardName(card: Card): string {
   return `${CARDS[card.card_id].name}${TIERLABEL[card.tier || 0]}`;
 }
@@ -1091,8 +1089,9 @@ export function drawCard(param: {
       text: hotkey,
     });
   }
-  font.draw({
-    style: disabled ? fontStyleAlpha(style_label, 0.5) : style_label,
+  markdownAuto({
+    font_style: style_label,
+    alpha: disabled ? 0.5 : 1,
     x: x + CARD_PAD, y, z, w: CARD_W - CARD_PAD * 2,
     align: ALIGN.HCENTERFIT,
     text: card_def.name + TIERLABEL[tier],
@@ -1219,6 +1218,107 @@ export function drawCard(param: {
   return any_usable;
 }
 
+const CARD_TOOLTIP_W = 96;
+const CARD_TOOLTIP_POS = [
+  [12, 12], // hand
+  [12, 12], // shop
+  [125, 12], // shop left pool
+];
+const CARD_TOOLTIP_H = 96;
+export function cardTooltip(pos: number, card: Card): void {
+  let x = CARD_TOOLTIP_POS[pos][0];
+  let y = CARD_TOOLTIP_POS[pos][1];
+  let w = CARD_TOOLTIP_W;
+  panel({
+    x, y,
+    w,
+    h: CARD_TOOLTIP_H,
+    z: Z.TOOLTIP - 1,
+    eat_clicks: false,
+  });
+  x += 8;
+  w -= 16;
+  y += 8;
+
+  let card_def = CARDS[card.card_id];
+  let desc: string[] = [];
+  desc.push(`**${card_def.name}**${TIERLABEL[card.tier]}`);
+  if (healMode()) {
+    desc.push('(flipside)');
+  }
+
+  function doEffects(effects: typeof card_def.effect): void {
+    let key: CardEffect;
+    for (key in effects) {
+      let value = effects[key]![card.tier];
+      if (!value) {
+        // for a later tier
+        continue;
+      }
+      let vis = EFFECT_TEMPLATE[key];
+      let { img } = vis;
+      let element = myEnt().data.element;
+      if (key === 'damage' && healMode()) {
+        img = `element-${element || 'null'}`;
+      }
+      let prefix = vis.prefix ? `${value}` : '';
+      let label_text = `${prefix}[img=${img}]:`;
+      let line;
+      switch (key) {
+        case 'damage':
+          if (healMode()) {
+            line = `Heal ${value} HP to a dying ${element || 'null'} minion in front of you.`;
+          } else {
+            line = `Deal ${value} physical damage to a target directly in front of you.`;
+          }
+          break;
+        case 'ranged':
+          line = `Deal ${value} physical damage at range, straight ahead of you.`;
+          break;
+        case 'block':
+          line = `Gain ${value} Block, canceling incoming physical damage.`;
+          break;
+        case 'poison':
+          line = `Add ${value} Poison. ` +
+            'Poison does non-physical damage each turn and then decrements.';
+          break;
+        case 'freeze':
+          line = `Adjacent target loses ${value} ${plural(value, 'turn')}.`;
+          break;
+        case 'push':
+          line = 'Push adjacent target away from you.';
+          break;
+        case 'pull':
+          line = 'Pull distant target toward you.';
+          break;
+        case 'delay':
+          line = 'Turn does not end upon play.';
+          break;
+        case 'heal':
+          line = 'NA';
+          break;
+        case 'burn':
+          line = 'Card is BANISHED after use.';
+          break;
+        default:
+          unreachable(key);
+      }
+
+      desc.push(`${label_text} ${line}`);
+    }
+  }
+  // desc.push('Combat Effects:');
+  doEffects(healMode() ? card_def.healeffect : card_def.effect);
+
+  markdownAuto({
+    x, y, z: Z.TOOLTIP,
+    w,
+    align: ALIGN.HWRAP,
+    text: desc.join('\n\n'),
+  });
+
+}
+
 function enemiesAlive(): boolean {
   let entities = entityManager().entities;
   let floor_id = crawlerGameState().floor_id;
@@ -1304,6 +1404,7 @@ function doReshuffle(): void {
       ...rect,
       z: rect.z + 0.1,
     });
+    cardTooltip(0, deck[discard_pile[0]]);
   }
   rect.x += CARD_W + BORDER_PAD;
   spot_ret = spot({
@@ -1328,6 +1429,7 @@ function doReshuffle(): void {
       ...rect,
       z: rect.z + 0.1,
     });
+    cardTooltip(0, deck[discard_pile[1]]);
   }
 
   if (burn_card !== -1) {
@@ -1369,7 +1471,7 @@ function showCardList(title: string, x: number, y: number, pile: number[]): void
 
   let z = Z.TOOLTIP;
 
-  const w = 80;
+  const w = 90;
   if (x < game_width / 2) {
     x += PANEL_PAD;
   } else {
@@ -1385,11 +1487,33 @@ function showCardList(title: string, x: number, y: number, pile: number[]): void
       --ii;
       ++count;
     }
+    let desc = [];
+    let card_def = CARDS[card.card_id];
+    let key: CardEffect;
+    let effects = healMode() ? card_def.healeffect : card_def.effect;
+    for (key in effects) {
+      let value = effects[key]![card.tier];
+      if (!value) {
+        // for a later tier
+        continue;
+      }
+      let vis = EFFECT_TEMPLATE[key];
+      let { img } = vis;
+      if (key === 'damage' && healMode()) {
+        let element = myEnt().data.element;
+        img = `element-${element || 'null'}`;
+      }
+      let prefix = vis.prefix ? `${value}` : '';
+      desc.push(`${prefix}[img=${img}]`);
+    }
+
     y -= FONT_HEIGHT;
-    font.draw({
-      style: style_label,
+    markdownAuto({
+      font_style: style_label,
       x, y, z,
-      text: `${cardName(card)}${count > 1 ? ` (${count})` : ''}`,
+      w: w - PANEL_PAD * 2,
+      align: ALIGN.HFIT,
+      text: `${cardName(card)}${count > 1 ? ` (${count})` : ''} - ${desc.join(' ')}`,
     });
   }
   if (!list.length) {
@@ -1951,12 +2075,13 @@ function doHand(): void {
       hotkey: KEYS['1'] + hotkey,
       ...click_rect,
       disabled,
-      disabled_focusable: false,
+      disabled_focusable: true,
       sound_button: null,
     });
     let target_y = rect.y;
     if (spot_ret.focused) {
       target_y = CARDS_Y_SEL;
+      cardTooltip(0, card);
     }
     let eff_y = blend(`cardy${uid}`, target_y, 200);
     if (eff_y < (CARDS_Y_SEL + CARDS_Y)/2) {
@@ -3314,6 +3439,27 @@ cmd_parse.register({
     myEnt().data.combat_phase = 'enemy';
     crawlerTurnBasedScheduleStep(ENEMY_DELAY[settings.gamespeed], 'attack');
     playUISound('card_discard');
+    resp_func();
+  },
+});
+
+cmd_parse.register({
+  cmd: 'addall',
+  help: 'Add all cards',
+  func: function (str, resp_func) {
+    let me = myEnt();
+    let { data } = me;
+    data.discard_pile.length = 0;
+    data.draw_pile.length = 0;
+    data.hand.length = 0;
+    data.deck = {};
+    data.picked.length = 0;
+    for (let card_id in CARDS) {
+      me.addCard(card_id as keyof typeof CARDS, randInt(4));
+      data.draw_pile.push(data.picked[me.data.picked.length - 1]);
+    }
+    me.populateDrawPileFromDeck();
+    me.resetDeck();
     resp_func();
   },
 });

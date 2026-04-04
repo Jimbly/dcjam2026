@@ -5,10 +5,11 @@ import { ALIGN, fontStyleAlpha } from 'glov/client/font';
 import { KEYS } from 'glov/client/input';
 import { markdownAuto } from 'glov/client/markdown';
 import { scrollAreaCreate } from 'glov/client/scroll_area';
-import { spot, SPOT_DEFAULT_BUTTON } from 'glov/client/spot';
+import { spot, SPOT_DEFAULT_BUTTON, SPOT_DEFAULT_LABEL } from 'glov/client/spot';
 import {
   button,
   buttonText,
+  buttonWasFocused,
   menuUp,
   panel,
   UIBox,
@@ -31,10 +32,12 @@ import {
   autosave,
   CARD_H,
   CARD_W,
+  cardTooltip,
   drawCard,
   myEnt,
   randInt,
   sameCard,
+  TIERLABEL,
 } from './play';
 import { style_dialog_title, style_dialog_title_err, style_hotkey, style_label } from './styles';
 import { TEXT } from './text';
@@ -131,6 +134,7 @@ function doCardPool(param: UIBox & {
   only?: 'deck' | 'pool';
 }): void {
   let { x, y, z, w, h, no_max_tier, no_select, only } = param;
+  let tooltip_pos = x < game_width / 2 ? 2 : 1;
 
   if (autoResetSkippedFrames('cardpool')) {
     pool_selected = null;
@@ -172,6 +176,8 @@ function doCardPool(param: UIBox & {
     pool_seen = false;
   }
 
+  let tooltipme: Card | undefined;
+
   function showList(header: string, total: number, by_id: ById): void {
     uiGetFont().draw({
       style: style_label,
@@ -198,7 +204,9 @@ function doCardPool(param: UIBox & {
             key: `cardpool${header}${card_id}-${tier}`,
             disabled,
             base_name: selected ? 'buttonselected' : undefined,
-            text: `${label}${count > 1 ? ` (${count})` : ''}`
+            text: `${label}${TIERLABEL[tier]}${count > 1 ? ` (${count})` : ''}`,
+            markdown: true,
+            disabled_focusable: true,
           })) {
             pool_seen = true;
             pool_selected = {
@@ -207,9 +215,15 @@ function doCardPool(param: UIBox & {
             };
             data.shop_state!.did_something = true;
           }
+          if (buttonWasFocused()) {
+            tooltipme = {
+              card_id,
+              tier,
+              uid: -1,
+            };
+          }
           y += uiButtonHeight();
         }
-        label += '*';
       }
     }
     y += 2;
@@ -226,6 +240,10 @@ function doCardPool(param: UIBox & {
   }
 
   card_pool_scroll.end(y);
+
+  if (tooltipme) {
+    cardTooltip(tooltip_pos, tooltipme);
+  }
 }
 
 const BORDER = 4;
@@ -314,18 +332,30 @@ class ShopAction extends UIAction {
 
       if (pool_selected) {
         y += 12;
-        drawCard({
+        let card_rect = {
           x: x + floor((w - CARD_W) / 2),
           y, z,
-          card: {
-            ...pool_selected,
-            uid: -1,
-          },
+          w: CARD_W,
+          h: CARD_H,
+        };
+        let card1 = {
+          ...pool_selected,
+          uid: -1,
+        };
+        drawCard({
+          ...card_rect,
+          card: card1,
           for_shop: true,
           no_target: false,
           no_ranged_target: false,
           disabled: false,
         });
+        if (spot({
+          def: SPOT_DEFAULT_LABEL,
+          ...card_rect,
+        }).focused) {
+          cardTooltip(0, card1);
+        }
         y += CARD_H + PAD;
 
         let num_in_deck = 0;
@@ -481,14 +511,18 @@ class ShopAction extends UIAction {
             hotkey: KEYS['1'] + hotkey,
             sound_button: 'reward_choice',
           });
+          let card = {
+            card_id,
+            tier,
+            uid: -1,
+          };
+          if (spot_ret.focused) {
+            cardTooltip(1, card);
+          }
           drawCard({
             ...rect,
             y: blend(`shopcardy${ii}`, rect.y - (spot_ret.focused && !disabled ? 12 : 0), 200),
-            card: {
-              card_id,
-              tier,
-              uid: -1,
-            },
+            card,
             hotkey: disabled ? undefined : String.fromCharCode('1'.charCodeAt(0) + hotkey),
             no_target: false,
             no_ranged_target: false,
@@ -604,14 +638,18 @@ class ShopAction extends UIAction {
             hotkey: KEYS['1'] + ii,
             sound_button: 'purchase'
           });
+          let card = {
+            card_id,
+            tier,
+            uid: -1,
+          };
+          if (spot_ret.focused) {
+            cardTooltip(1, card);
+          }
           drawCard({
             ...rect,
             y: blend(`shopcardy${ii}`, rect.y - (spot_ret.focused && !disabled ? 12 : 0), 200),
-            card: {
-              card_id,
-              tier,
-              uid: -1,
-            },
+            card,
             hotkey: disabled ? undefined : String.fromCharCode('1'.charCodeAt(0) + ii),
             no_target: false,
             no_ranged_target: false,
@@ -685,18 +723,30 @@ class ShopAction extends UIAction {
       if (pool_selected) {
         let cost = 3 + pool_selected.tier * 2;
         let disabled = respect < cost;
-        drawCard({
-          card: {
-            ...pool_selected,
-            uid: -1,
-          },
+        let card_rect = {
           x: x + margin,
           y, z,
+          w: CARD_W,
+          h: CARD_H,
+        };
+        let card1 = {
+          ...pool_selected,
+          uid: -1,
+        };
+        drawCard({
+          ...card_rect,
+          card: card1,
           for_shop: true,
           no_target: false,
           no_ranged_target: false,
           disabled: false,
         });
+        if (spot({
+          def: SPOT_DEFAULT_LABEL,
+          ...card_rect,
+        }).focused) {
+          cardTooltip(1, card1);
+        }
 
         let center_rect = {
           style: disabled ? fontStyleAlpha(style_label, 0.5) : style_label,
@@ -725,19 +775,27 @@ class ShopAction extends UIAction {
             text: `${disabled ? '[c=red]' : ''}${cost}[img=currency-respect scale=1.75]`,
           });
 
+          card_rect.x = x + margin + CARD_W + margin + MID_W + margin;
+          card_rect.y = y;
+          let card2 = {
+            ...pool_selected,
+            tier: pool_selected.tier + 1,
+            uid: -1,
+          };
           drawCard({
-            card: {
-              ...pool_selected,
-              tier: pool_selected.tier + 1,
-              uid: -1,
-            },
-            x: x + margin + CARD_W + margin + MID_W + margin,
-            y, z,
+            card: card2,
+            ...card_rect,
             for_shop: true,
             no_target: false,
             no_ranged_target: false,
             disabled,
           });
+          if (spot({
+            def: SPOT_DEFAULT_LABEL,
+            ...card_rect,
+          }).focused) {
+            cardTooltip(1, card2);
+          }
 
           if (button({
             x: x + (w2 - uiButtonWidth())/2,

@@ -1,0 +1,6 @@
+---
+tile_res: [8,12]
+tiles:
+  tier1: [0, 0]
+  tier2: [1, 0]
+  tier3: [2, 0]
