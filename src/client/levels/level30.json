@@ -1220,12 +1220,6 @@
         "river-edge",
         "door",
         "river-edge"
-      ],
-      "events": [
-        {
-          "id": "section_intro",
-          "param": ""
-        }
       ]
     },
     {
@@ -2508,9 +2502,9 @@
       ]
     },
     {
-      "type": "enemy-water-ranged",
+      "type": "enemy-water-balanced",
       "pos": [
-        2,
+        8,
         8,
         0
       ]
@@ -2548,9 +2542,9 @@
       ]
     },
     {
-      "type": "enemy-water-balanced",
+      "type": "enemy-water-ranged",
       "pos": [
-        8,
+        3,
         8,
         0
       ]

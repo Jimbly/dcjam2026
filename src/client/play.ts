@@ -27,6 +27,7 @@ import {
   KEYS,
   keyUpEdge,
   PAD,
+  padButtonUpEdge,
 } from 'glov/client/input';
 import { localStorageGetJSON, localStorageSet, localStorageSetJSON } from 'glov/client/local_storage';
 import { markdownAuto } from 'glov/client/markdown';
@@ -1757,12 +1758,20 @@ function findRangedTarget(): Entity | null {
   let { pos } = data;
   let game_state = crawlerGameState();
   let { level, floor_id } = game_state;
+  let allow_block_move = me.floorElement() === 'water';
   assert(level);
   let dir = pos[2] as DirType;
   let walk: JSVec2 = [pos[0], pos[1]];
   for (let ii = 0; ii < MAX_RANGE; ++ii) {
-    if (level.wallsBlock(walk, dir, crawlerScriptAPI()) & BLOCK_VIS) {
-      return null;
+    let res = level.wallsBlock(walk, dir, crawlerScriptAPI());
+    if (allow_block_move) {
+      if (res & BLOCK_VIS) {
+        return null;
+      }
+    } else {
+      if (res) {
+        return null;
+      }
     }
     walk[0] += DX[dir];
     walk[1] += DY[dir];
@@ -1781,6 +1790,7 @@ export function findRangedTargetForEnemy(enemy: Entity): Entity | null {
   let { data } = me;
   let { pos } = data;
   let enemy_pos = enemy.data.pos;
+  let allow_block_move = me.floorElement() === 'water';
   if (!(enemy_pos[0] === pos[0] || enemy_pos[1] === pos[1])) {
     // not lined up
     return null;
@@ -1788,7 +1798,9 @@ export function findRangedTargetForEnemy(enemy: Entity): Entity | null {
   let game_state = crawlerGameState();
   let { level, floor_id } = game_state;
   assert(level);
-  if (level.simpleVisCheck(pos, enemy_pos, crawlerScriptAPI(), 'visBlockNormal')) {
+  if (level.simpleVisCheck(pos, enemy_pos, crawlerScriptAPI(),
+    allow_block_move ? 'visBlockNormal' : 'visBlockNoObstacles')
+  ) {
     let walk = enemy_pos.slice(0) as JSVec2;
     while (walk[0] !== pos[0] || walk[1] !== pos[1]) {
       walk[0] += sign(pos[0] - walk[0]);
@@ -2859,10 +2871,13 @@ function playCrawl(): void {
     }
   }
 
-  // if (!overlay_menu_up && (keyDownEdge(KEYS.M) || padButtonUpEdge(PAD.BACK))) {
-  //   playUISound('button_click');
-  //   mapViewToggle();
-  // }
+
+  if (build_mode) {
+    if (!overlay_menu_up && (keyDownEdge(KEYS.M) || padButtonUpEdge(PAD.BACK))) {
+      playUISound('button_click');
+      mapViewToggle();
+    }
+  }
   let game_state = crawlerGameState();
   let script_api = crawlerScriptAPI();
   if (frame_map_view) {

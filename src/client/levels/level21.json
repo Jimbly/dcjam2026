@@ -801,7 +801,7 @@
       "id": "solid",
       "walls": [
         "open",
-        "solid",
+        "open",
         "open",
         "open"
       ]
@@ -969,21 +969,12 @@
       ]
     },
     {
-      "id": "open",
+      "id": "solid",
       "walls": [
-        "open",
         "solid",
         "solid",
-        "solid"
-      ]
-    },
-    {
-      "id": "open",
-      "walls": [
-        "door",
         "solid",
-        "open",
-        "solid"
+        "open"
       ]
     },
     {
@@ -991,7 +982,16 @@
       "walls": [
         "open",
         "open",
-        "door",
+        "solid",
+        "solid"
+      ]
+    },
+    {
+      "id": "open",
+      "walls": [
+        "open",
+        "open",
+        "open",
         "solid"
       ]
     },
@@ -1154,7 +1154,7 @@
         "open",
         "solid",
         "open",
-        "solid"
+        "open"
       ]
     },
     {
@@ -1835,19 +1835,10 @@
       ]
     },
     {
-      "id": "solid",
-      "walls": [
-        "solid",
-        "open",
-        "main_dun1-solid1",
-        "main_dun1-solid1"
-      ]
-    },
-    {
       "id": "open",
       "walls": [
-        "door",
         "open",
+        "solid",
         "solid",
         "solid"
       ]
@@ -1856,8 +1847,17 @@
       "id": "open",
       "walls": [
         "open",
-        "solid",
-        "door",
+        "open",
+        "open",
+        "solid"
+      ]
+    },
+    {
+      "id": "open",
+      "walls": [
+        "open",
+        "open",
+        "open",
         "door"
       ]
     },
@@ -1865,7 +1865,7 @@
       "id": "open",
       "walls": [
         "open",
-        "solid",
+        "open",
         "open",
         "solid"
       ]
@@ -1874,7 +1874,7 @@
       "id": "open",
       "walls": [
         "open",
-        "solid",
+        "open",
         "open",
         "solid"
       ]
@@ -1883,7 +1883,7 @@
       "id": "open",
       "walls": [
         "door",
-        "door",
+        "open",
         "open",
         "solid"
       ]
@@ -2011,6 +2011,15 @@
         "solid",
         "open",
         "main_dun1-solid1",
+        "solid"
+      ]
+    },
+    {
+      "id": "open",
+      "walls": [
+        "open",
+        "solid",
+        "solid",
         "open"
       ]
     },
@@ -2019,26 +2028,17 @@
       "walls": [
         "open",
         "solid",
-        "solid",
+        "open",
         "open"
       ]
     },
     {
       "id": "open",
       "walls": [
-        "solid",
-        "solid",
-        "open",
-        "solid"
-      ]
-    },
-    {
-      "id": "open",
-      "walls": [
         "open",
         "solid",
-        "solid",
-        "solid"
+        "open",
+        "open"
       ]
     },
     {
@@ -2047,7 +2047,7 @@
         "open",
         "solid",
         "open",
-        "solid"
+        "open"
       ]
     },
     {
@@ -2056,7 +2056,7 @@
         "open",
         "solid",
         "open",
-        "door"
+        "open"
       ]
     },
     {
@@ -2830,7 +2830,7 @@
       ]
     },
     {
-      "type": "enemy-earth-blocker",
+      "type": "enemy-earth-balanced",
       "pos": [
         16,
         11,

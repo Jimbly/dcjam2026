@@ -1,14 +1,9 @@
 TODO - The Adventures of Rasa and the Chromatic Dragons
 ====
 
-make 9 floors with better encounters
-  try 4/5/6 enemies/floor
-
 difficulty
   water/fire/finale pretty easy if bought either fatality or go in on poison
   try a ranged run next
-
-shouldn't be able to shoot through details on earth/fire levels
 
 tooltips everywhere - fixed screen location (per Action) for tooltips to show up?
     - or, F1 to open help screen explaining all effects
@@ -22,6 +17,7 @@ one details object per region
 wandering cat
 floor title - top and center?
 cover/share image
+add compass
 put damage number over the icon
 different text color for all of Rasa's speech?
 in-world monologues for Rasa to say randomly?
