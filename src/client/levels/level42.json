@@ -1567,7 +1567,7 @@
       "events": [
         {
           "id": "dialog",
-          "param": "monologue Uh... what is that thing and why is it wearing a chicken hat?  I don't think I'm supposed to be here..."
+          "param": "monologue Uh... what is that thing and why does it have a chicken on its head?  I don't think I'm supposed to be here..."
         }
       ]
     },
@@ -2148,5 +2148,13 @@
   "vstyle": "dun2fire",
   "seed": "32845502",
   "props": {},
-  "paths": {}
+  "paths": {
+    "8,14": [],
+    "8,15": [
+      0
+    ],
+    "7,15": [
+      0
+    ]
+  }
 }

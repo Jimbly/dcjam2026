@@ -2,7 +2,7 @@
 properties:
   blocks_player: false
 traits:
-- id: wander
+# - id: wander
 - id: drawable
   biasL: [-0.25, 0.3]
   biasF: [0, -0.25]
@@ -20,7 +20,7 @@ traits:
   shadow:
     atlas: main
     name: shadow2
-  scale: 0.6
+  scale: 0.2
   simple_anim:
     - period: 5000
       scale: [1, 0.85]
