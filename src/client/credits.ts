@@ -9,7 +9,7 @@ import { game_height, game_width } from './globals';
 import { tickMusic } from './music';
 import { PAL_BORDER, PAL_WHITE, palette, palette_font } from './palette';
 import { queueTransition } from './play';
-import { titleInit } from './title';
+import { titleInit, titleUseAC } from './title';
 
 const { round } = Math;
 
@@ -69,6 +69,7 @@ function exit(): void {
   queueTransition(false);
   urlhash.go('');
   engine.setState(titleInit);
+  titleUseAC();
 }
 function doCredits(): void {
   gl.clearColor(palette[PAL_BORDER][0], palette[PAL_BORDER][1], palette[PAL_BORDER][2], 1);

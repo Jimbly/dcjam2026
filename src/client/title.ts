@@ -1,5 +1,6 @@
 /* eslint @typescript-eslint/no-unused-vars:off */
 
+import { autoResetSkippedFrames } from 'glov/client/auto_reset';
 import { autoAtlas } from 'glov/client/autoatlas';
 import * as camera2d from 'glov/client/camera2d';
 import { MODE_DEVELOPMENT } from 'glov/client/client_config';
@@ -165,13 +166,25 @@ function startNewGame(slot: number): void {
   urlhash.go(`?c=local&slot=${slot}`);
 }
 
+
+let use_ac = false;
+export function titleUseAC(): void {
+  use_ac = true;
+}
+function titleMusicTick(): void {
+  if (autoResetSkippedFrames('titleac')) {
+    use_ac = false;
+  }
+  tickMusic(use_ac ? 'credits' : 'bgm_earth_explore');
+}
+
 function title(dt: number): void {
   gl.clearColor(palette[PAL_BORDER][0], palette[PAL_BORDER][1], palette[PAL_BORDER][2], 1);
   main.chat_ui.run({
     hide: true,
   });
 
-  tickMusic(null);
+  titleMusicTick();
 
   let y = 40;
   if (ALLOW_ONLINE || DEBUG) {
@@ -407,7 +420,7 @@ const level_idx = 0;
 export function stateHighScores(dt: number): void {
   // crawlerRenderSetUIClearColor(palette[PAL_BORDER]);
   gl.clearColor(palette[PAL_BORDER][0], palette[PAL_BORDER][1], palette[PAL_BORDER][2], 1);
-  tickMusic('menu');
+  titleMusicTick();
   let W = game_width;
   let H = game_height;
   // camera2d.setAspectFixed(W, H);
