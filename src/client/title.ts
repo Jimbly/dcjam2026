@@ -62,7 +62,7 @@ import {
   palette,
   palette_font,
 } from './palette';
-import { myEnt } from './play';
+import { myEnt, queueTransition } from './play';
 
 
 const ALLOW_ONLINE = false;
@@ -277,6 +277,7 @@ function title(dt: number): void {
       w: slot_w,
       disabled: !eff_data.timestamp
     })) {
+      queueTransition();
       crawlerPlayWantMode('recent');
       urlhash.go(`?c=local&slot=${slot}`);
     }
@@ -309,12 +310,14 @@ function title(dt: number): void {
           text: 'This will overwrite your existing game when you next save.  Continue?',
           buttons: {
             yes: function () {
+              queueTransition();
               startNewGame(slot);
             },
             no: null,
           }
         });
       } else {
+        queueTransition();
         startNewGame(slot);
       }
     }
@@ -330,6 +333,7 @@ function title(dt: number): void {
     y: side_y,
     text: 'Hall of Fame',
   })) {
+    queueTransition(true);
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
     setState(stateHighScores);
   }
@@ -492,10 +496,11 @@ export function stateHighScores(dt: number): void {
   });
 
   if (buttonText({
-    x: W - hpad - 80, y: 227 + text_height * 0.25,
+    x: W - hpad - 80 + 8, y: game_height - button_h - 8,
     w: 80, h: button_h,
     text: 'Return to Title',
   }) || keyDownEdge(KEYS.ESC)) {
+    queueTransition(true);
     setState(title);
   }
 

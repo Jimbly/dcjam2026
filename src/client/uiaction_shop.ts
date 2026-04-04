@@ -35,6 +35,7 @@ import {
   cardTooltip,
   drawCard,
   myEnt,
+  queueTransition,
   randInt,
   sameCard,
   TIERLABEL,
@@ -448,6 +449,7 @@ class ShopAction extends UIAction {
       })) {
         keyClear('needs_shop');
         keyClear('shop_decksize');
+        queueTransition(true);
         uiActionClear();
         me.resetDeck();
 
@@ -534,6 +536,7 @@ class ShopAction extends UIAction {
             data.draw_pile.push(uid);
             keyClear('needs_shop');
             keyClear('shop_chest');
+            queueTransition(true);
             uiActionClear(); // NOT closeShopAndCheckDeck()
           }
           ++hotkey;
@@ -562,6 +565,7 @@ class ShopAction extends UIAction {
         data.gold += data.shop_state!.gold as number;
         keyClear('needs_shop');
         keyClear('shop_chest');
+        queueTransition(true);
         uiActionClear(); // NOT closeShopAndCheckDeck()
       }
       ++hotkey;
@@ -584,6 +588,7 @@ class ShopAction extends UIAction {
         data.respect += data.shop_state!.respect as number;
         keyClear('needs_shop');
         keyClear('shop_chest');
+        queueTransition(true);
         uiActionClear(); // NOT closeShopAndCheckDeck()
       }
       ++hotkey;
@@ -898,6 +903,7 @@ class ShopAction extends UIAction {
         text: '[c=hotkey]1[/c]) Buy [c=green]NEW CARDS[/c]'
       })) {
         keySet('shop_gold');
+        queueTransition(true);
         data.shop_state = {};
         pickCardShopOptions();
         data.shop_rerolls = 0;
@@ -925,6 +931,7 @@ class ShopAction extends UIAction {
         text: '[c=hotkey]2[/c]) [c=green]UPGRADE[/c] cards'
       })) {
         keySet('shop_respect');
+        queueTransition(true);
         data.shop_state = {};
         autosave();
       }
@@ -953,6 +960,7 @@ ShopAction.prototype.needs_decks = false;
 
 export function shopOpen(): void {
   pool_selected = null;
+  queueTransition(true);
   uiAction(new ShopAction());
 }
 

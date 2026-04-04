@@ -43,6 +43,7 @@ import {
   healMode,
   myEnt,
   myEntOptional,
+  queueTransition,
 } from './play';
 import { statusPush } from './status';
 import { style_label } from './styles';
@@ -317,6 +318,7 @@ dialogRegister({
   },
   healtro: function () {
     let elemnum = myEnt().floorElementNumber();
+    queueTransition(false);
     dialogPush({
       ...MONO,
       flags: { cutscene: true },
@@ -330,6 +332,7 @@ dialogRegister({
     let elemnum = myEnt().floorElementNumber();
     // dialog('monologue', TEXT[`RASA_OUTTRO${elemnum}`]);
     // or, cutscene between floors?
+    queueTransition(false);
     dialogPush({
       ...MONO,
       flags: { cutscene: true },
@@ -340,6 +343,7 @@ dialogRegister({
     });
   },
   victory: function () {
+    queueTransition(false);
     dialogPush({
       ...MONO,
       flags: { cutscene: true },

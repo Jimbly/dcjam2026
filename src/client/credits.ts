@@ -8,6 +8,7 @@ import * as urlhash from 'glov/client/urlhash';
 import { game_height, game_width } from './globals';
 import { tickMusic } from './music';
 import { PAL_BORDER, PAL_WHITE, palette, palette_font } from './palette';
+import { queueTransition } from './play';
 import { titleInit } from './title';
 
 const { round } = Math;
@@ -65,6 +66,7 @@ let scroll_pos = 0;
 let looped = false;
 let clicked = false;
 function exit(): void {
+  queueTransition(false);
   urlhash.go('');
   engine.setState(titleInit);
 }

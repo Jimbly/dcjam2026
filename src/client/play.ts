@@ -55,6 +55,7 @@ import {
   Sprite,
   spriteCreate,
 } from 'glov/client/sprites';
+import * as transition from 'glov/client/transition';
 import {
   button,
   buttonLastSpotRet,
@@ -330,6 +331,10 @@ export function myEnt(): Entity {
 
 export function myEntOptional(): Entity | undefined {
   return crawlerMyEntOptional() as Entity | undefined;
+}
+
+export function queueTransition(quick?: boolean): void {
+  transition.queue(Z.TRANSITION_FINAL, transition.fade(quick ? 200 : 800));
 }
 
 export function randInt(range: number): number {
@@ -3512,7 +3517,10 @@ cmd_parse.register({
   cmd: 'save',
   help: 'Immediately trigger an auto-save',
   func: function (str, resp_func) {
-    autosave();
+    crawlerSaveGame('auto');
+    if (engine.DEBUG) {
+      statusPush('Auto-saved.');
+    }
     resp_func();
   },
 });
