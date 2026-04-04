@@ -107,6 +107,7 @@ import { CRAWLER_IS_ONLINE, CRAWLER_TURN_BASED } from '../common/crawler_config'
 import { entManhattanDistance } from '../common/crawler_entity_common';
 import {
   BLOCK_MOVE,
+  BLOCK_VIS,
   CrawlerLevel,
   crawlerLoadData,
   dirFromDelta,
@@ -1760,7 +1761,7 @@ function findRangedTarget(): Entity | null {
   let dir = pos[2] as DirType;
   let walk: JSVec2 = [pos[0], pos[1]];
   for (let ii = 0; ii < MAX_RANGE; ++ii) {
-    if (level.wallsBlock(walk, dir, crawlerScriptAPI())) {
+    if (level.wallsBlock(walk, dir, crawlerScriptAPI()) & BLOCK_VIS) {
       return null;
     }
     walk[0] += DX[dir];

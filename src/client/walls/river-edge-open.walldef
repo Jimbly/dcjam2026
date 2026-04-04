@@ -1,0 +1,12 @@
+---
+open_move: true
+open_vis: true
+map_view_wall_frames_from: solid
+advertise_other_side: true
+visuals:
+- pass: bg
+  type: simple_wall
+  opts:
+    atlas: main
+    tile: waterwall
+    offs: [0, -1]

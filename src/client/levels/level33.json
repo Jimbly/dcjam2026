@@ -963,7 +963,7 @@
       "id": "solid",
       "walls": [
         "open",
-        "open",
+        "solid",
         "open",
         "open"
       ]
@@ -972,7 +972,7 @@
       "id": "solid",
       "walls": [
         "open",
-        "open",
+        "solid",
         "open",
         "open"
       ]
@@ -1088,36 +1088,45 @@
     {
       "id": "open",
       "walls": [
-        "open",
-        "open",
-        "solid",
-        "open"
-      ]
-    },
-    {
-      "id": "open",
-      "walls": [
-        "solid",
-        "open",
-        "open",
-        "solid"
-      ]
-    },
-    {
-      "id": "solid",
-      "walls": [
-        "open",
+        "river-edge",
         "open",
         "solid",
         "open"
       ]
     },
     {
+      "id": "main_dun9-river",
+      "walls": [
+        "open",
+        "river-edge",
+        "river-edge",
+        "river-edge-double"
+      ]
+    },
+    {
+      "id": "main_dun9-river",
+      "walls": [
+        "open",
+        "river-edge-double",
+        "open",
+        "river-edge-double"
+      ]
+    },
+    {
+      "id": "main_dun9-river",
+      "walls": [
+        "river-edge-double",
+        "open",
+        "open",
+        "river-edge-double"
+      ]
+    },
+    {
       "id": "solid",
       "walls": [
         "open",
-        "open",
-        "open",
+        "solid",
+        "solid",
         "open"
       ]
     },
@@ -1125,16 +1134,7 @@
       "id": "solid",
       "walls": [
         "open",
-        "open",
-        "open",
-        "open"
-      ]
-    },
-    {
-      "id": "solid",
-      "walls": [
-        "open",
-        "open",
+        "solid",
         "open",
         "open"
       ]
@@ -1254,11 +1254,47 @@
       "id": "main_dun9-goalfloor",
       "walls": [
         "solid",
+        "river-edge",
         "open",
-        "open",
-        "open"
+        "river-edge"
       ],
       "props": {}
+    },
+    {
+      "id": "solid",
+      "walls": [
+        "solid",
+        "solid",
+        "solid",
+        "solid"
+      ]
+    },
+    {
+      "id": "main_dun9-river",
+      "walls": [
+        "open",
+        "open",
+        "river-edge-double",
+        "open"
+      ]
+    },
+    {
+      "id": "main_dun9-river",
+      "walls": [
+        "open",
+        "river-edge-double",
+        "open",
+        "river-edge-double"
+      ]
+    },
+    {
+      "id": "main_dun9-river",
+      "walls": [
+        "river-edge-double",
+        "river-edge-double",
+        "open",
+        "river-edge-double"
+      ]
     },
     {
       "id": "solid",
@@ -1266,42 +1302,6 @@
         "open",
         "open",
         "solid",
-        "open"
-      ]
-    },
-    {
-      "id": "solid",
-      "walls": [
-        "open",
-        "open",
-        "open",
-        "open"
-      ]
-    },
-    {
-      "id": "solid",
-      "walls": [
-        "open",
-        "open",
-        "open",
-        "open"
-      ]
-    },
-    {
-      "id": "solid",
-      "walls": [
-        "open",
-        "open",
-        "open",
-        "open"
-      ]
-    },
-    {
-      "id": "solid",
-      "walls": [
-        "open",
-        "open",
-        "open",
         "open"
       ]
     },
@@ -1401,44 +1401,35 @@
     {
       "id": "open",
       "walls": [
-        "open",
+        "river-edge",
         "solid",
         "solid",
         "open"
       ]
     },
     {
-      "id": "open",
+      "id": "main_dun9-river",
       "walls": [
-        "solid",
-        "solid",
         "open",
-        "open"
+        "river-edge-double",
+        "river-edge",
+        "river-edge"
       ]
     },
     {
-      "id": "solid",
+      "id": "main_dun9-river",
       "walls": [
         "open",
+        "river-edge-double",
         "open",
-        "solid",
-        "open"
+        "river-edge-double"
       ]
     },
     {
-      "id": "solid",
+      "id": "main_dun9-river",
       "walls": [
-        "open",
-        "open",
-        "open",
-        "open"
-      ]
-    },
-    {
-      "id": "solid",
-      "walls": [
-        "open",
-        "open",
+        "river-edge-double",
+        "river-edge-double",
         "open",
         "open"
       ]
@@ -1448,8 +1439,17 @@
       "walls": [
         "open",
         "open",
+        "solid",
+        "solid"
+      ]
+    },
+    {
+      "id": "solid",
+      "walls": [
         "open",
-        "open"
+        "open",
+        "open",
+        "solid"
       ]
     },
     {
@@ -1566,7 +1566,7 @@
         "open",
         "open",
         "open",
-        "open"
+        "solid"
       ]
     },
     {
@@ -1575,7 +1575,7 @@
         "open",
         "open",
         "open",
-        "open"
+        "solid"
       ]
     },
     {

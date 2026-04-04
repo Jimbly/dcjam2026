@@ -1306,7 +1306,7 @@
       "walls": [
         "solid",
         "open",
-        "main_dun1-solid1",
+        "solid",
         "open"
       ]
     },

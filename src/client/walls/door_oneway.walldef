@@ -5,6 +5,7 @@ map_view_wall_frame_north: door_oneway_north
 map_view_wall_frame_east: door_oneway_east
 map_view_wall_frame_south: door_oneway_south
 map_view_wall_frame_west: door_oneway_west
+sound_id: door_secret
 visuals:
 - type: simple_wall
   opts:

@@ -370,7 +370,7 @@ dialogRegister({
     dialog('monologue', TEXT.RASA_BEFORE_STAIRS);
   },
   leave2: function () {
-    if (!keyGet(`seen_leave_${myEnt().data.floor}`)) {
+    if (!keyGet(`seen_leave_${myEnt().data.floor}`) || healMode()) {
       return;
     }
     dialog('monologue', TEXT.RASA_BEFORE_STAIRS_MISTAKE);

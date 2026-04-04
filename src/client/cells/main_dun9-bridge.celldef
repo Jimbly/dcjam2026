@@ -1,0 +1,34 @@
+---
+open_move: true
+open_vis: true
+default_wall: solid
+visuals:
+- pass: bg
+  type: simple_ceiling
+  opts:
+    atlas: main
+    tile: dun9-ceiling
+- pass: bg
+  type: simple_floor
+  opts:
+    atlas: main
+    tile: [watera1, watera2, watera3, watera4, watera3, watera2]
+    offs: [0, 0, -0.2]
+    times: 421
+    do_blend: 100
+- pass: details
+  type: simple_floor
+  opts:
+    atlas: main
+    tile: [waterb1, waterb2, waterb3, waterb4, waterb3, waterb2]
+    offs: [0, 0, -0.1]
+    times: 300
+    do_blend: 100
+    do_alpha: true
+- pass: details
+  type: simple_floor
+  opts:
+    atlas: main
+    tile: waterbridge
+    offs: [0, 0]
+    do_alpha: true

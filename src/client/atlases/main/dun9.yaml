@@ -18,3 +18,14 @@ tiles:
 
   dun9-goalceiling: [2, 0]
   dun9-goalfloor: [2, 3]
+
+  watera1: [0,4]
+  watera2: [1,4]
+  watera3: [2,4]
+  watera4: [3,4]
+  waterb1: [0,5]
+  waterb2: [1,5]
+  waterb3: [2,5]
+  waterb4: [3,5]
+  waterwall: [0,3]
+  waterbridge: [1,3]
