@@ -5,11 +5,12 @@ difficulty
   water/fire/finale pretty easy if bought either fatality or go in on poison
   try a ranged run next
 
+play through
+
 one details object per region
-floor title - top and center?
-put damage number over the icon
 bug: keyboard not working on respawn dialog
 controller support?
+try: put damage number over the icon, multiple icons per row, room for image?
 
 different text color for all of Rasa's speech?
 

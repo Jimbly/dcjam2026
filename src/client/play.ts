@@ -2600,6 +2600,38 @@ function drawBorders(): void {
     z: Z.BORDERS - 0.1,
     color: palette[PAL_BORDER],
   });
+
+  let title = '';
+  if (myEntOptional()) {
+    if (myEnt().floorIsFinalBoss()) {
+      title = 'The Dad Cave';
+    } else {
+      title = [
+        'Deep Dirt Dungeon of Doom',
+        'Wide Watery Wastes of Whimsy',
+        'Fiery Fortress of Fear & Fire',
+      ][myEnt().floorElementNumber()];
+    }
+  }
+  if (title) {
+    let w = font.draw({
+      color: palette_font[PAL_GREY[1]],
+      x: game_width / 2,
+      y: 0,
+      z: Z.BORDERS + 0.2,
+      h: 13,
+      w: 0,
+      align: ALIGN.HVCENTER,
+      text: title,
+    });
+    w += 48;
+    drawBox({
+      x: (game_width - w) / 2,
+      y: 0,
+      w, h: 13,
+      z: Z.BORDERS + 0.1,
+    }, autoAtlas('ui', 'titlebg'));
+  }
 }
 
 function pad2(v: number): string {

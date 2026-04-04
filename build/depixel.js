@@ -76,6 +76,7 @@ gb.task({
       'ui/border-ll.png:bclamp',
       'ui/button*:balpha',
       'ui/menu*:balpha',
+      'ui/titlebg*:balpha',
       'ui/scrollbar*:balpha',
       'main/waterbridge.png:halpha,vwrap',
       'main/waterb*:hwrap,valpha',
