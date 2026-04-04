@@ -370,7 +370,8 @@ ${mode === 'blocker' ? '# ' : ''}- id: hunter${mode === 'ranged' ? '\n  ranged_c
     origin: [0.5, 1]
   ${body.trim()}
 `;
-    if (1) {
+    if (0) {
+      // note: have hand edits now
       fs.writeFileSync(filename, data);
     }
     console.log(filename, data);

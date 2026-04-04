@@ -1622,7 +1622,7 @@
       "id": "solid",
       "walls": [
         "open",
-        "open",
+        "solid",
         "solid",
         "open"
       ]
@@ -1756,19 +1756,19 @@
     {
       "id": "open",
       "walls": [
-        "solid",
+        "open",
         "open",
         "open",
         "open"
       ]
     },
     {
-      "id": "solid",
+      "id": "open",
       "walls": [
-        "open",
-        "open",
         "solid",
-        "open"
+        "open",
+        "open",
+        "solid"
       ]
     },
     {
@@ -1900,18 +1900,18 @@
     {
       "id": "open",
       "walls": [
-        "solid",
+        "open",
         "solid",
         "open",
         "open"
       ]
     },
     {
-      "id": "solid",
+      "id": "open",
       "walls": [
-        "open",
-        "open",
         "solid",
+        "solid",
+        "open",
         "open"
       ]
     },
@@ -1973,7 +1973,7 @@
       "id": "main_dun2fire-detail2",
       "walls": [
         "open",
-        "open",
+        "solid",
         "open",
         "solid"
       ]
@@ -2056,7 +2056,7 @@
         "open",
         "open",
         "open",
-        "open"
+        "solid"
       ]
     },
     {
@@ -2107,15 +2107,6 @@
     {
       "id": "open",
       "walls": [
-        "open",
-        "open",
-        "open",
-        "open"
-      ]
-    },
-    {
-      "id": "open",
-      "walls": [
         "solid",
         "open",
         "open",
@@ -2125,9 +2116,18 @@
     {
       "id": "solid",
       "walls": [
+        "open",
         "solid",
         "solid",
+        "solid"
+      ]
+    },
+    {
+      "id": "solid",
+      "walls": [
         "solid",
+        "solid",
+        "open",
         "solid"
       ]
     },
@@ -2263,7 +2263,7 @@
         "door_oneway",
         "solid",
         "open",
-        "open"
+        "solid"
       ]
     },
     {
@@ -2440,7 +2440,7 @@
     {
       "id": "open",
       "walls": [
-        "door_oneway",
+        "open",
         "solid",
         "open",
         "open"
@@ -2449,9 +2449,9 @@
     {
       "id": "open",
       "walls": [
+        "door_oneway",
+        "solid",
         "open",
-        "solid",
-        "solid",
         "solid"
       ]
     },
@@ -2460,7 +2460,7 @@
       "walls": [
         "open",
         "open",
-        "open",
+        "solid",
         "open"
       ]
     },

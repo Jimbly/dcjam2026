@@ -8,9 +8,9 @@ traits:
   - effect:
       damage: 6
   - effect:
-      block: 6
+      block: 5
   - effect:
-      block: 6
+      block: 5
 - id: stats_default
   hp: 20
 - id: drawable

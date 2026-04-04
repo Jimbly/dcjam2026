@@ -738,7 +738,8 @@ function drawPoison(is_player: boolean, x: number, y: number, value: number): nu
   label({
     x, y, w, h,
     text: '',
-    tooltip: `${do_fire ? 'Burn' : 'Poison'} deals damage every turn and then is reduced by 1.`,
+    tooltip: `${do_fire ? 'Burn' : 'Poison'} deals non-physical damage (bypassing Block)` +
+      ' every turn and then is reduced by 1.',
   });
   x += w;
   return x + 1;
@@ -936,6 +937,7 @@ function drawInWorldHealthbar(
     return;
   }
   let hp = ent.getData('stats.hp', 0);
+  hp = blend(`enemyhpinwold${ent.id}`, hp);
   let hp_max = ent.getData('stats.hp_max', 1);
   if (!hp_max/* || hp >= hp_max*/) {
     return;
@@ -1105,7 +1107,8 @@ export function drawCard(param: {
   });
   y += FONT_HEIGHT + CARD_PAD;
   let key: CardEffect;
-  let effects = healMode() ? card_def.healeffect : card_def.effect;
+  let eff_heal_mode = healMode() && !for_shop;
+  let effects = eff_heal_mode ? card_def.healeffect : card_def.effect;
   let any_usable = false;
   for (key in effects) {
     let value = effects[key]![tier];
@@ -1115,7 +1118,7 @@ export function drawCard(param: {
     }
     let vis = EFFECT_TEMPLATE[key];
     let { img } = vis;
-    if (key === 'damage' && healMode()) {
+    if (key === 'damage' && eff_heal_mode) {
       let element = myEnt().data.element;
       img = `element-${element || 'null'}`;
     }
@@ -1183,13 +1186,13 @@ export function drawCard(param: {
   }
 
   if (myElement()) {
-    effects = healMode() ? card_def.effect : card_def.healeffect;
+    effects = eff_heal_mode ? card_def.effect : card_def.healeffect;
     y = y0 + CARD_H - CARD_PAD;
     for (key in effects) {
       let value = effects[key]![tier];
       let vis = EFFECT_TEMPLATE[key];
       let { img } = vis;
-      if (key === 'damage' && !healMode()) {
+      if (key === 'damage' && !eff_heal_mode) {
         let element = myEnt().data.element;
         img = `element-${element || 'null'}`;
       }
@@ -1770,6 +1773,10 @@ function pushPullTarget(ent: Entity, effect: 'push' | 'pull'): JSVec2 {
       break;
     }
     v2iAdd(walk, delta);
+    if (level.wallsBlock(walk, dirMod(dir + 2), crawlerScriptAPI()) & BLOCK_MOVE) {
+      // not through one-way doors
+      break;
+    }
     let events = level.getCell(walk[0], walk[1])?.events;
     if (events && events[0].id.includes('stairs')) {
       break;
@@ -2738,7 +2745,10 @@ function drawHud(): void {
   let heal_mode = healMode();
   for (let ent_id_str in entities) {
     let ent = entities[ent_id_str]!;
-    if (ent.data.floor === floor_id && ent.isEnemy()) {
+    if (ent.data.floor !== floor_id) {
+      continue;
+    }
+    if (ent.isEnemy()) {
       let { hp } = ent.data.stats;
       if (hp < 0) {
         counts.dead++;

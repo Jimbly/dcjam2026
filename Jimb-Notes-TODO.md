@@ -1,11 +1,9 @@
 TODO - The Adventures of Rasa and the Chromatic Dragons
 ====
 
-difficulty
-  water/fire/finale pretty easy if bought either fatality or go in on poison
-  try a ranged run next
+chests will give cards of invalidly high tiers
 
-play through, balance gameplay
+make itch page
 
 final play through, balance audio
 

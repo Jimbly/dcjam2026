@@ -6,21 +6,19 @@ traits:
 - id: enemy
   moves:
   - effect:
-      damage: 5
+      damage: 8
   - effect:
-      poison: 3
+      poison: 4
   - effect:
       freeze: 3
   - effect:
-      block: 3
+      block: 6
   - effect:
-      damage: 2
-  - effect:
-      damage: 3
+      damage: 5
   - effect:
       damage: 4
 - id: stats_default
-  hp: 39
+  hp: 74
 - id: drawable
   biasL: [0, 0.4]
   biasF: [0, -0.4]

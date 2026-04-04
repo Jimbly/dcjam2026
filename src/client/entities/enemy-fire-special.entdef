@@ -35,6 +35,11 @@ traits:
       frames: [elemental-death0, elemental-death1, elemental-death2, elemental-death3, elemental-death4, elemental-death5]
       times: 200
       loop: false
+      transition_to: death_loop
+    death_loop:
+      frames: [elemental-death4, elemental-death5]
+      times: [200, 700]
+      loop: true
     uncon:
       frames: [elemental-aa0, elemental-aa1, elemental-aa2, elemental-aa3]
       times: 300

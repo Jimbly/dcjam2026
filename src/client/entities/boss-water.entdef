@@ -8,13 +8,13 @@ traits:
   - effect:
       damage: 5
   - effect:
-      damage: 2
+      damage: 3
   - effect:
       freeze: 2
   - effect:
       damage: 3
   - effect:
-      block: 3
+      block: 6
   - effect:
       freeze: 2
 - id: stats_default

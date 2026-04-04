@@ -6,11 +6,11 @@ traits:
 - id: enemy
   moves:
   - effect:
-      damage: 2
+      damage: 1
   - effect:
-      poison: 1
+      poison: 2
   - effect:
-      poison: 1
+      poison: 2
 - id: stats_default
   hp: 8
 - id: drawable

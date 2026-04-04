@@ -4,7 +4,7 @@ import * as settings from 'glov/client/settings';
 import { GlovSoundSetUp, soundLoad, soundPlay, soundResumed } from 'glov/client/sound';
 import type { TSMap } from 'glov/common/types';
 
-const MUSIC_VOLUME = 1;
+const MUSIC_VOLUME = 0.5;
 let last_music_ref: GlovSoundSetUp | null;
 let last_music_name: string | null = null;
 let last_music_fading_out = false;

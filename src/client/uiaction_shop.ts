@@ -193,10 +193,13 @@ function doCardPool(param: UIBox & {
     for (card_id in by_id) {
       let by_tier = by_id[card_id]!;
       let label = CARDS[card_id].name;
+      let card_def = CARDS[card_id];
+      let upgrade_cost = card_def.upgrade_cost || [3, 5, 7];
+      let max_tier = upgrade_cost.length;
       for (let tier = 0; tier <= MAX_TIER; ++tier) {
         let count = by_tier[tier] || 0;
         if (count) {
-          let disabled = no_max_tier && tier === MAX_TIER || no_select;
+          let disabled = no_max_tier && tier >= max_tier || no_select;
           let selected = pool_selected && sameCard({ card_id, tier }, pool_selected);
           if (selected) {
             pool_seen = true;
@@ -280,6 +283,7 @@ class ShopAction extends UIAction {
     if (deck_size > 10 && !keyGet(`seendeck${deck_size}`)) {
       keySet(`seendeck${deck_size}`);
       dialogPush({
+        instant: true,
         text: `Congratulations!  For obtaining the power of ${data.element},` +
           ` your Deck Size Limit has increased to ${deck_size}!${data.element === 'fire' ?
             '\n\nPrepare for [c=red]the final battle[/c]!' : ''}`,
