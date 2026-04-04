@@ -165,6 +165,7 @@ function startNewGame(slot: number): void {
 }
 
 function title(dt: number): void {
+  gl.clearColor(palette[PAL_BLACK_PURE][0], palette[PAL_BLACK_PURE][1], palette[PAL_BLACK_PURE][2], 1);
   main.chat_ui.run({
     hide: true,
   });

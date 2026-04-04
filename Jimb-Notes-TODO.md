@@ -6,6 +6,7 @@ difficulty
   try a ranged run next
 
 cover/share image
+change border to be in-palette?
 index bg/logo color to palette
 
 one details object per region
