@@ -242,6 +242,7 @@ import { musicTimestamp, tickMusic } from './music';
 import {
   PAL_BLACK_PURE,
   PAL_BLUE,
+  PAL_BORDER,
   PAL_GREEN,
   PAL_GREY,
   PAL_RED,
@@ -2584,7 +2585,7 @@ function drawBorders(): void {
     w: game_width - 12,
     h: 6,
     z: Z.BORDERS - 0.1,
-    color: palette[PAL_BLACK_PURE],
+    color: palette[PAL_BORDER],
   });
 
   drawRect2({
@@ -2592,7 +2593,7 @@ function drawBorders(): void {
     w: 6,
     h: game_height - 12,
     z: Z.BORDERS - 0.1,
-    color: palette[PAL_BLACK_PURE],
+    color: palette[PAL_BORDER],
   });
 }
 
@@ -3207,7 +3208,7 @@ export function renderBGHook(): void {
 
 export function play(dt: number): void {
   profilerStartFunc();
-  crawlerRenderSetUIClearColor(palette[PAL_BLACK_PURE]);
+  crawlerRenderSetUIClearColor(palette[PAL_BORDER]);
   let game_state = crawlerGameState();
   if (crawlerCommWant()) {
     // Must have been disconnected?

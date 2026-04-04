@@ -33,3 +33,4 @@ export const PAL_BLACK = 4;
 export const PAL_BLACK_PURE = 16;
 export const PAL_WHITE = 10;
 export const PAL_GREY = [PAL_BLACK, 13, 14, 15, PAL_WHITE];
+export const PAL_BORDER = PAL_BLACK;

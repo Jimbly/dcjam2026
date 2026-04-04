@@ -54,6 +54,7 @@ import {
   PAL_BLACK,
   PAL_BLACK_PURE,
   PAL_BLUE,
+  PAL_BORDER,
   PAL_GREEN,
   PAL_GREY,
   PAL_WHITE,
@@ -165,7 +166,7 @@ function startNewGame(slot: number): void {
 }
 
 function title(dt: number): void {
-  gl.clearColor(palette[PAL_BLACK_PURE][0], palette[PAL_BLACK_PURE][1], palette[PAL_BLACK_PURE][2], 1);
+  gl.clearColor(palette[PAL_BORDER][0], palette[PAL_BORDER][1], palette[PAL_BORDER][2], 1);
   main.chat_ui.run({
     hide: true,
   });
@@ -400,8 +401,8 @@ function myScoreToRow(row: unknown[], score: Score): void {
 
 const level_idx = 0;
 export function stateHighScores(dt: number): void {
-  // crawlerRenderSetUIClearColor(palette[PAL_BLACK_PURE]);
-  gl.clearColor(palette[PAL_BLACK_PURE][0], palette[PAL_BLACK_PURE][1], palette[PAL_BLACK_PURE][2], 1);
+  // crawlerRenderSetUIClearColor(palette[PAL_BORDER]);
+  gl.clearColor(palette[PAL_BORDER][0], palette[PAL_BORDER][1], palette[PAL_BORDER][2], 1);
   tickMusic('menu');
   let W = game_width;
   let H = game_height;

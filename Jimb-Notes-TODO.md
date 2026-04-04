@@ -5,10 +5,6 @@ difficulty
   water/fire/finale pretty easy if bought either fatality or go in on poison
   try a ranged run next
 
-cover/share image
-change border to be in-palette?
-index bg/logo color to palette
-
 one details object per region
 floor title - top and center?
 put damage number over the icon

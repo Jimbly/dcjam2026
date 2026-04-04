@@ -7,7 +7,7 @@ import { buttonText } from 'glov/client/ui';
 import * as urlhash from 'glov/client/urlhash';
 import { game_height, game_width } from './globals';
 import { tickMusic } from './music';
-import { PAL_BLACK_PURE, PAL_WHITE, palette, palette_font } from './palette';
+import { PAL_BORDER, PAL_WHITE, palette, palette_font } from './palette';
 import { titleInit } from './title';
 
 const { round } = Math;
@@ -28,30 +28,30 @@ Thanks for playing!
 Created in 9 days for [c=green]Dungeon Crawler Jam 2026[/c]
 
 
-[c=yellow]LEAD - CODING - DESIGN - KITBASHING - ART[/c]
+[c=yellow]Lead * Coding * Design * Kitbashing * Art[/c]
 [c=blue]Jimb Esser[/c]
 
-[c=yellow]BRAINSTORMING CONSULTANT[/c]
-[c=blue]Siena Merlin Moraff[/c]
-
-[c=yellow]MUSIC AND SOUND FX[/c]
+[c=yellow]Music * Sound FX[/c]
 [c=blue]Niki Yeracaris[/c]
 
-[c=yellow]SOME ART SOURCED FROM[/c]
+[c=yellow]Brainstorming Consultant[/c]
+[c=blue]Siena Merlin Moraff[/c]
+
+[c=yellow]Some Art Sourced From[/c]
 [c=blue]CraftPix.net[/c]
 [c=blue]Limited DC Jam Asset Pack[/c]
 
 See page on itch.io for links
 
-[c=yellow]AI CONTENT[/c]
+[c=yellow]AI Content[/c]
 No generative AI of any kind was used in the making of this game.
 
-[c=yellow]ENGINE[/c]
+[c=yellow]Engine[/c]
 [c=blue]GLOV.js + crawler toolkit[/c]
 [c=blue]MIT Licensed[/c]
 [c=blue]by Jimb Esser[/c]
 
-[c=yellow]SPECIAL THANKS[/c]
+[c=yellow]Special Thanks[/c]
 [c=blue]The DungeonCrawlers.org Discord[/c]
 
 `.split('\n');
@@ -69,7 +69,7 @@ function exit(): void {
   engine.setState(titleInit);
 }
 function doCredits(): void {
-  gl.clearColor(palette[PAL_BLACK_PURE][0], palette[PAL_BLACK_PURE][1], palette[PAL_BLACK_PURE][2], 1);
+  gl.clearColor(palette[PAL_BORDER][0], palette[PAL_BORDER][1], palette[PAL_BORDER][2], 1);
   tickMusic('bgm_ice_explore');
 
   if (mouseDownAnywhere()) {

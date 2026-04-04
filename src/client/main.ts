@@ -55,6 +55,7 @@ import { FONT_HEIGHT, game_height, game_width } from './globals';
 import {
   PAL_BLACK,
   PAL_BLACK_PURE,
+  PAL_BORDER,
   PAL_GREY,
   palette,
   palette_font,
@@ -85,7 +86,7 @@ crawlerOnPixelyChange(function (new_value: number): void {
   engine.setFonts(fonts[new_value] || fonts[2]);
 });
 
-const clear_color = palette[PAL_BLACK_PURE];
+const clear_color = palette[PAL_BORDER];
 
 export let chat_ui: ChatUI;
 
