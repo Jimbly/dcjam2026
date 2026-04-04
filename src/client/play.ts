@@ -2354,7 +2354,10 @@ function bumpEntityCallback(ent_id: EntityID): void {
     attackSurgeAdd(target_ent.data.pos[0] - me.data.pos[0], target_ent.data.pos[1] - me.data.pos[1], 0.1);
     //crawlerTurnBasedScheduleStep(250, 'attack');
 
-    if (target_ent.is_boss && !target_ent.isAlive()) {
+    if (target_ent.type_id === 'demo_wander') {
+      playUISound('meow');
+      crawlerTurnBasedScheduleStep(250, 'move');
+    } else if (target_ent.is_boss && !target_ent.isAlive()) {
       dialog('bosspoke');
     } else if (target_ent.isEnemy() && !target_ent.data.recovered && healMode() &&
       !target_ent.is_boss

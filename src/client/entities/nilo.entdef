@@ -1,6 +1,6 @@
 ---
 properties:
-  blocks_player: true
+  blocks_player: false
 traits:
 - id: wander
 - id: drawable
@@ -10,12 +10,17 @@ traits:
 - id: drawable_sprite
   anim_data:
     idle:
-      frames: [cat]
+      frames: [dcjam24-nilo]
       times: 10000
   sprite_data:
-    atlas: fire
+    atlas: easteregg
     filter_min: LINEAR_MIPMAP_LINEAR
     filter_mag: LINEAR
-    origin: [0.5, 0.9]
-  hybrid: false # if true, requires filter_min: LINEAR_MIPMAP_LINEAR above
-  scale: 0.62
+    origin: [0.5, 1]
+  shadow:
+    atlas: main
+    name: shadow2
+  scale: 0.6
+  simple_anim:
+    - period: 5000
+      scale: [1, 0.85]

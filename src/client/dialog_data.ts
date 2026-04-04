@@ -369,6 +369,10 @@ dialogRegister({
     dialog('monologue', TEXT.RASA_BEFORE_STAIRS_MISTAKE);
     keyClear(`seen_leave_${myEnt().data.floor}`);
   },
+
+  cat: function () {
+    dialog('monologue', TEXT.RASA_CAT);
+  },
 });
 
 crawlerScriptRegisterEvent({

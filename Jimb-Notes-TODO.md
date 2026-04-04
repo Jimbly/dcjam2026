@@ -12,40 +12,24 @@ tooltips everywhere - fixed screen location (per Action) for tooltips to show up
   need tooltips on cards in hand showing descriptions
   need tooltips on cards in Reshuffle screen showing descriptions
 
-one details object per region
-
-wandering cat
-floor title - top and center?
 cover/share image
+index bg/logo color to palette
 add compass
+game speed option that affects enemy delay
+
+one details object per region
+floor title - top and center?
 put damage number over the icon
-different text color for all of Rasa's speech?
-in-world monologues for Rasa to say randomly?
 bug: keyboard not working on respawn dialog
-one-turn combat log in upper left? 50% alpha, solid on hover?
 
 walls: try depixel scale up by 4, then do 2 bilinear filters down to get 16xMSAA
-
-Level sizes
-  ~4 enemies per level
-  gain 1-2 cards per level on way in, 1 total on way out (but potentially lots of upgrade points)
-  Dungeon #1: 3 floors@4 - 12
-  Dungeon #2: 4 floors@4-5 - 18
-  Dungeon #3: 5 floors@5 - 25
-  deck size goes up by 2 per dungeon, therefore, want more enemies per floor in later dungeons?
-  Dungeon #1: 3 floors@4 - 12
-  Dungeon #2: 3 floors@5 - 15
-  Dungeon #3: 3 floors@6 - 18
-  or, more extreme:
-  Dungeon #1: 3 floors@4 - 12
-  Dungeon #2: 4 floors@5 - 20
-  Dungeon #3: 5 floors@6 - 30 - with a deck size of 14, need to get at least 16 yields!
+different text color for all of Rasa's speech?
 
 stretch: undo (to beginning of previous turn)
 
 animate: upon taking the orb, flip cards over, change element, probably a dialog
 
-Card abilities
+Additional card abilities
 ==============
 "heal" by moving from discard to draw
 pierce
@@ -64,6 +48,11 @@ Fire - fire/hell
 Post-jam fixes to do
 ====================
 post-jam bug fix: changing an atlas's tex coords doesn't apply if swapped
+
+Discarded ideas
+===============
+in-world monologues for Rasa to say randomly?
+one-turn combat log in upper left? 50% alpha, solid on hover?
 
 Notes / Brainstorming
 =====================
@@ -107,3 +96,18 @@ Cards
 * Big icon
 * Target: Self/Melee/Ranged
 * Effect (text)
+
+Level sizes
+  ~4 enemies per level
+  gain 1-2 cards per level on way in, 1 total on way out (but potentially lots of upgrade points)
+  Dungeon #1: 3 floors@4 - 12
+  Dungeon #2: 4 floors@4-5 - 18
+  Dungeon #3: 5 floors@5 - 25
+  deck size goes up by 2 per dungeon, therefore, want more enemies per floor in later dungeons?
+  Dungeon #1: 3 floors@4 - 12
+  Dungeon #2: 3 floors@5 - 15
+  Dungeon #3: 3 floors@6 - 18
+  or, more extreme:
+  Dungeon #1: 3 floors@4 - 12
+  Dungeon #2: 4 floors@5 - 20
+  Dungeon #3: 5 floors@6 - 30 - with a deck size of 14, need to get at least 16 yields!

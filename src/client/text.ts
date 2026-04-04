@@ -36,6 +36,7 @@ export const TEXT = {
 
   RASA_INTRO2: 'In this, the third and final chapter of **The Amazing Tales of Rasa and the Chromatic Dragons**, you will hear of great feats of daring!  Of longing!  Of betrayal... '+
     '\n\nBut first, I tell you of how I entered the fiery halls.  It was sweltering and oppressive, and I would have turned back but for the thought of you, gentle listeners, who would have been left so disappointed, were I not able to tastefully terminate the telling of my tale.',
+  RASA_CAT: 'It was there, in front of me!  The most terrifying beast I had ever seen.\n\nCalm your hearts and rest easy, as I will not describe it to you, lest it offends the sensibilities of our more sensitive listeners.\n\nWhat was it doing here?  I do not know.  It must have wandered in from somewhere else, as it was clearly not of the [c=red]domain of fire[/c].  Perhaps [c=death]Chaos[/c]?  I did the sensible thing for once and let it lie unperturbed.',
   RASA_BOSS2: 'I had defeated two very similar beasts in the past, had I not?  This nefarious dragon would surely meet the same fate!',
   UNCLE2_NAME: 'Draco Infernus Immortal Defender of the Realm of Fire',
   UNCLE2_HELLO: 'Who were you talking to?  Did you just call me a "nefarious beast"?',

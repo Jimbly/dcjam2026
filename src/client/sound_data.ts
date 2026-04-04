@@ -144,4 +144,9 @@ export const SOUND_DATA = {
     volume: 1,
   },
 
+  meow: {
+    file: 'meow',
+    volume: 1,
+  },
+
 } satisfies Partial<Record<string, UISoundID | string | string[] | UISoundID[]>>;
