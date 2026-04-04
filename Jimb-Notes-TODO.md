@@ -1,11 +1,8 @@
 TODO - The Adventures of Rasa and the Chromatic Dragons
 ====
 
-make itch page
-
 final play through, balance audio, ensure all music
 
-bug: keyboard not working on respawn dialog
 controller support?
 try: put damage number over the icon, multiple icons per row, room for image?
 touch up tiling on all tilesets

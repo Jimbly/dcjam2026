@@ -3323,7 +3323,8 @@ export function play(dt: number): void {
 
   screen_shake = 0;
 
-  let overlay_menu_up = Boolean(uiActionCurrent()?.is_overlay_menu || dialogMoveLocked());
+  let overlay_menu_up = Boolean(uiActionCurrent()?.is_overlay_menu || dialogMoveLocked() ||
+    crawlerController().hasMoveBlocker());
 
   {
     let is_combat = isCombat();
