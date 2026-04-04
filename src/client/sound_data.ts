@@ -94,7 +94,7 @@ export const SOUND_DATA = {
   },
 
   hit_monster: [{
-    file: 'hit_monster/1',
+    file: 'hit_monster',
     volume: 1,
   }],
   hit_hero: [{
@@ -119,6 +119,11 @@ export const SOUND_DATA = {
   },
   monster_shoots: {
     file: 'monster_shoots',
+    volume: 1,
+  },
+
+  player_death: {
+    file: 'music/player_death',
     volume: 1,
   },
 

@@ -8,7 +8,7 @@ difficulty
   water/fire/finale pretty easy if bought either fatality or go in on poison
   try a ranged run next
 
-hook up player_death sound
+shouldn't be able to shoot through details on earth/fire levels
 
 tooltips everywhere - fixed screen location (per Action) for tooltips to show up?
     - or, F1 to open help screen explaining all effects

@@ -2243,6 +2243,7 @@ function moveBlockDead(): boolean {
 
   if (autoResetSkippedFrames('moveBlockDead')) {
     autosave();
+    playUISound('player_death');
   }
 
   const BORDER_PAD = 32;
