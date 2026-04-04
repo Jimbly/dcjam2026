@@ -5,6 +5,8 @@ difficulty
   water/fire/finale pretty easy if bought either fatality or go in on poison
   try a ranged run next
 
+game speed option that affects enemy delay
+
 tooltips everywhere - fixed screen location (per Action) for tooltips to show up?
     - or, F1 to open help screen explaining all effects
   need tooltips on pool showing card + description
@@ -14,8 +16,6 @@ tooltips everywhere - fixed screen location (per Action) for tooltips to show up
 
 cover/share image
 index bg/logo color to palette
-add compass
-game speed option that affects enemy delay
 
 one details object per region
 floor title - top and center?

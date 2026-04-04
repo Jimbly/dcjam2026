@@ -2391,7 +2391,7 @@ const RIGHT_BAR_W = 22;
 const RIGHT_BAR_X = game_width - 12 - RIGHT_BAR_W;
 //const RIGHT_BAR_H = 120-12;
 function rightBarH(): number {
-  let h = 120 - 12;
+  let h = 120 - 12 + 14+4;
   let me = myEntOptional();
   if (me && me.data.deaths) {
     h += 12;
@@ -2479,8 +2479,43 @@ function pad2(v: number): string {
 
 function drawHud(): void {
   let x = RIGHT_BAR_X;
-  let y = 12 + MOVE_BUTTON_H + 8;
+  let y = 12 + MOVE_BUTTON_H + 4;
   let z = Z.UI;
+
+  function drawCompass(): void {
+    let game_state = crawlerGameState();
+    let angle = (round((game_state.angle / (2 * PI) * 8) + 8) % 8) / 2;
+    // let pos = crawlerController().getEffPos();
+
+    // font.draw({
+    //   style: style_stats,
+    //   x, y,
+    //   w: 12,
+    //   align: ALIGN.HCENTER,
+    //   text: `${pos[0]},${pos[1]}`,
+    // });
+    // y += 14;
+
+    autoAtlas('ui', `compass-${angle}`).draw({
+      x: x + (RIGHT_BAR_W - 14)/2,
+      y,
+      w: 14,
+      h: 14,
+    });
+    y += 14 + 4;
+    // let rot = crawlerController().getEffRot();
+    // if (rot >= 0 && rot <= 4) {
+    //   title_font.draw({
+    //     style: style_stats,
+    //     size: TITLE_FONT_H,
+    //     x, y,
+    //     w: 12,
+    //     align: ALIGN.HCENTER,
+    //     text: ['E', 'N', 'W', 'S'][rot],
+    //   });
+    // }
+  }
+  drawCompass();
 
   let counts = {
     aggro: 0,
