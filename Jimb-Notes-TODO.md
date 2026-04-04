@@ -1,9 +1,7 @@
 TODO - The Adventures of Rasa and the Chromatic Dragons
 ====
 
-show chest in entity counters
 bile's final upgrade should cost more, but still grow 1 each time
-modal if you try to leave without a full deck
 level 21 - better design so ranged guy does something
 
 

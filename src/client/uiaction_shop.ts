@@ -1,6 +1,7 @@
 import assert from 'assert';
 import { autoResetSkippedFrames } from 'glov/client/auto_reset';
 import { autoAtlas } from 'glov/client/autoatlas';
+import { isOutOfTick } from 'glov/client/engine';
 import { ALIGN, fontStyleAlpha } from 'glov/client/font';
 import { KEYS } from 'glov/client/input';
 import { markdownAuto } from 'glov/client/markdown';
@@ -413,7 +414,7 @@ class ShopAction extends UIAction {
         if (button({
           x, y, z,
           w: button_w,
-          disabled: !num_in_deck,
+          disabled: !num_in_deck || picked.length < 3,
           text: 'Move to Pool'
         })) {
           let idx = picked.indexOf(picked_uid);
@@ -447,16 +448,35 @@ class ShopAction extends UIAction {
         disabled: over,
         text: 'Done',
       })) {
-        keyClear('needs_shop');
-        keyClear('shop_decksize');
-        queueTransition(true);
-        uiActionClear();
-        me.resetDeck();
+        function doDone(): void {
+          keyClear('needs_shop');
+          keyClear('shop_decksize');
+          queueTransition(true);
+          uiActionClear();
+          me.resetDeck();
 
-        if (keyGet('post_shop_story')) {
-          keyClear('post_shop_story');
-          dialog('monologue', TEXT[`RASA_INTRO${me.data.floor === 50 ? 3 : me.floorElementNumber()}`]);
+          if (keyGet('post_shop_story')) {
+            keyClear('post_shop_story');
+            dialog('monologue', TEXT[`RASA_INTRO${me.data.floor === 50 ? 3 : me.floorElementNumber()}`]);
+          }
         }
+
+        if (under) {
+          dialogPush({
+            instant: true,
+            text: `**WARNING**: You do not have a full deck (${picked.length}/${deck_size}).\n\n` +
+              'Since cards are health, this will make it harder to survive, and is not recommended for new players.',
+            buttons: [{
+              label: 'Cancel and add more cards',
+            }, {
+              label: 'I relish the challenge!',
+              cb: doDone,
+            }]
+          });
+        } else {
+          doDone();
+        }
+
       }
 
     } else if (keyGet('shop_chest')) {
@@ -960,7 +980,9 @@ ShopAction.prototype.needs_decks = false;
 
 export function shopOpen(): void {
   pool_selected = null;
-  queueTransition(true);
+  if (!isOutOfTick()) {
+    queueTransition(true);
+  }
   uiAction(new ShopAction());
 }
 

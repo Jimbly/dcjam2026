@@ -2467,8 +2467,11 @@ function moveBlockDead(): boolean {
       keySet(`respawn_floor_${check_floor_id}`);
     }
 
-    if (floor_id > 20 && (me.data.gold > 3 || me.data.respect > 3)) {
+    if (floor_id > 20) {
       keySet('needs_shop');
+      if (!(me.data.gold > 3 || me.data.respect > 3)) {
+        keySet('shop_decksize');
+      }
     }
     me.data.deaths = (me.data.deaths || 0) + 1;
     me.data.stats.hp = me.data.stats.hp_max;
@@ -2564,7 +2567,7 @@ const RIGHT_BAR_W = 22;
 const RIGHT_BAR_X = game_width - 12 - RIGHT_BAR_W;
 //const RIGHT_BAR_H = 120-12;
 function rightBarH(): number {
-  let h = 120 - 12 + 14+4;
+  let h = 120 - 12 + 14+4 + 12;
   let me = myEntOptional();
   if (me && me.data.deaths) {
     h += 12;
@@ -2727,6 +2730,7 @@ function drawHud(): void {
     dead: 0,
     yield: 0,
     recov: 0,
+    chest: 0,
   };
 
   let entities = entityManager().entities;
@@ -2750,6 +2754,8 @@ function drawHud(): void {
           counts.aggro++;
         }
       }
+    } else if (ent.type_id === 'chest') {
+      counts.chest++;
     }
   }
 
@@ -2761,6 +2767,7 @@ function drawHud(): void {
   let { data } = me;
   ([
     ['counter-aggro', 'Remaining enemies', counts.aggro],
+    ['chest', 'Undiscovered treasure', counts.chest],
     ['counter-yield', 'Yielded monsters\n\n[c=note]Hint: Monsters yield at 1 HP[/c]', counts.yield],
     ['counter-dead', 'Defeated monsters', counts.dead],
     ['counter-recov', 'Recovering friends' +
@@ -2777,8 +2784,8 @@ function drawHud(): void {
     )
   ] as const).forEach(function (pair, idx) {
     let [img, tooltip, value] = pair;
-    let h = idx >= 4 ? 14 : 12;
-    if (idx === 4) {
+    let h = idx >= 5 ? 14 : 12;
+    if (idx === 5) {
       y += 4;
     }
     if (img === 'counter-recov' && !heal_mode) {
@@ -2787,7 +2794,7 @@ function drawHud(): void {
     }
     let xx = x;
     value = min(value, 99);
-    if (idx >= 4) {
+    if (idx >= 5) {
       xx -= 2;
     }
     autoAtlas('ui', img).draw({
@@ -2795,7 +2802,7 @@ function drawHud(): void {
       w: h,
       h: h,
     });
-    if (idx < 4) {
+    if (idx < 5) {
       xx += 2;
     }
     font.draw({
@@ -2803,7 +2810,7 @@ function drawHud(): void {
       x: xx + 12 + 2,
       y, z, h: h,
       align: ALIGN.VCENTER,
-      text: `${idx >= 4 ? pad2(value) : value}`,
+      text: `${idx >= 5 ? pad2(value) : value}`,
     });
     label({
       x, y, z,
