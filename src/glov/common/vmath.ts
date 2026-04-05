@@ -633,6 +633,14 @@ export function v4add(out: Vec4, a: ROVec4, b: ROVec4): Vec4 {
   return out;
 }
 
+export function v4addScale(out: Vec4, a: ROVec4, b: ROVec4, s: number): Vec4 {
+  out[0] = a[0] + b[0] * s;
+  out[1] = a[1] + b[1] * s;
+  out[2] = a[2] + b[2] * s;
+  out[3] = a[3] + b[3] * s;
+  return out;
+}
+
 export function v4clone(a: ROVec4): Vec4 {
   return a.slice(0) as Vec4;
 }
