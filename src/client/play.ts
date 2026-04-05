@@ -2731,7 +2731,7 @@ function drawBorders(): void {
   drawRect2({
     x: 6, y: game_height - 6,
     w: game_width - 12,
-    h: 6,
+    h: 6 + 100,
     z: Z.BORDERS - 0.1,
     color: palette[PAL_BORDER],
   });
