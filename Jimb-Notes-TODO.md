@@ -1,13 +1,7 @@
 TODO - The Adventures of Rasa and the Chromatic Dragons
 ====
 
-final play through, balance audio, ensure all music
-  earth explore/combat @30s didn't transition right?
-
-shrink vbar to fit in 4K; (or detail it)
 touch up tiling on all tilesets
-
-animate: upon taking the orb, flip cards over, change element, probably a dialog
 
 Additional card abilities (not implemented)
 ==============
@@ -31,6 +25,7 @@ post-jam bug fix: changing an atlas's tex coords doesn't apply if swapped
 
 Discarded ideas
 ===============
+didn't get to: animate: upon taking the orb, flip cards over, change element, probably a dialog
 in-world monologues for Rasa to say randomly?
 one-turn combat log in upper left? 50% alpha, solid on hover?
 stretch: undo (to beginning of previous turn)
