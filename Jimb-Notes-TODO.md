@@ -1,8 +1,6 @@
 TODO - The Adventures of Rasa and the Chromatic Dragons
 ====
 
-touch up tiling on all tilesets
-
 Additional card abilities (not implemented)
 ==============
 "heal" by moving from discard to draw
