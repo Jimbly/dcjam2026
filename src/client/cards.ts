@@ -15,6 +15,7 @@ export type CardDef = {
   effect: Partial<Record<CardEffect, NumberPerTier>>;
   healeffect: Partial<Record<CardEffect, NumberPerTier>>;
   upgrade_cost?: number[]; // default 3,5,7,9
+  icon: string;
 };
 export type EnemyMove = {
   name: string;
@@ -84,6 +85,7 @@ export const CARDS_RAW = {
     effect: {
       damage: grow(2),
     },
+    icon: 'icon-claw',
     ...heal(5),
   },
   'attack3': {
@@ -92,6 +94,7 @@ export const CARDS_RAW = {
     effect: {
       damage: grow(3),
     },
+    icon: 'icon-bite',
     ...heal(1),
   },
   'attack4': {
@@ -100,6 +103,7 @@ export const CARDS_RAW = {
     effect: {
       damage: grow(4),
     },
+    icon: 'icon-spikes',
     ...heal(1),
   },
   'attack5': {
@@ -109,6 +113,7 @@ export const CARDS_RAW = {
       damage: grow(5),
     },
     ...heal(1),
+    icon: 'icon-pummel',
   },
   'finisher': {
     cost: 6,
@@ -118,6 +123,7 @@ export const CARDS_RAW = {
       burn: ONES,
     },
     ...heal(1),
+    icon: 'icon-bolt2',
   },
   'block2': {
     cost: 0,
@@ -125,6 +131,7 @@ export const CARDS_RAW = {
     effect: {
       block: grow(3),
     },
+    icon: 'icon-gird',
     ...heal(2),
   },
   'block3': {
@@ -134,6 +141,7 @@ export const CARDS_RAW = {
       block: grow(4),
     },
     ...heal(1),
+    icon: 'icon-scales',
   },
   'ranged2': {
     cost: 3,
@@ -141,6 +149,7 @@ export const CARDS_RAW = {
     effect: {
       ranged: grow(2),
     },
+    icon: 'icon-fireball',
     ...heal(2),
   },
   'ranged3': {
@@ -149,6 +158,7 @@ export const CARDS_RAW = {
     effect: {
       ranged: grow(3),
     },
+    icon: 'icon-bolt',
     ...heal(1),
   },
   'push': {
@@ -158,16 +168,18 @@ export const CARDS_RAW = {
       damage: grow(1),
       push: ONES
     },
+    icon: 'icon-push',
     ...heal(2),
   },
   'pull': {
     cost: 3,
-    name: 'Pull',
+    name: 'Black Hole',
     upgrade_cost: [3, 14],
     effect: {
       pull: ONES,
       freeze: [0, 1, 2, 2],
     },
+    icon: 'icon-pull',
     ...healgrow(1),
   },
   'repeatdam1': {
@@ -177,15 +189,17 @@ export const CARDS_RAW = {
       damage: grow(1),
       delay: ONES,
     },
+    icon: 'icon-shiv',
     ...heal(1),
   },
   'repeatblock1': {
     cost: 4,
-    name: 'Weave',
+    name: 'Harden',
     effect: {
       block: grow(2),
       delay: ONES,
     },
+    icon: 'icon-weave',
     ...heal(1),
   },
   'repeatpoison1': {
@@ -196,6 +210,7 @@ export const CARDS_RAW = {
       poison: [1,2,3, 3],
       delay: ONES,
     },
+    icon: 'icon-wither',
     ...heal(1),
   },
   'poison2': {
@@ -205,6 +220,7 @@ export const CARDS_RAW = {
     effect: {
       poison: [2, 3, 4, 4],
     },
+    icon: 'icon-bile',
     ...heal(1),
   },
   'poison3': {
@@ -215,6 +231,7 @@ export const CARDS_RAW = {
       poison: [3, 4, 5, 5],
     },
     ...heal(1),
+    icon: 'icon-infect',
   },
   'stun2': {
     name: 'Daze',
@@ -224,6 +241,7 @@ export const CARDS_RAW = {
       freeze: [2, 3, 3, 3],
     },
     ...heal(1),
+    icon: 'icon-daze',
   },
   'attackstun': {
     cost: 5,
@@ -233,6 +251,7 @@ export const CARDS_RAW = {
       freeze: ONES,
     },
     ...healgrow(1),
+    icon: 'icon-midas',
   },
 
 } as const satisfies TSMap<CardDef>;

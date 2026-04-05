@@ -1210,6 +1210,18 @@ export function drawCard(param: {
     xx2 += w + PAD1;
   }
 
+  y += 14;
+  if (card_def.icon) {
+    let ybot = y0 + CARD_H - CARD_PAD - 14;
+    let icon_h = ybot - y - 4;
+    autoAtlas('ui', card_def.icon).draw({
+      color: [1, 1, 1, any_usable ? 1 : 0.5],
+      x: x + (CARD_W - icon_h) / 2,
+      y: y + 2,
+      z,
+      w: icon_h, h: icon_h,
+    });
+  }
   if (myElement()) {
     effects = eff_heal_mode ? card_def.effect : card_def.healeffect;
     y = y0 + CARD_H - CARD_PAD;
