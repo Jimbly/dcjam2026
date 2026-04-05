@@ -1475,7 +1475,7 @@ function doReshuffle(): void {
   if (spot_ret.focused) {
     autoAtlas('ui', 'x').draw({
       ...rect,
-      z: rect.z + 0.1,
+      z: rect.z + 5,
     });
     cardTooltip(0, deck[discard_pile[0]]);
   }
@@ -1501,7 +1501,7 @@ function doReshuffle(): void {
   if (spot_ret.focused) {
     autoAtlas('ui', 'x').draw({
       ...rect,
-      z: rect.z + 0.1,
+      z: rect.z + 5,
     });
     cardTooltip(0, deck[discard_pile[1]]);
   }
@@ -1643,7 +1643,9 @@ function applyDamage(target_ent: Entity | null, value: number, bypass_block: boo
   let { data } = me;
   let { heal_mode } = data;
   let dir = data.pos[2] as DirType;
-  attackSurgeAdd(DX[dir], DY[dir], target_ent ? 0.5 : 0.25);
+  if (!bypass_block) {
+    attackSurgeAdd(DX[dir], DY[dir], target_ent ? 0.5 : 0.25);
+  }
   let want_save = false;
   if (target_ent) {
     if (heal_mode) {

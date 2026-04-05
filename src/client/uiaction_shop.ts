@@ -121,7 +121,11 @@ function closeShopAndCheckDeck(): void {
   }
 }
 
-let card_pool_scroll = scrollAreaCreate({
+let card_pool_scroll1 = scrollAreaCreate({
+  background_color: null,
+  auto_hide: true,
+});
+let card_pool_scroll2 = scrollAreaCreate({
   background_color: null,
   auto_hide: true,
 });
@@ -166,6 +170,7 @@ function doCardPool(param: UIBox & {
   let unpicked = Object.keys(deck).map(Number).filter((a) => !seen_map[a]);
   let [total_pool, pool] = countById(unpicked);
 
+  let card_pool_scroll = (only === 'pool') ? card_pool_scroll2 : card_pool_scroll1;
   y -= FONT_HEIGHT + 2;
   card_pool_scroll.begin({
     x, y, z, w, h,
@@ -636,7 +641,7 @@ class ShopAction extends UIAction {
       });
       x += POOL_W + PAD;
       y += 20;
-      let w2 = w - (POOL_W + PAD) - card_pool_scroll.barWidth();
+      let w2 = w - (POOL_W + PAD) - card_pool_scroll1.barWidth();
 
       // markdownAuto({
       //   x, y, z,
@@ -654,7 +659,7 @@ class ShopAction extends UIAction {
       for (let ii = 0; ii < shop_options.length; ++ii) {
         if (!data.shop_state![`bought${ii}`]) {
           let card_id = shop_options[ii];
-          let tier = 0;
+          let tier = myEnt().floorElementNumber() >= 2 ? 1 : 0;
           let cost = CARDS[card_id]!.cost;
           let rect = {
             x, y, z: z + 5,
@@ -747,7 +752,7 @@ class ShopAction extends UIAction {
       });
       x += POOL_W + PAD;
       y += 20;
-      let w2 = w - (POOL_W + PAD) - card_pool_scroll.barWidth();
+      let w2 = w - (POOL_W + PAD) - card_pool_scroll1.barWidth();
       let MID_W = CARD_W/2;
       let margin = floor((w2 - CARD_W * 2 - MID_W) / 4);
 

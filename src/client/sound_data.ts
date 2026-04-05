@@ -146,10 +146,10 @@ export const SOUND_DATA = {
 
   hit_monster: [{
     file: 'hit_monster_1',
-    volume: 1,
+    volume: 0.9,
   },{
     file: 'hit_monster_2',
-    volume: 1,
+    volume: 0.8,
   },{
     file: 'hit_monster_3',
     volume: 1,
