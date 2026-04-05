@@ -2,6 +2,7 @@ TODO - The Adventures of Rasa and the Chromatic Dragons
 ====
 
 final play through, balance audio, ensure all music
+  earth explore/combat @30s didn't transition right?
 
 shrink vbar to fit in 4K; (or detail it)
 touch up tiling on all tilesets

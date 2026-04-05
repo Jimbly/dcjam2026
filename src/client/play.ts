@@ -3428,9 +3428,6 @@ export function play(dt: number): void {
     }
     let mode = healMode() ? 'heal' :
       isBossFloor() ? 'boss' : is_combat ? 'combat' : 'explore';
-    if (mode === 'heal' && (element=== 'fire' || element === 'ice')) {
-      mode = 'explore';
-    }
     let music: string | null = `bgm_${element}_${mode}`;
     if (isDefeatedBoss()) {
       music = null;

@@ -73,7 +73,7 @@ function exit(): void {
 }
 function doCredits(): void {
   gl.clearColor(palette[PAL_BORDER][0], palette[PAL_BORDER][1], palette[PAL_BORDER][2], 1);
-  tickMusic('credits');
+  tickMusic('credits', 1);
 
   if (mouseDownAnywhere()) {
     clicked = true;

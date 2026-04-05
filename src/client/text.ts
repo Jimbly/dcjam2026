@@ -3,7 +3,7 @@ export const TEXT = {
   // script
   RASA_INTRO_CUTSCENE1: 'Listen closely, and you will hear the tale of how I, Rasa, the Draco Vacuus, obtained the powers of all of the chromatic dragons.',
   MOM_NAME: 'Mother of Dragons',
-  MOM_INTRO_CUTSCENE2: 'Please go outside and play, maybe visit your uncle\'s cave?',
+  MOM_INTRO_CUTSCENE2: 'I have so much to do today, honey, please go outside and play, maybe visit your uncle\'s cave?',
   RASA_INTRO0: 'Egads, the minions of Earth were arrayed before me, intent on preventing me from reaching my goal deep within the [c=green]Cave of Earth[/c].',
   RASA_BOSS0: 'It was at this point of my epic journey that I must face the undefeated [c=green]Green Dragon[/c] in order to earn the power of [c=green]Earth[/c] for myself.',
 

@@ -175,7 +175,7 @@ function titleMusicTick(): void {
   if (autoResetSkippedFrames('titleac')) {
     use_ac = false;
   }
-  tickMusic(use_ac ? 'credits' : 'bgm_earth_explore');
+  tickMusic(use_ac ? 'credits' : 'bgm_title');
 }
 
 function title(dt: number): void {

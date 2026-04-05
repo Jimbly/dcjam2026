@@ -29,7 +29,7 @@ const FADE_OUT_CHANGE = 500/MUSIC_VOLUME;
 const FADE_OUT_SILENCE = 5000/MUSIC_VOLUME;
 const FADE_CROSS = 100/MUSIC_VOLUME;
 const FADE_UP = 2500/MUSIC_VOLUME;
-export function tickMusic(music_name: string | null): void {
+export function tickMusic(music_name: string | null, override_volume?: number): void {
   // if (!music_name && optionsMenuVisible()) {
   //   music_name = 'music_menu';
   // }
@@ -94,7 +94,7 @@ export function tickMusic(music_name: string | null): void {
         }
         last_music_fading_out = false;
         if (last_music_ref) {
-          last_music_ref.fade(MUSIC_VOLUME, cross ? FADE_CROSS : FADE_UP);
+          last_music_ref.fade(override_volume || MUSIC_VOLUME, cross ? FADE_CROSS : FADE_UP);
           last_music_name = music_name;
           playing_music_name = music_name;
         }
