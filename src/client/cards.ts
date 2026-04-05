@@ -23,7 +23,7 @@ export type EnemyMove = {
 
 export type EffectVis = {
   prefix?: boolean;
-  img?: string;
+  img: string;
   img_enemy?: string;
 };
 export const EFFECT_TEMPLATE: Record<CardEffect, EffectVis> = {
