@@ -68,10 +68,15 @@ export function keyClear(name: string): void {
 
 let last_vo: GlovSoundSetUp | null = null;
 let generation = 0;
+let vo_last_played: Record<string, number> = {};
 export function playVO(key: keyof typeof TEXT): string {
-  if (debugDefineIsSet('NOVO')) {
+  let now = getFrameTimestamp();
+  if (debugDefineIsSet('NOVO') ||
+    vo_last_played[key] && now - vo_last_played[key] < 60000
+  ) {
     return TEXT[key];
   }
+  vo_last_played[key] = now;
   ++generation;
   let gen = generation;
   soundPlayStreaming(`vo/${key}`, {}, function (sound) {
