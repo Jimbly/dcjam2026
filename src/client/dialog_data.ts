@@ -5,6 +5,7 @@ import { cmd_parse } from 'glov/client/cmds';
 import { getFrameTimestamp } from 'glov/client/engine';
 import { ALIGN } from 'glov/client/font';
 import { inputTouchMode } from 'glov/client/input';
+import { GlovSoundSetUp, soundPlayStreaming } from 'glov/client/sound';
 import {
   panel,
   PanelParam,
@@ -63,6 +64,27 @@ export function keySet(name: string): void {
 
 export function keyClear(name: string): void {
   crawlerScriptAPI().keyClear(name);
+}
+
+let last_vo: GlovSoundSetUp | null = null;
+let generation = 0;
+export function playVO(key: keyof typeof TEXT): string {
+  ++generation;
+  let gen = generation;
+  soundPlayStreaming(`vo/${key}`, {}, function (sound) {
+    if (sound) {
+      if (gen !== generation) {
+        sound.stop();
+      } else {
+        if (last_vo) {
+          last_vo.stop();
+          last_vo = null;
+        }
+        last_vo = sound;
+      }
+    }
+  });
+  return TEXT[key];
 }
 
 const MONO = {
@@ -259,7 +281,7 @@ dialogRegister({
     dialogPush({
       ...MONO,
       flags: { cutscene: true },
-      text: TEXT.RASA_INTRO_CUTSCENE1,
+      text: playVO('RASA_INTRO_CUTSCENE1'),
       buttons: [{
         label: '(continue)',
         cb: function () {
@@ -288,6 +310,9 @@ dialogRegister({
       text: TEXT[`UNCLE${elemnum}_HELLO`],
       buttons: [{
         label: `"${TEXT.RASA_UNCLE_RESPONSE}"`,
+        cb: function () {
+          playVO('RASA_UNCLE_RESPONSE');
+        },
       }]
     });
   },
@@ -295,7 +320,7 @@ dialogRegister({
     let elemnum = elementNumber();
     dialogPush({
       ...MONO,
-      text: TEXT[`RASA_BOSS${elemnum}_VICTORY`],
+      text: playVO(`RASA_BOSS${elemnum}_VICTORY`),
       buttons: [{
         label: '(continue)',
       }],
@@ -315,7 +340,7 @@ dialogRegister({
       return;
     }
     playUISound('get_goal');
-    dialog('monologue', TEXT[`RASA_ORB${elemnum}_ACQUIRED`]);
+    dialog('monologue', playVO(`RASA_ORB${elemnum}_ACQUIRED`));
   },
   healtro: function () {
     let elemnum = myEnt().floorElementNumber();
@@ -323,7 +348,7 @@ dialogRegister({
     dialogPush({
       ...MONO,
       flags: { cutscene: true },
-      text: TEXT[`RASA_HEAL${elemnum}`],
+      text: playVO(`RASA_HEAL${elemnum}`),
       buttons: [{
         label: TEXT[`RASA_HEAL${elemnum}_BUTTON`],
       }]
@@ -331,13 +356,13 @@ dialogRegister({
   },
   outtro: function () {
     let elemnum = myEnt().floorElementNumber();
-    // dialog('monologue', TEXT[`RASA_OUTTRO${elemnum}`]);
+    // dialog('monologue', playVO(`RASA_OUTTRO${elemnum}`));
     // or, cutscene between floors?
     queueTransition(false);
     dialogPush({
       ...MONO,
       flags: { cutscene: true },
-      text: TEXT[`RASA_OUTTRO${elemnum}`],
+      text: playVO(`RASA_OUTTRO${elemnum}`),
       buttons: [{
         label: '(continue)',
       }]
@@ -349,9 +374,9 @@ dialogRegister({
     dialogPush({
       ...MONO,
       flags: { cutscene: true },
-      text: TEXT.RASA_VICTORY,
+      text: playVO('RASA_VICTORY'),
       buttons: [{
-        label: TEXT.RASA_VICTORY_BUTTON,
+        label: playVO('RASA_VICTORY_BUTTON'),
         cb: function () {
           dialogPush({
             name: TEXT.MOM_NAME,
@@ -372,7 +397,7 @@ dialogRegister({
     if (!keyGet(`seen_leave_${myEnt().data.floor}`) || healMode()) {
       return;
     }
-    dialog('monologue', TEXT.RASA_BEFORE_STAIRS_MISTAKE);
+    dialog('monologue', playVO('RASA_BEFORE_STAIRS_MISTAKE'));
     keyClear(`seen_leave_${myEnt().data.floor}`);
   },
 
@@ -390,7 +415,7 @@ crawlerScriptRegisterEvent({
       return;
     }
     keySet(`seen_leave_${myEnt().data.floor}`);
-    dialog('monologue', TEXT.RASA_BEFORE_STAIRS);
+    dialog('monologue', playVO('RASA_BEFORE_STAIRS'));
   },
 });
 
@@ -408,7 +433,7 @@ crawlerScriptRegisterEvent({
         ...MONO,
         transient: true,
         transient_dist: 1,
-        text: TEXT.RASA_NOEXIT_ON_WAY_IN,
+        text: playVO('RASA_NOEXIT_ON_WAY_IN'),
       });
       return;
     }
@@ -424,7 +449,7 @@ crawlerScriptRegisterEvent({
       api.floorDelta(10, 'stairs_in', false);
     } else {
       // let elemnum = (elementNumber() - 1) as 0 | 1 | 2;
-      // dialog('monologue', TEXT[`RASA_HEAL${elemnum}`]);
+      // dialog('monologue', playVO(`RASA_HEAL${elemnum}`));
       api.floorDelta(delta, 'stairs_out', false);
     }
   },
@@ -444,7 +469,7 @@ crawlerScriptRegisterEvent({
         ...MONO,
         transient: true,
         transient_dist: 1,
-        text: TEXT.RASA_NOEXIT_ON_WAY_OUT,
+        text: playVO('RASA_NOEXIT_ON_WAY_OUT'),
       });
       return;
     } else {
@@ -474,7 +499,7 @@ crawlerScriptRegisterEvent({
         // on our way in
         if (!element) {
           if (onetimeEvent()) {
-            dialog('monologue', TEXT.RASA_INTRO0);
+            dialog('monologue', playVO('RASA_INTRO0'));
           }
         } else {
           if (onetimeEvent()) {
@@ -508,7 +533,7 @@ crawlerScriptRegisterEvent({
       return;
     }
     if (element !== me.floorElement()) {
-      dialog('monologue', TEXT[`RASA_BOSS${me.floorElementNumber()}`]);
+      dialog('monologue', playVO(`RASA_BOSS${me.floorElementNumber()}`));
     }
   },
 });

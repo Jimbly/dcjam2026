@@ -4,8 +4,8 @@ TODO - The Adventures of Rasa and the Chromatic Dragons
 final play through, balance audio, ensure all music
 
 controller support?
-try: put damage number over the icon, multiple icons per row, room for image?
 touch up tiling on all tilesets
+try: put damage number over the icon, multiple icons per row, room for image?
 
 animate: upon taking the orb, flip cards over, change element, probably a dialog
 

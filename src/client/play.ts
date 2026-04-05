@@ -210,7 +210,7 @@ import {
 } from './crawler_render_entities';
 import { crawlerScriptAPIDummyServer } from './crawler_script_api_client';
 import { crawlerOnScreenButton } from './crawler_ui';
-import { dialogNameRender, keyClear, keyGet, keySet, myElement } from './dialog_data';
+import { dialogNameRender, keyClear, keyGet, keySet, myElement, playVO } from './dialog_data';
 import {
   dialog,
   dialogActive,
@@ -259,7 +259,6 @@ import {
   statusTick,
 } from './status';
 import { style_damage, style_floater, style_hotkey, style_label, style_text } from './styles';
-import { TEXT } from './text';
 import { setScore } from './title';
 import { uiActionClear, uiActionCurrent, uiActionTick } from './uiaction';
 import { pauseMenuActive, pauseMenuOpen } from './uiaction_pause_menu';
@@ -2446,7 +2445,7 @@ function moveBlockDead(): boolean {
   let z = Z.UI + 20;
 
   if (!dialogActive()) {
-    dialog('monologue', TEXT.RASA_UPON_DEATH);
+    dialog('monologue', playVO('RASA_UPON_DEATH'));
   }
 
   y += floor(h/2) - 100;

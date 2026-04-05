@@ -69,4 +69,4 @@ export const TEXT = {
 
   RASA_BEFORE_STAIRS: 'Certain I was done here, I descended deeper into the depths, confident I would never return.',
   RASA_BEFORE_STAIRS_MISTAKE: 'Apologies, dear listeners, I misremembered.  In fact, I retraced my steps to investigate something I may have missed...',
-};
+} as const;

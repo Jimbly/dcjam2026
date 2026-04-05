@@ -1893,6 +1893,12 @@
         "solid",
         "solid",
         "open"
+      ],
+      "events": [
+        {
+          "id": "leave1",
+          "param": ""
+        }
       ]
     },
     {

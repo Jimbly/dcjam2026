@@ -21,7 +21,7 @@ import {
 import { ridx } from 'glov/common/util';
 import { blend } from './blend';
 import { Card, CardID, CARDS, MAX_TIER } from './cards';
-import { keyClear, keyGet, keySet } from './dialog_data';
+import { keyClear, keyGet, keySet, playVO } from './dialog_data';
 import { dialog, dialogPush } from './dialog_system';
 import {
   FONT_HEIGHT,
@@ -42,7 +42,6 @@ import {
   TIERLABEL,
 } from './play';
 import { style_dialog_title, style_dialog_title_err, style_hotkey, style_label } from './styles';
-import { TEXT } from './text';
 import {
   uiAction,
   UIAction,
@@ -461,7 +460,7 @@ class ShopAction extends UIAction {
 
           if (keyGet('post_shop_story')) {
             keyClear('post_shop_story');
-            dialog('monologue', TEXT[`RASA_INTRO${me.data.floor === 50 ? 3 : me.floorElementNumber()}`]);
+            dialog('monologue', playVO(`RASA_INTRO${me.data.floor === 50 ? 3 : me.floorElementNumber()}`));
           }
         }
 
