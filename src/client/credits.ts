@@ -45,7 +45,7 @@ Created in 9 days for [c=green]Dungeon Crawler Jam 2026[/c]
 See page on itch.io for links
 
 [c=yellow]AI Content[/c]
-No generative AI of any kind was used in the making of this game.
+[c=blue]No generative AI of any kind was used in the making of this game.[/c]
 
 [c=yellow]Engine[/c]
 [c=blue]GLOV.js + crawler toolkit[/c]
@@ -54,6 +54,8 @@ No generative AI of any kind was used in the making of this game.
 
 [c=yellow]Special Thanks[/c]
 [c=blue]The DungeonCrawlers.org Discord[/c]
+[c=blue]The Kopf-Lischinski Depixel Algorithm[/c]
+[c=note] (You can thank an algorithm, right?) [/c]
 
 `.split('\n');
 

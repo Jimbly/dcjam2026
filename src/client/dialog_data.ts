@@ -338,7 +338,7 @@ dialogRegister({
     });
   },
   bosspoke: function () {
-    let elemnum = myEnt().floorElementNumber();
+    const elemnum = myEnt().floorIsFinalBoss() ? 3 : myEnt().floorElementNumber();
     dialogPush({
       name: TEXT[`UNCLE${elemnum}_NAME`],
       text: TEXT[`UNCLE_BOSS${elemnum}_POKE`],
@@ -387,7 +387,7 @@ dialogRegister({
       flags: { cutscene: true },
       text: playVO('RASA_VICTORY'),
       buttons: [{
-        label: playVO('RASA_VICTORY_BUTTON'),
+        label: TEXT.RASA_VICTORY_BUTTON,
         cb: function () {
           dialogPush({
             name: TEXT.MOM_NAME,
