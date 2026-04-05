@@ -350,7 +350,7 @@ dialogRegister({
     if (elemnum === 3) {
       return;
     }
-    playUISound('get_goal');
+    playUISound(`get_goal_${elemnum}`);
     dialog('monologue', playVO(`RASA_ORB${elemnum}_ACQUIRED`));
   },
   healtro: function () {

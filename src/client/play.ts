@@ -2651,6 +2651,7 @@ function bumpEntityCallback(ent_id: EntityID): void {
       entityManager().deleteEntity(target_ent.id, 'removed');
       let elem = me.floorElement();
       me.resetDeck();
+      me.drawHand();
       dialog('get_goal'); // *before* changing element
       // TODO: after dialog: once reshuffle and draw anim finishes: flip cards over, then change element
       me.data.heal_mode = true;

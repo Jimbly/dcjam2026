@@ -44,6 +44,7 @@ import * as ui from 'glov/client/ui';
 import { getURLBase } from 'glov/client/urlhash';
 import { v4copy } from 'glov/common/vmath';
 // import './client_cmds.js'; // for side effects
+import { CRAWLER_IS_ONLINE } from '../common/crawler_config';
 import { crawlerBuildModeStartup } from './crawler_build_mode';
 import { drawableSpriteLoadNear } from './crawler_entity_client';
 import {
@@ -122,7 +123,7 @@ export function main(): void {
     }
   }
 
-  if (engine.DEBUG || true) {
+  if (engine.DEBUG || CRAWLER_IS_ONLINE) {
     netInit({
       engine,
       cmd_parse,

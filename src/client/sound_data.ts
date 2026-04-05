@@ -109,8 +109,16 @@ export const SOUND_DATA = {
     volume: 1,
   },
 
-  get_goal: { // get a new element, change to that element
-    file: 'get_goal',
+  get_goal_0: { // get a new element, change to that element
+    file: 'get_goal_earth',
+    volume: 1,
+  },
+  get_goal_1: { // get a new element, change to that element
+    file: 'get_goal_water',
+    volume: 1,
+  },
+  get_goal_2: { // get a new element, change to that element
+    file: 'get_goal_fire',
     volume: 1,
   },
 
