@@ -259,7 +259,15 @@ import {
   statusPush,
   statusTick,
 } from './status';
-import { style_damage, style_floater, style_hotkey, style_label, style_text } from './styles';
+import {
+  style_card_effect,
+  style_card_effect_faded,
+  style_damage,
+  style_floater,
+  style_hotkey,
+  style_label,
+  style_text,
+} from './styles';
 import { setScore } from './title';
 import { uiActionClear, uiActionCurrent, uiActionTick } from './uiaction';
 import { pauseMenuActive, pauseMenuOpen } from './uiaction_pause_menu';
@@ -1112,6 +1120,28 @@ export function drawCard(param: {
   let eff_heal_mode = healMode() && !for_shop;
   let effects = eff_heal_mode ? card_def.healeffect : card_def.effect;
   let any_usable = false;
+  const PAD1 = 8;
+  let things_width = 0;
+  for (key in effects) {
+    let value = effects[key]![tier];
+    if (!value) {
+      // for a later tier
+      continue;
+    }
+    let vis = EFFECT_TEMPLATE[key];
+    let { img, prefix } = vis;
+    let sprite = autoAtlas('ui', img);
+    let aspect = sprite.uidata.aspect?.[0] || 1;
+    things_width += 14 * aspect;
+    if (prefix) {
+      things_width += font.getStringWidth(style_label, FONT_HEIGHT, `${value}`);
+    }
+    things_width += PAD1;
+  }
+  things_width -= PAD1;
+
+  let xx2 = x + (CARD_W - things_width) / 2;
+
   for (key in effects) {
     let value = effects[key]![tier];
     if (!value) {
@@ -1153,45 +1183,63 @@ export function drawCard(param: {
     }
     let alpha = !for_shop && ((disabled || eff_no_target && needs_target === true) ||
       (needs_target === 'auto' && !any_usable)) ? 0.5 : 1;
-    let prefix = vis.prefix ? `${value} ` : '';
-    let prefix_w = (prefix ? font.getStringWidth(style_label, FONT_HEIGHT, prefix) : 0);
-    let line_w = prefix_w + (img ? 14 : 0);
-    let xx = x + floor((CARD_W - line_w)/2);
 
     if (key === 'pull' && !eff_no_target) {
       no_target = false; // future melee effects now have a target
     }
 
-    if (prefix) {
-      font.draw({
-        x: xx, y, z,
-        style: style_label,
-        alpha,
+    if (vis.prefix) {
+      xx2 += font.draw({
+        x: xx2, y, z: z + 0.1,
+        style: alpha < 1 ? style_card_effect_faded : style_card_effect,
         size: FONT_HEIGHT,
         h: 14,
         align: ALIGN.VCENTER,
-        text: prefix,
-      });
-      xx += prefix_w;
-    }
-    if (img) {
-      let sprite = autoAtlas('ui', img);
-      let aspect = sprite.uidata.aspect?.[0] || 1;
-      sprite.draw({
-        x: xx, y, z,
-        w: 14 * aspect,
-        h: 14,
-        color: [1,1,1,alpha],
+        text: `${value}`,
       });
     }
-    y += 15;
+    let sprite = autoAtlas('ui', img);
+    let aspect = sprite.uidata.aspect?.[0] || 1;
+    let w = 14 * aspect;
+    sprite.draw({
+      x: xx2, y, z,
+      w,
+      h: 14,
+      color: [1,1,1,alpha],
+    });
+    xx2 += w + PAD1;
   }
 
   if (myElement()) {
     effects = eff_heal_mode ? card_def.effect : card_def.healeffect;
     y = y0 + CARD_H - CARD_PAD;
+    things_width = 0;
     for (key in effects) {
       let value = effects[key]![tier];
+      if (!value) {
+        // for a later tier
+        continue;
+      }
+      let vis = EFFECT_TEMPLATE[key];
+      let { img, prefix } = vis;
+      let sprite = autoAtlas('ui', img);
+      let aspect = sprite.uidata.aspect?.[0] || 1;
+      things_width += 14 * aspect;
+      if (prefix) {
+        things_width += font.getStringWidth(style_label, FONT_HEIGHT, `${value}`);
+      }
+      things_width += PAD1;
+    }
+    things_width -= PAD1;
+    //xx2 = x + CARD_W - (CARD_W - things_width) / 2;
+    xx2 = x + (CARD_W - things_width) / 2;
+    y -= 14;
+    let rot = 0; // PI
+    for (key in effects) {
+      let value = effects[key]![tier];
+      if (!value) {
+        continue;
+      }
       let vis = EFFECT_TEMPLATE[key];
       let { img } = vis;
       if (key === 'damage' && !eff_heal_mode) {
@@ -1199,34 +1247,29 @@ export function drawCard(param: {
         img = `element-${element || 'null'}`;
       }
       let alpha = disabled || !for_shop || no_target ? 0.5 : 1;
-      let prefix = vis.prefix ? `${value} ` : '';
-      let prefix_w = (prefix ? font.getStringWidth(style_label, FONT_HEIGHT, prefix) : 0);
-      let line_w = prefix_w + (img ? 14 : 0);
-      let xx = x + CARD_W - floor((CARD_W - line_w)/2);
-
-      if (prefix) {
-        font.draw({
-          x: xx, y, z,
-          style: style_label,
-          alpha,
+      if (vis.prefix) {
+        xx2 += font.draw({
+          x: xx2, y, z: z + 0.1,
+          style: alpha < 1 ? style_card_effect_faded : style_card_effect,
           size: FONT_HEIGHT,
           h: 14,
           align: ALIGN.VCENTER,
-          text: prefix,
-          rot: PI,
-        });
-        xx -= prefix_w;
-      }
-      if (img) {
-        autoAtlas('ui', img).draw({
-          x: xx, y, z,
-          w: 14,
-          h: 14,
-          color: [1,1,1,alpha],
-          rot: PI,
+          text: `${value}`,
+          rot,
         });
       }
-      y -= 15;
+      let sprite = autoAtlas('ui', img);
+      let aspect = sprite.uidata.aspect?.[0] || 1;
+      let w = 14 * aspect;
+      sprite.draw({
+        x: xx2, y, z,
+        w,
+        h: 14,
+        color: [1,1,1,alpha],
+        rot,
+      });
+      // xx2 -= w + PAD1;
+      xx2 += w + PAD1;
     }
   }
   return any_usable;
@@ -1988,7 +2031,7 @@ const DRAW_PILE_Y = game_height - 12 - DRAW_PILE_H;
 const DRAW_PILE_W = 48;
 const DISCARD_PILE_X = game_width - 12 - DRAW_PILE_W;
 
-const CARD_OVERLAP = 20;
+const CARD_OVERLAP = 12;
 const CARDS_W = HAND_SIZE * (CARD_W - CARD_OVERLAP) + CARD_OVERLAP;
 const CARDS_X = VIEWPORT_X0 + floor((render_width - CARDS_W) / 2);
 const CARDS_Y = 203;
