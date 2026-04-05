@@ -5,6 +5,7 @@ import { cmd_parse } from 'glov/client/cmds';
 import { debugDefineIsSet, getFrameTimestamp } from 'glov/client/engine';
 import { ALIGN } from 'glov/client/font';
 import { inputTouchMode } from 'glov/client/input';
+import * as settings from 'glov/client/settings';
 import { GlovSoundSetUp, soundPlayStreaming } from 'glov/client/sound';
 import {
   panel,
@@ -72,10 +73,17 @@ let vo_last_played: Record<string, number> = {};
 export function voReset(): void {
   vo_last_played = {};
 }
+export function voOff(): void {
+  if (last_vo) {
+    last_vo.stop();
+    last_vo = null;
+  }
+}
 export function playVO(key: keyof typeof TEXT): string {
   let now = getFrameTimestamp();
   if (debugDefineIsSet('NOVO') ||
-    vo_last_played[key] && now - vo_last_played[key] < 60000
+    vo_last_played[key] && now - vo_last_played[key] < 60000 ||
+    !settings.voiceovers
   ) {
     return TEXT[key];
   }

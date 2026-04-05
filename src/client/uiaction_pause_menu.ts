@@ -52,6 +52,11 @@ class PauseMenuAction extends UIAction {
       value_min: 0,
       value_max: 1,
     }, {
+      name: `Voice Overs: ${['OFF', 'ON'][settings.voiceovers]}`,
+      cb: () => {
+        settingsSet('voiceovers', (settings.voiceovers + 1) % 2);
+      },
+    }, {
       name: 'Mus Vol',
       slider: true,
       value_inc: 0.05,

@@ -211,7 +211,7 @@ import {
 } from './crawler_render_entities';
 import { crawlerScriptAPIDummyServer } from './crawler_script_api_client';
 import { crawlerOnScreenButton } from './crawler_ui';
-import { dialogNameRender, keyClear, keyGet, keySet, myElement, playVO, voReset } from './dialog_data';
+import { dialogNameRender, keyClear, keyGet, keySet, myElement, playVO, voOff, voReset } from './dialog_data';
 import {
   dialog,
   dialogActive,
@@ -282,6 +282,7 @@ declare module 'glov/client/settings' {
   export let turn_toggle: 0 | 1;
   export let depixel: 0 | 1;
   export let gamespeed: 0 | 1 | 2;
+  export let voiceovers: 0 | 1;
 }
 
 const REWARD_YIELD_RESPECT = 3;
@@ -3624,6 +3625,16 @@ settingsRegister({
     default_value: 1,
     type: cmd_parse.TYPE_INT,
     range: [0, 2],
+  },
+  voiceovers: {
+    default_value: 1,
+    type: cmd_parse.TYPE_INT,
+    range: [0, 1],
+    on_change: function (): void {
+      if (!settings.voiceovers) {
+        voOff();
+      }
+    }
   },
 });
 
