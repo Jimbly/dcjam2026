@@ -211,7 +211,7 @@ import {
 } from './crawler_render_entities';
 import { crawlerScriptAPIDummyServer } from './crawler_script_api_client';
 import { crawlerOnScreenButton } from './crawler_ui';
-import { dialogNameRender, keyClear, keyGet, keySet, myElement, playVO } from './dialog_data';
+import { dialogNameRender, keyClear, keyGet, keySet, myElement, playVO, voReset } from './dialog_data';
 import {
   dialog,
   dialogActive,
@@ -3526,6 +3526,7 @@ function playOfflineLoading(): void {
 }
 
 function playInitOffline(): void {
+  voReset();
   playInitShared(false);
 }
 

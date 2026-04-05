@@ -69,6 +69,9 @@ export function keyClear(name: string): void {
 let last_vo: GlovSoundSetUp | null = null;
 let generation = 0;
 let vo_last_played: Record<string, number> = {};
+export function voReset(): void {
+  vo_last_played = {};
+}
 export function playVO(key: keyof typeof TEXT): string {
   let now = getFrameTimestamp();
   if (debugDefineIsSet('NOVO') ||
