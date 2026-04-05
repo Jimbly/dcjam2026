@@ -35,7 +35,7 @@ Created in 9 days for [c=green]Dungeon Crawler Jam 2026[/c]
 [c=yellow]Music * Sound FX[/c]
 [c=blue]Niki Yeracaris[/c]
 
-[c=yellow]Brainstorming Consultant * A Capella[/c]
+[c=yellow]Brainstorming Consultant * Voices * A Capella[/c]
 [c=blue]Siena Merlin Moraff[/c]
 
 [c=yellow]Some Art Sourced From[/c]
