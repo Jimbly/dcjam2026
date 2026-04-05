@@ -3,7 +3,6 @@ TODO - The Adventures of Rasa and the Chromatic Dragons
 
 final play through, balance audio, ensure all music
 
-controller support?
 touch up tiling on all tilesets
 try: put damage number over the icon, multiple icons per row, room for image?
 

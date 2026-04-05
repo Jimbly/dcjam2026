@@ -32,6 +32,7 @@ import {
   KEYS,
   keyUpEdge,
   PAD,
+  padButtonDownEdge,
   padButtonUpEdge,
 } from 'glov/client/input';
 import { localStorageGetJSON, localStorageSet, localStorageSetJSON } from 'glov/client/local_storage';
@@ -342,12 +343,14 @@ export function randInt(range: number): number {
 
 type CombatState = {
   countdown: number;
+  selected_card: number;
 };
 let combat_state: CombatState;
 
 function combatStateReset(): void {
   combat_state = {
     countdown: 0,
+    selected_card: -1,
   };
 }
 
@@ -1397,6 +1400,7 @@ function doReshuffle(): void {
   };
   let spot_ret = spot({
     ...rect,
+    key: 'reshuffle1',
     def: SPOT_DEFAULT_BUTTON,
     hotkey: KEYS['1']
   });
@@ -1423,6 +1427,7 @@ function doReshuffle(): void {
   rect.x += CARD_W + BORDER_PAD;
   spot_ret = spot({
     ...rect,
+    key: 'reshuffle2',
     def: SPOT_DEFAULT_BUTTON,
     hotkey: KEYS['2']
   });
@@ -2070,8 +2075,26 @@ function doHand(): void {
     }
   }
 
+  let steal_focus = false;
   if (data.combat_phase === 'reshuffle') {
     doReshuffle();
+  } else {
+    if (keyDownEdge(KEYS.Z) || padButtonDownEdge(PAD.LT)) {
+      combat_state.selected_card--;
+      if (combat_state.selected_card < 0) {
+        combat_state.selected_card = hand.length - 1;
+      }
+      steal_focus = true;
+      playUISound('rollover');
+    }
+    if (keyDownEdge(KEYS.X) || padButtonDownEdge(PAD.RT)) {
+      combat_state.selected_card++;
+      if (combat_state.selected_card >= hand.length) {
+        combat_state.selected_card = 0;
+      }
+      steal_focus = true;
+      playUISound('rollover');
+    }
   }
 
   let x = CARDS_X;
@@ -2105,17 +2128,29 @@ function doHand(): void {
     }
     let disabled = overlay_menu_up || data.combat_phase !== 'player' || no_target && heal_mode;
     let spot_ret = spot({
+      key: `hand${ii}`,
       def: SPOT_DEFAULT_BUTTON,
       hotkey: KEYS['1'] + hotkey,
       ...click_rect,
       disabled,
       disabled_focusable: true,
       sound_button: null,
+      focus_steal: steal_focus && combat_state.selected_card === ii,
+      sticky_focus: combat_state.selected_card === ii,
     });
     let target_y = rect.y;
+    let do_discard = false;
     if (spot_ret.focused) {
       target_y = CARDS_Y_SEL;
       cardTooltip(0, card);
+      if (!disabled) {
+        if (keyDownEdge(KEYS.SPACE) || padButtonDownEdge(PAD.A)) {
+          spot_ret.ret++;
+        } else if (padButtonDownEdge(PAD.B)) {
+          spot_ret.ret++;
+          do_discard = true;
+        }
+      }
     }
     let eff_y = blend(`cardy${uid}`, target_y, 200);
     if (eff_y < (CARDS_Y_SEL + CARDS_Y)/2) {
@@ -2123,7 +2158,7 @@ function doHand(): void {
     }
     if (spot_ret.ret) {
       play_card = ii;
-      if (spot_ret.button === 2 || keyDown(KEYS.SHIFT)) {
+      if (spot_ret.button === 2 || keyDown(KEYS.SHIFT) || do_discard) {
         if (!heal_mode) {
           actually_discard = true;
         }
@@ -2981,6 +3016,7 @@ function playCrawl(): void {
         ...BUTTON_STYLE,
         img: autoAtlas('ui', img),
         hotkeys: keys,
+        hotpad: pads && pads.length && pads[0],
         disabled: my_disabled,
       });
       let ret = buttonLastSpotRet();
@@ -3323,7 +3359,7 @@ export function play(dt: number): void {
   screen_shake = 0;
 
   let overlay_menu_up = Boolean(uiActionCurrent()?.is_overlay_menu || dialogMoveLocked() ||
-    crawlerController().hasMoveBlocker());
+    crawlerController().hasMoveBlocker() || myEntOptional()?.data.combat_phase === 'reshuffle');
 
   {
     let is_combat = isCombat();

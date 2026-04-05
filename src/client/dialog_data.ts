@@ -2,7 +2,7 @@
 export const SHUTTLE_COST = 100;
 import { autoAtlas } from 'glov/client/autoatlas';
 import { cmd_parse } from 'glov/client/cmds';
-import { getFrameTimestamp } from 'glov/client/engine';
+import { debugDefineIsSet, getFrameTimestamp } from 'glov/client/engine';
 import { ALIGN } from 'glov/client/font';
 import { inputTouchMode } from 'glov/client/input';
 import { GlovSoundSetUp, soundPlayStreaming } from 'glov/client/sound';
@@ -69,6 +69,9 @@ export function keyClear(name: string): void {
 let last_vo: GlovSoundSetUp | null = null;
 let generation = 0;
 export function playVO(key: keyof typeof TEXT): string {
+  if (debugDefineIsSet('NOVO')) {
+    return TEXT[key];
+  }
   ++generation;
   let gen = generation;
   soundPlayStreaming(`vo/${key}`, {}, function (sound) {
