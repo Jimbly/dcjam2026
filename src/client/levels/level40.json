@@ -1,9 +1,9 @@
 {
   "special_pos": {
     "stairs_in": [
-      2,
-      9,
-      0
+      3,
+      13,
+      3
     ],
     "stairs_out": [
       2,
@@ -1339,25 +1339,19 @@
     {
       "id": "solid",
       "walls": [
-        "solid",
+        "open",
         "open",
         "open",
         "open"
       ]
     },
     {
-      "id": "stairs_in",
+      "id": "solid",
       "walls": [
-        "door",
         "solid",
-        "solid",
+        "open",
+        "open",
         "solid"
-      ],
-      "events": [
-        {
-          "id": "stairs_up",
-          "param": ""
-        }
       ]
     },
     {
@@ -1365,14 +1359,8 @@
       "walls": [
         "open",
         "solid",
-        "stairs_in",
+        "solid",
         "solid"
-      ],
-      "events": [
-        {
-          "id": "section_intro",
-          "param": ""
-        }
       ]
     },
     {
@@ -1507,7 +1495,7 @@
         "open",
         "open",
         "open",
-        "solid"
+        "open"
       ]
     },
     {
@@ -1658,7 +1646,7 @@
       "id": "solid",
       "walls": [
         "solid",
-        "open",
+        "solid",
         "open",
         "open"
       ]
@@ -1792,19 +1780,19 @@
     {
       "id": "solid",
       "walls": [
-        "open",
+        "solid",
         "open",
         "open",
         "open"
       ]
     },
     {
-      "id": "solid",
+      "id": "open",
       "walls": [
+        "open",
+        "stairs_in",
         "solid",
-        "open",
-        "open",
-        "open"
+        "solid"
       ]
     },
     {
@@ -1812,7 +1800,7 @@
       "walls": [
         "open",
         "solid",
-        "solid",
+        "open",
         "open"
       ]
     },
@@ -1936,19 +1924,25 @@
     {
       "id": "solid",
       "walls": [
-        "open",
+        "solid",
         "open",
         "open",
         "open"
       ]
     },
     {
-      "id": "solid",
+      "id": "stairs_in",
       "walls": [
-        "open",
-        "open",
-        "open",
-        "open"
+        "solid",
+        "solid",
+        "solid",
+        "door"
+      ],
+      "events": [
+        {
+          "id": "stairs_up",
+          "param": ""
+        }
       ]
     },
     {
@@ -1956,7 +1950,7 @@
       "walls": [
         "solid",
         "solid",
-        "open",
+        "solid",
         "solid"
       ]
     },
@@ -2092,7 +2086,7 @@
         "solid",
         "open",
         "open",
-        "open"
+        "solid"
       ]
     },
     {
@@ -2654,11 +2648,11 @@
       ]
     },
     {
-      "type": "enemy-fire-balanced",
+      "type": "enemy-fire-ranged",
       "pos": [
-        6,
-        11,
-        2
+        14,
+        10,
+        1
       ]
     },
     {
@@ -2694,11 +2688,11 @@
       ]
     },
     {
-      "type": "enemy-fire-ranged",
+      "type": "enemy-fire-balanced",
       "pos": [
-        14,
+        6,
         10,
-        1
+        2
       ]
     }
   ],
