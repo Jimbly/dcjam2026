@@ -343,6 +343,9 @@ export function myEntOptional(): Entity | undefined {
 }
 
 export function queueTransition(quick?: boolean): void {
+  if (engine.isOutOfTick()) {
+    return;
+  }
   transition.queue(Z.TRANSITION_FINAL, transition.fade(quick ? 200 : 800));
 }
 

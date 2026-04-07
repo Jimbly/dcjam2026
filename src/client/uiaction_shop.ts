@@ -2,7 +2,6 @@ import assert from 'assert';
 import { autoResetSkippedFrames } from 'glov/client/auto_reset';
 import { autoAtlas } from 'glov/client/autoatlas';
 import { MODE_DEVELOPMENT } from 'glov/client/client_config';
-import { isOutOfTick } from 'glov/client/engine';
 import { ALIGN, fontStyleAlpha } from 'glov/client/font';
 import { keyDownEdge, KEYS } from 'glov/client/input';
 import { markdownAuto } from 'glov/client/markdown';
@@ -1000,9 +999,6 @@ ShopAction.prototype.needs_decks = false;
 
 export function shopOpen(): void {
   pool_selected = null;
-  if (!isOutOfTick()) {
-    queueTransition(true);
-  }
   uiAction(new ShopAction());
 }
 
