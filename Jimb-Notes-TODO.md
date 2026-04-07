@@ -24,7 +24,7 @@ Fire - fire/hell
 
 Post-jam fixes to do
 ====================
-post-jam bug fix: changing an atlas's tex coords doesn't apply if swapped
+move depixel config into config.project or similar?
 
 Discarded ideas
 ===============

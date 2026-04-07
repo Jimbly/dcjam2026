@@ -12,7 +12,7 @@ UIAction.prototype.name = 'UnknownAction';
 UIAction.prototype.is_overlay_menu = false;
 UIAction.prototype.is_fullscreen_ui = false;
 UIAction.prototype.esc_cancels = false;
-UIAction.prototype.needs_decks = false;
+UIAction.prototype.needs_decks = false; // DCJAM
 
 let cur_action: UIAction | null = null;
 

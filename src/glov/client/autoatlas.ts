@@ -359,11 +359,12 @@ function autoAtlasReload(filename: string): void {
     return;
   }
   atlas.doInit();
-  if (atlas_swaps[filename]) {
-    // also try reloading the target?  didn't seem to help
-    let other = atlases[atlas_swaps[filename]!];
-    if (other) {
-      other.doInit();
+  for (let key in atlas_swaps) {
+    if (key === filename || atlas_swaps[key] === filename) {
+      let other = atlases[key];
+      if (other && other !== atlas) {
+        other.doInit();
+      }
     }
   }
 }

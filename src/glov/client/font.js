@@ -252,8 +252,7 @@ export function fontStyleAlpha(font_style, alpha) {
 // Returns a Float64, so pretty much anything is fine
 export function fontStyleHash(style) {
   if (!style.hash) {
-    // DCJAM - ignoring alpha - not sure this is valid? - nope, should be using the `alpha` param of markdownAuto instd!
-    style.hash = (style.color & 0xFFFFFF00) +
+    style.hash = style.color +
       style.outline_width * 1007 +
       style.outline_color * 3 +
       style.glow_xoffs * 10007 +

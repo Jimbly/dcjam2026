@@ -579,8 +579,8 @@ export function crawlerRenderEntitiesPrep(): void {
   ped_list.sort(cmpPeds);
 }
 
-let draw_pos_temp = vec3();
 let color_temp = vec4(1, 1, 1, 1);
+let draw_pos_temp = vec3();
 export function crawlerRenderEntities(ent_set: SplitSet): void {
   profilerStartFunc();
   // Draw other entities

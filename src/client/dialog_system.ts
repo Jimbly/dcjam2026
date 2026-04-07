@@ -462,7 +462,7 @@ export function dialog(id: string, param?: string): void {
 
 export function dialogStartup(param: {
   font: Font;
-  style_default: FontStyle;
+  style_default?: FontStyle;
   text_style_cb?: DialogTextStyleCB;
   name_render_cb?: DialogNameRenderCB;
 }): void {
