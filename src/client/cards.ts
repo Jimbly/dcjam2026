@@ -129,7 +129,7 @@ export const CARDS_RAW = {
     cost: 0,
     name: 'Gird',
     effect: {
-      block: grow(3),
+      block: [3, 5, 7, 9],
     },
     icon: 'icon-gird',
     ...heal(2),
@@ -138,7 +138,7 @@ export const CARDS_RAW = {
     cost: 4,
     name: 'Scales',
     effect: {
-      block: grow(4),
+      block: [5, 7, 9, 11],
     },
     ...heal(1),
     icon: 'icon-scales',
@@ -194,12 +194,22 @@ export const CARDS_RAW = {
   },
   'repeatblock1': {
     cost: 4,
-    name: 'Harden',
+    name: 'Deflect',
     effect: {
       block: grow(2),
       delay: ONES,
     },
     icon: 'icon-weave',
+    ...heal(1),
+  },
+  'repeatblock2': {
+    cost: 5,
+    name: 'Harden',
+    effect: {
+      block: grow(3),
+      delay: ONES,
+    },
+    icon: 'icon-shield3',
     ...heal(1),
   },
   'repeatpoison1': {

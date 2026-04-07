@@ -3,7 +3,6 @@ TODO - The Adventures of Rasa and the Chromatic Dragons
 
 tweaks
   ranged to double damage when not in melee / half in melee, and buff them
-  bump defense again - maybe make two of them like Harden
 
 Screenshots
 Art Pipeline images
