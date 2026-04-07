@@ -984,14 +984,28 @@ function drawInWorldHealthbar(
     });
   }
   y += ENEMY_HP_BAR_H * BAR_WORLD_PX;
-  let move = ent.monsterRangedGet();
+  let move = ent.monsterMoveGet();
   if (move) {
     const INTENT_SIZE = 28;
-    autoAtlas('ui', 'ranged-enemy').draw3D({
-      pos: [temp_pos[0], temp_pos[1], z],
-      offs: [-INTENT_SIZE/2 * BAR_WORLD_PX, y],
-      size: [INTENT_SIZE * BAR_WORLD_PX, INTENT_SIZE * BAR_WORLD_PX],
-    });
+    let key: CardEffect;
+    let img: string | undefined;
+    for (key in move.effect) {
+      let vis = EFFECT_TEMPLATE[key];
+      img = vis.img_enemy || vis.img;
+      if (img) {
+        if (img === 'poison' && myEnt().floorElement() === 'fire') {
+          img = 'fire';
+        }
+        break;
+      }
+    }
+    if (img) {
+      autoAtlas('ui', img).draw3D({
+        pos: [temp_pos[0], temp_pos[1], z],
+        offs: [-INTENT_SIZE/2 * BAR_WORLD_PX, y],
+        size: [INTENT_SIZE * BAR_WORLD_PX, INTENT_SIZE * BAR_WORLD_PX],
+      });
+    }
   }
 }
 
@@ -1036,7 +1050,7 @@ function doHealthbars(): void {
       }
     }
 
-    if (!ent.isAlive() || ent.id === ent_in_front || !ent.data.alert) {
+    if (!ent.isAlive() || ent.id === ent_in_front || !ent.data.alert || ent.is_boss) {
       return false;
     }
     if (entManhattanDistance(ent, my_pos) <= MONSTER_MAX_RANGE) {

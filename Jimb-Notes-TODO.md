@@ -2,8 +2,6 @@ TODO - The Adventures of Rasa and the Chromatic Dragons
 ====
 
 tweaks
-  could show next move for everyone, not just ranged guys (no numbers, just 1 icon)
-    not on dragon
   ranged to double damage when not in melee / half in melee, and buff them
   bump defense again - maybe make two of them like Harden
 
