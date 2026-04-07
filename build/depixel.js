@@ -19,19 +19,6 @@ const {
 
 const { floor, round } = Math;
 
-const scale_globs = {
-  'ui/*.png': 8,
-  'font/*.png': 32,
-  'test/*.png': 8,
-  'main/*.png': 24,
-  'earth/*.png': 8,
-  'water/*.png': 8,
-  'fire/*.png': 8,
-  'dragon/*.png': 8,
-  'rasa/*.png': 8,
-};
-const depixel_input = Object.keys(scale_globs);
-
 const targets = {
   out: path.join(__dirname, '../src/client/atlases-autogen'),
 };
@@ -42,6 +29,35 @@ gb.configure({
   targets,
   log_level: gb.LOG_INFO,
 });
+
+// eslint-disable-next-line import/order
+const config = require('./config.js')(gb, {
+  depixel_scales: {
+    'demo/*.png': 8,
+    'utumno/*.png': 8,
+  },
+  tiling_expand_pix: 4,
+  tiling_expand_rules: [
+    // auto rules:
+    //   if alpha on all 4 sides, do both alpha (will break with UI frames)
+    //   otherwise, if alpha on either vert side, do vert_clamp; same for horiz
+    //   otherwise, wrap
+    '**/*chest*:balpha',
+    '**/*wall*:hwrap,vclamp',
+    '**/*solid*:hwrap,vclamp',
+    '**/*door*:hwrap,vclamp',
+    '**/*stairs*:hwrap,vclamp',
+    '**/*arch*:hwrap,vclamp',
+    '**/*exit*:hwrap,vclamp',
+    '**/*enter*:hwrap,vclamp',
+    '**/*return*:hwrap,vclamp',
+    '**/*brick_dark*:hwrap,vclamp',
+    '**/*lair*:hwrap,vclamp',
+  ],
+});
+
+const scale_globs = config.depixel_scales;
+const depixel_input = Object.keys(scale_globs);
 
 gb.task({
   ...autoatlas({
@@ -55,45 +71,8 @@ gb.task({
   name: 'depixel-tiling-expand',
   input: ['depixel-atlas-prep:**'],
   ...tilingExpand({
-    pix: 4,
-    // auto rules:
-    //   if alpha on all 4 sides, do both alpha (will break with UI frames)
-    //   otherwise, if alpha on either vert side, do vert_clamp; same for horiz
-    //   otherwise, wrap
-    rules: [
-      'font/**:bclamp',
-      '**/*chest*:balpha',
-      'main/dun1-*solid*:hwrap,vwrap',
-      'main/dun1-*stairs*:hwrap,vwrap',
-      'main/dun1-*door*:hwrap,vwrap',
-      'main/fire*:balpha',
-      'main/dun2fire-detail*:balpha',
-      'ui/icon-*:balpha',
-      'ui/compass*:balpha',
-      'ui/block.png:balpha',
-      'ui/bar-frame*:balpha',
-      'ui/border-corner.png:balpha',
-      'ui/bar-vert.png:halpha,vwrap',
-      'ui/bar-horiz.png:hwrap,valpha',
-      'ui/border-ll.png:bclamp',
-      'ui/button*:balpha',
-      'ui/menu*:balpha',
-      'ui/titlebg*:balpha',
-      'ui/scrollbar*:balpha',
-      'main/waterbridge.png:halpha,vwrap',
-      'main/waterb*:hwrap,valpha',
-      'main/water*:hwrap,vwrap',
-      '**/*wall*:hwrap,vclamp',
-      '**/*solid*:hwrap,vclamp',
-      '**/*door*:hwrap,vclamp',
-      '**/*stairs*:hwrap,vclamp',
-      '**/*arch*:hwrap,vclamp',
-      '**/*exit*:hwrap,vclamp',
-      '**/*enter*:hwrap,vclamp',
-      '**/*return*:hwrap,vclamp',
-      '**/*brick_dark*:hwrap,vclamp',
-      '**/*lair*:hwrap,vclamp',
-    ],
+    pix: config.tiling_expand_pix,
+    rules: config.tiling_expand_rules,
   }),
 });
 

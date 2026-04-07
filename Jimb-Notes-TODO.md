@@ -22,10 +22,6 @@ Earth - dirt/trees/nature/lightning
 Ice - ice/water
 Fire - fire/hell
 
-Post-jam fixes to do
-====================
-move depixel config into config.project or similar?
-
 Discarded ideas
 ===============
 didn't get to: animate: upon taking the orb, flip cards over, change element, probably a dialog
