@@ -2,7 +2,6 @@ TODO - The Adventures of Rasa and the Chromatic Dragons
 ====
 
 tweaks
-  disable hunter following in heal mode
   chests/shop should never give max tier cards (or, not until later anyway - nice to spend final gold on fire on max tier cards)
   don't draw initial hand until you take a step
     also on boss floor with intro text

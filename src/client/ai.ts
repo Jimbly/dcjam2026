@@ -29,7 +29,7 @@ import {
 import { crawlerEntFactory } from './crawler_entity_client';
 import { TurnBasedStepReason } from './crawler_play';
 import { EntityClient } from './entity_game_client';
-import { attackPlayer, findRangedTargetForEnemy, MAX_RANGE, myEnt, playSoundFromEnt, tickDOTs } from './play';
+import { attackPlayer, findRangedTargetForEnemy, healMode, MAX_RANGE, myEnt, playSoundFromEnt, tickDOTs } from './play';
 import { statusSet } from './status';
 
 const { abs, floor, random } = Math;
@@ -287,6 +287,11 @@ export function aiTraitsClientStartup(): void {
         // if they can see the player, update target pos to that pos
         // if they have a target pos, attempt to move towards it
         // if there's no clear path to target, give up
+
+        if (healMode()) {
+          profilerStopFunc();
+          return false;
+        }
 
         // in range?
         let pos = this.getData<JSVec3>('pos')!;
