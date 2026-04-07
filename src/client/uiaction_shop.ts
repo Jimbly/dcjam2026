@@ -1,9 +1,10 @@
 import assert from 'assert';
 import { autoResetSkippedFrames } from 'glov/client/auto_reset';
 import { autoAtlas } from 'glov/client/autoatlas';
+import { MODE_DEVELOPMENT } from 'glov/client/client_config';
 import { isOutOfTick } from 'glov/client/engine';
 import { ALIGN, fontStyleAlpha } from 'glov/client/font';
-import { KEYS } from 'glov/client/input';
+import { keyDownEdge, KEYS } from 'glov/client/input';
 import { markdownAuto } from 'glov/client/markdown';
 import { scrollAreaCreate } from 'glov/client/scroll_area';
 import { spot, SPOT_DEFAULT_BUTTON, SPOT_DEFAULT_LABEL } from 'glov/client/spot';
@@ -497,6 +498,10 @@ class ShopAction extends UIAction {
       });
       y += FONT_HEIGHT * 2 + PAD;
 
+      if (MODE_DEVELOPMENT && keyDownEdge(KEYS.R)) {
+        pickChestOptions();
+      }
+
       font.draw({
         color: palette_font[PAL_BLACK],
         x, y: y - 3, z, w,
@@ -529,8 +534,9 @@ class ShopAction extends UIAction {
           let card_id = shop_options[ii];
           let card_def = CARDS[card_id];
           let upgrade_cost = card_def.upgrade_cost || [3, 5, 7];
-          let max_tier = upgrade_cost.length;
-          let tier = Math.min(max_tier, myEnt().floorElementNumber());
+          let max_tier = upgrade_cost.length; // 1, 2, or 3
+          let elem_number = myEnt().floorElementNumber(); // 0, 1, or 2
+          let tier = Math.max(0, max_tier - (3 - elem_number));
           let rect = {
             x, y, z: z + 5,
             w: CARD_W,

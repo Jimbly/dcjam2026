@@ -2,7 +2,6 @@ TODO - The Adventures of Rasa and the Chromatic Dragons
 ====
 
 tweaks
-  chests/shop should never give max tier cards (or, not until later anyway - nice to spend final gold on fire on max tier cards)
   don't draw initial hand until you take a step
     also on boss floor with intro text
   draw new card immediately after closing chest, not waiting until next move
@@ -10,6 +9,7 @@ tweaks
   could show next move for everyone, not just ranged guys (no numbers, just 1 icon)
     not on dragon
   ranged to double damage when not in melee / half in melee, and buff them
+  bump defense again - maybe make two of them like Harden
 
 Screenshots
 Art Pipeline images
