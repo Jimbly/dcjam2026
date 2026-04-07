@@ -2,8 +2,6 @@ TODO - The Adventures of Rasa and the Chromatic Dragons
 ====
 
 tweaks
-  don't draw initial hand until you take a step
-    also on boss floor with intro text
   draw new card immediately after closing chest, not waiting until next move
   golems should spend their first move "going alert"
   could show next move for everyone, not just ranged guys (no numbers, just 1 icon)

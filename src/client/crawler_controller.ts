@@ -99,7 +99,7 @@ import {
 } from './crawler_render';
 import { CrawlerScriptAPIClient } from './crawler_script_api_client';
 import { crawlerOnScreenButton } from './crawler_ui';
-import { enemyVacate } from './play';
+import { enemyVacate, skipOneStep } from './play';
 import { statusPush } from './status';
 
 const { PI, abs, cos, floor, max, min, random, round, sin } = Math;
@@ -1542,6 +1542,7 @@ export class CrawlerController {
           if (cur_cell.walls[rot].open_move && from_my_ent &&
             game_state.level!.getCell(cur_pos[0] + DX[rot], cur_pos[1] + DY[rot])!.desc.open_move
           ) {
+            skipOneStep(); // DCJAM - probably?
             this.player_controller.autoStartMove(rot, 0.5);
             break;
           }

@@ -188,7 +188,7 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
           this.addCard('block2', 0);
         }
         this.populateDrawPileFromDeck();
-        this.drawHand();
+        // this.drawHand();
         data.block = 0;
         data.poison = 0;
         data.freeze = 0;
@@ -367,6 +367,9 @@ export class EntityClient extends EntityBaseClient implements EntityCrawlerClien
   }
   floorIsFinalBoss(): boolean {
     return this.data.floor === 50;
+  }
+  floorIsSectionBoss(): boolean {
+    return (this.data.floor % 10) === 3;
   }
 
   static AI_UPDATE_FIELD = 'seq_ai_update';

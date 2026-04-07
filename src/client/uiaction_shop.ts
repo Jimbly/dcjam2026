@@ -462,6 +462,9 @@ class ShopAction extends UIAction {
           queueTransition(true);
           uiActionClear();
           me.resetDeck();
+          if (myEnt().floorIsSectionBoss() || myEnt().floorIsFinalBoss()) {
+            myEnt().data.combat_phase = 'player'; // don't immediately redraw until step
+          }
 
           if (keyGet('post_shop_story')) {
             keyClear('post_shop_story');
