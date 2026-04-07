@@ -543,9 +543,17 @@ function aiDoEnemy(
 
   let ret = false;
   if (target_ent) {
-    attackPlayer(ent, target_ent, ent.monsterMoveGet(), false);
-    ent.monsterMovePick();
-    ret = true;
+    if (!ent.data.alert) {
+      ent.data.alert = true;
+      if (!ent.is_boss) {
+        playSoundFromEnt(ent, 'hunter_alert');
+      }
+      ret = true;
+    } else {
+      attackPlayer(ent, target_ent, ent.monsterMoveGet(), false);
+      ent.monsterMovePick();
+      ret = true;
+    }
   }
 
   profilerStopFunc();

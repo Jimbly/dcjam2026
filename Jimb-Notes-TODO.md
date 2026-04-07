@@ -2,7 +2,6 @@ TODO - The Adventures of Rasa and the Chromatic Dragons
 ====
 
 tweaks
-  golems should spend their first move "going alert"
   could show next move for everyone, not just ranged guys (no numbers, just 1 icon)
     not on dragon
   ranged to double damage when not in melee / half in melee, and buff them
