@@ -577,6 +577,7 @@ class ShopAction extends UIAction {
             keyClear('shop_chest');
             queueTransition(true);
             uiActionClear(); // NOT closeShopAndCheckDeck()
+            data.combat_phase = 'redraw';
           }
           ++hotkey;
         }
