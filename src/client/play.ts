@@ -262,6 +262,8 @@ import {
 import {
   style_card_effect,
   style_card_effect_faded,
+  style_card_effect_faded_red,
+  style_card_effect_red,
   style_damage,
   style_floater,
   style_hotkey,
@@ -1179,6 +1181,12 @@ export function drawCard(param: {
       let element = myEnt().data.element;
       img = `element-${element || 'null'}`;
     }
+    let value_diminished = false;
+    if (key === 'ranged' && !no_target) {
+      // has melee target
+      value = ceil(value / 2);
+      value_diminished = true;
+    }
     let needs_target = EFFECT_NEEDS_TARGET[key];
     let eff_no_target = no_target;
     if (needs_target === 'ranged') {
@@ -1213,10 +1221,13 @@ export function drawCard(param: {
       no_target = false; // future melee effects now have a target
     }
 
+    let style = alpha < 1 ? value_diminished ? style_card_effect_faded_red : style_card_effect_faded :
+      value_diminished ? style_card_effect_red : style_card_effect;
+
     if (vis.prefix) {
       xx2 += font.draw({
         x: xx2, y, z: z + 0.1,
-        style: alpha < 1 ? style_card_effect_faded : style_card_effect,
+        style,
         size: FONT_HEIGHT,
         h: 14,
         align: ALIGN.VCENTER,
@@ -1367,7 +1378,7 @@ export function cardTooltip(pos: number, card: Card): void {
           }
           break;
         case 'ranged':
-          line = `Deal ${value} physical damage at range, straight ahead of you.`;
+          line = `Deal ${value} physical damage at range, straight ahead of you.  Reduced by half in melee.`;
           break;
         case 'block':
           line = `Gain ${value} Block, canceling incoming physical damage.`;
@@ -1933,6 +1944,9 @@ function playCard(
     } else if (key === 'ranged') {
       ranged_attack_counter = RANGED_ANIM_TIME;
       ranged_attack_range = v2manhattanDist(ranged_target!.data.pos, myEnt().data.pos);
+      if (ranged_attack_range === 1) {
+        value = ceil(value / 2);
+      }
       should_save = applyDamage(ranged_target, value, false) || should_save;
     } else if (key === 'block') {
       data.block = (data.block || 0) + value;

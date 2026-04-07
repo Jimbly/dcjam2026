@@ -147,7 +147,7 @@ export const CARDS_RAW = {
     cost: 3,
     name: 'Breath',
     effect: {
-      ranged: grow(2),
+      ranged: grow(4),
     },
     icon: 'icon-fireball',
     ...heal(2),
@@ -156,7 +156,7 @@ export const CARDS_RAW = {
     cost: 5,
     name: 'Bolt',
     effect: {
-      ranged: grow(3),
+      ranged: grow(5),
     },
     icon: 'icon-bolt',
     ...heal(1),

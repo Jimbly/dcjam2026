@@ -33,6 +33,12 @@ export const style_card_effect = fontStyle(null, {
 export const style_card_effect_faded = fontStyle(style_card_effect, {
   color: intColorFromVec4Color(v4addScale(vec4(), v4scale(vec4(), palette[PAL_BLACK], 0.5), palette[PAL_WHITE], 0.5)),
 });
+export const style_card_effect_red = fontStyle(style_card_effect, {
+  color: palette_font[PAL_RED],
+});
+export const style_card_effect_faded_red = fontStyle(style_card_effect, {
+  color: intColorFromVec4Color(v4addScale(vec4(), v4scale(vec4(), palette[PAL_RED], 0.5), palette[PAL_WHITE], 0.5)),
+});
 export const style_text = fontStyle(null, {
   color: palette_font[PAL_WHITE],
   outline_width,
