@@ -1,10 +1,6 @@
 TODO - The Adventures of Rasa and the Chromatic Dragons
 ====
 
-Screenshots
-Art Pipeline images
-  Some monster I edited slightly more (a frame of the dragon?)
-
 
 Additional card abilities (not implemented)
 ==============
