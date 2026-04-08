@@ -2103,7 +2103,7 @@ function doHand(): void {
     combat_state.countdown = max(0, combat_state.countdown - engine.getFrameDt());
   }
 
-  if (engine.DEBUG && false) {
+  if (engine.DEBUG) {
     font.draw({
       x: 13, y: game_height, z: Z.MODAL + 10,
       size: uiTextHeight() * 0.5,
