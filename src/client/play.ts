@@ -356,6 +356,19 @@ export function randInt(range: number): number {
   return floor(random() * range);
 }
 
+export function playSoundFromEnt(ent: Entity, sound_id: keyof typeof SOUND_DATA): void {
+  let pos = ent.getData<JSVec3>('pos')!;
+
+  playUISound(sound_id, {
+    pos: [pos[0] + 0.5, pos[1] + 0.5, 0.5],
+    volume: 1,
+  });
+}
+
+export function playSound(sound_id: keyof typeof SOUND_DATA): void {
+  playUISound(sound_id);
+}
+
 type CombatState = {
   countdown: number;
   selected_card: number;
@@ -381,7 +394,7 @@ export function skipOneStep(): void {
 
 let cur_reason: TurnBasedStepReason;
 function aiStep(reason: TurnBasedStepReason): void {
-  // playUISound('button_click');
+  // playSound('button_click');
   let game_state = crawlerGameState();
   cur_reason = reason;
   if (!buildModeActive() && !skip_step) {
@@ -1549,7 +1562,7 @@ function doReshuffle(): void {
     discard_pile.splice(0, 2);
     me.reshuffle();
     data.draw_pile.push(not_burnt);
-    playUISound('reset_deck');
+    playSound('reset_deck');
     data.combat_phase = 'redraw';
     if (data.incoming_damage) {
       let amt = data.incoming_damage;
@@ -1705,7 +1718,7 @@ function applyDamage(target_ent: Entity | null, value: number, bypass_block: boo
           data.respect += 1;
         }
         setScore();
-        playUISound('restored');
+        playSound('restored');
       }
     } else if (!heal_mode && target_ent.isAlive()) {
       let stats = target_ent.data.stats;
@@ -1728,7 +1741,7 @@ function applyDamage(target_ent: Entity | null, value: number, bypass_block: boo
           target_ent.triggerAnimation!('death');
           keySet(`killed_boss_${myEnt().floorIsFinalBoss() ? 'final' : myEnt().floorElement()}`);
           addFloater(target_ent.id, 'Argh...');
-          setTimeout(playUISound.bind(null, 'death'), MSG_STEP_DELAY);
+          setTimeout(playSound.bind(null, 'death'), MSG_STEP_DELAY);
           setTimeout(dialog.bind(null, 'bossvictory'), MSG_STEP_DELAY * 2);
           me.data.poison = 0;
           me.data.incoming_damage = 0;
@@ -1745,14 +1758,14 @@ function applyDamage(target_ent: Entity | null, value: number, bypass_block: boo
         if (stats.hp < 0) {
           target_ent.triggerAnimation!('death');
           addFloater(target_ent.id, 'Argh...');
-          setTimeout(playUISound.bind(null, 'death'), MSG_STEP_DELAY);
+          setTimeout(playSound.bind(null, 'death'), MSG_STEP_DELAY);
           addFloater(target_ent.id, `+${REWARD_KILL_GOLD}[img=currency-gold scale=1.5]`);
           data.gold += REWARD_KILL_GOLD;
           want_save = true;
         } else if (!stats.hp) {
           target_ent.triggerAnimation!('uncon');
           addFloater(target_ent.id, 'I yield!');
-          setTimeout(playUISound.bind(null, 'yield'), MSG_STEP_DELAY);
+          setTimeout(playSound.bind(null, 'yield'), MSG_STEP_DELAY);
           addFloater(target_ent.id, `+${REWARD_YIELD_RESPECT}[img=currency-respect scale=1.5]`);
           data.respect += REWARD_YIELD_RESPECT;
           want_save = true;
@@ -1996,7 +2009,7 @@ function playCard(
     crawlerTurnBasedScheduleStep(ENEMY_DELAY[settings.gamespeed], 'attack');
   }
   let sound = cardSound(no_target, no_ranged_target, target_ent, ranged_target, card);
-  playUISound(sound || 'card_discard');
+  playSound(sound || 'card_discard');
 }
 
 // as an action, not in response to attacks/etc
@@ -2010,7 +2023,7 @@ function discardCard(hand_index: number): void {
   tickPlayerDOTs();
   data.combat_phase = 'enemy';
   crawlerTurnBasedScheduleStep(ENEMY_DELAY[settings.gamespeed], 'attack');
-  playUISound('card_discard');
+  playSound('card_discard');
 }
 
 function findRangedTarget(): Entity | null {
@@ -2148,7 +2161,7 @@ function doHand(): void {
       if (draw_pile.length) {
         if (!combat_state.countdown) {
           me.drawCard();
-          playUISound('card_draw_single');
+          playSound('card_draw_single');
           if (hand.length === me.handSize()) {
             me.startPlayerPhase();
           } else {
@@ -2182,7 +2195,7 @@ function doHand(): void {
         combat_state.selected_card = hand.length - 1;
       }
       steal_focus = true;
-      playUISound('rollover');
+      playSound('rollover');
     }
     if (keyDownEdge(KEYS.X) || padButtonDownEdge(PAD.RT)) {
       combat_state.selected_card++;
@@ -2190,7 +2203,7 @@ function doHand(): void {
         combat_state.selected_card = 0;
       }
       steal_focus = true;
-      playUISound('rollover');
+      playSound('rollover');
     }
   }
 
@@ -2282,7 +2295,7 @@ function doHand(): void {
   if (play_card !== -1) {
     if (actually_discard) {
       if (played_card_any_usable) {
-        playUISound('button_click');
+        playSound('button_click');
         dialogPush({
           instant: true,
           text: `Are you sure you want to discard this card (${cardName(deck[hand[play_card]])})?` +
@@ -2305,7 +2318,7 @@ function doHand(): void {
       if (played_card_any_usable) {
         playCard(no_target, no_ranged_target, target_ent, ranged_target, play_card);
       } else {
-        playUISound('button_click');
+        playSound('button_click');
         dialogPush({
           instant: true,
           text: `Playing this card (${cardName(deck[hand[play_card]])}) will` +
@@ -2437,15 +2450,6 @@ export function autosave(): void {
   }
 }
 
-export function playSoundFromEnt(ent: Entity, sound_id: keyof typeof SOUND_DATA): void {
-  let pos = ent.getData<JSVec3>('pos')!;
-
-  playUISound(sound_id, {
-    pos: [pos[0] + 0.5, pos[1] + 0.5, 0.5],
-    volume: 1,
-  });
-}
-
 export function attackPlayer(source: Entity, target: Entity, attack: EnemyMove, is_ranged: boolean): void {
   if (healMode()) {
     return;
@@ -2566,7 +2570,7 @@ function moveBlockDead(): boolean {
 
   if (autoResetSkippedFrames('moveBlockDead')) {
     autosave();
-    playUISound('player_death');
+    playSound('player_death');
   }
 
   const BORDER_PAD = 32;
@@ -2614,7 +2618,7 @@ function moveBlockDead(): boolean {
     me.data.deaths = (me.data.deaths || 0) + 1;
     me.data.stats.hp = me.data.stats.hp_max;
     me.resetDeck();
-    playUISound('reset_deck');
+    playSound('reset_deck');
     combatStateReset();
     controller.goToFloor(floor_id, 'stairs_in', 'respawn');
   }
@@ -2669,7 +2673,7 @@ function bumpEntityCallback(ent_id: EntityID): void {
     //crawlerTurnBasedScheduleStep(250, 'attack');
 
     if (target_ent.type_id === 'demo_wander') {
-      playUISound('meow');
+      playSound('meow');
       crawlerTurnBasedScheduleStep(250, 'move');
     } else if (target_ent.is_boss && !target_ent.isAlive()) {
       dialog('bosspoke');
@@ -2688,7 +2692,7 @@ function bumpEntityCallback(ent_id: EntityID): void {
         data.respect += 1;
       }
       setScore();
-      playUISound('befriended');
+      playSound('befriended');
     } else if (target_ent.is_goal) {
       entityManager().deleteEntity(target_ent.id, 'removed');
       let elem = me.floorElement();
@@ -3272,7 +3276,7 @@ function playCrawl(): void {
 
   if (build_mode) {
     if (!overlay_menu_up && (keyDownEdge(KEYS.M) || padButtonUpEdge(PAD.BACK))) {
-      playUISound('button_click');
+      playSound('button_click');
       mapViewToggle();
     }
   }
@@ -3599,7 +3603,7 @@ function onEnterCell(pos: Vec2): void {
     keySet('needs_shop');
     keySet('shop_chest');
     pickChestOptions();
-    playUISound('chest');
+    playSound('chest');
     shopOpen();
     entity_manager.deleteEntity(chest.id, 'pickup');
     autosave();
@@ -3684,7 +3688,7 @@ cmd_parse.register({
   help: 'Reinitialize hand',
   func: function (str, resp_func) {
     myEnt().resetDeck();
-    playUISound('reset_deck');
+    playSound('reset_deck');
     resp_func();
   },
 });
@@ -3697,7 +3701,7 @@ cmd_parse.register({
     myEnt().data.hand.length = str ? 1 : 0;
     myEnt().data.combat_phase = 'enemy';
     crawlerTurnBasedScheduleStep(ENEMY_DELAY[settings.gamespeed], 'attack');
-    playUISound('card_discard');
+    playSound('card_discard');
     resp_func();
   },
 });

@@ -10,7 +10,6 @@ import { GlovSoundSetUp, soundPlayStreaming } from 'glov/client/sound';
 import {
   panel,
   PanelParam,
-  playUISound,
   uiGetFont,
   uiTextHeight,
 } from 'glov/client/ui';
@@ -46,6 +45,7 @@ import {
   musicOverride,
   myEnt,
   myEntOptional,
+  playSound,
   queueTransition,
 } from './play';
 import { statusPush } from './status';
@@ -358,7 +358,7 @@ dialogRegister({
     if (elemnum === 3) {
       return;
     }
-    playUISound(`get_goal_${elemnum}`);
+    playSound(`get_goal_${elemnum}`);
     dialog('monologue', playVO(`RASA_ORB${elemnum}_ACQUIRED`));
   },
   healtro: function () {
@@ -498,7 +498,7 @@ crawlerScriptRegisterEvent({
       keyClear('shop_decksize');
     }
     // myEnt().resetDeck();
-    // playUISound('reset_deck');
+    // playSound('reset_deck');
     api.floorDelta(delta, 'stairs_in', false);
   },
 });

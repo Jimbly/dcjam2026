@@ -300,7 +300,6 @@ export function aiTraitsClientStartup(): void {
         assert(typeof floor_id === 'number');
         let level = game_state.levels[floor_id];
         let distance = v2dist(player_pos, pos);
-        // let volume = lerp(min(distance/5, 1), 1, 0.25);
         let can_see = false;
         let { radius, see_through_walls } = this.hunter_opts;
         if (this.data.alert) {
@@ -361,7 +360,7 @@ export function aiTraitsClientStartup(): void {
               // Got there, can't see him, prefer wandering through doors if possible
               (this as unknown as EntityWander).wander_state.prefer_door = true;
             }
-            // playUISound('hunter_lost', volume);
+            // playSoundFromEnt(this, 'hunter_lost');
             ret = false; // trigger an immediate wander
           } else {
             // at target, and player is there, don't move, combat should trigger
@@ -414,7 +413,7 @@ export function aiTraitsClientStartup(): void {
             if (debugDefineIsSet('HUNTER')) {
               statusSet(`edbg${this.id}`, `${this.id}: Move wall blocked - giving up`).counter = 500;
             }
-            // playUISound('hunter_lost', volume);
+            // playSoundFromEnt(this, 'hunter_lost');
             this.hunter_state.has_target = false;
           }
           profilerStopFunc();

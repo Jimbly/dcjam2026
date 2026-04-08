@@ -1,8 +1,6 @@
 TODO - The Adventures of Rasa and the Chromatic Dragons
 ====
 
-merge music.ts changes; add type-safe playSound; howler dep bump (back to glov-js)
-
 Additional card abilities (not implemented)
 ==============
 "heal" by moving from discard to draw
