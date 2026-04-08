@@ -18,8 +18,8 @@ visuals:
   opts:
     atlas: main
     tile: [fire1, fire2]
-    width: 0.85
-    height: 0.65
+    width: 0.63
+    height: 0.47
     offs: [0, 0, 0]
     face_camera: false # Otherwise faces frustum
     do_alpha: true

@@ -421,7 +421,10 @@ dialogRegister({
   },
 
   cat: function () {
-    dialog('monologue', TEXT.RASA_CAT);
+    dialog('monologue', playVO('RASA_CAT'));
+  },
+  secret: function () {
+    dialog('monologue', playVO('RASA_SECRET'));
   },
 });
 

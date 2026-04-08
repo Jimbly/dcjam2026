@@ -1,6 +1,9 @@
 TODO - The Adventures of Rasa and the Chromatic Dragons
 ====
 
+merge music.ts changes; howler dep bump (back to glov-js); playSound; dim_music (move that logic into tickMusic instead?)
+add "vacate upon door passage" as an engine feature
+
 Additional card abilities (not implemented)
 ==============
 "heal" by moving from discard to draw

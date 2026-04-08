@@ -1567,7 +1567,7 @@
       "events": [
         {
           "id": "dialog",
-          "param": "monologue Uh... what is that thing and why does it have a chicken on its head?  I don't think I'm supposed to be here..."
+          "param": "secret"
         }
       ]
     },
