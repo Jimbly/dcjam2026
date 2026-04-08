@@ -22,7 +22,9 @@ export function musicTimestamp(): number {
 function canCrossfade(m1: string, m2: string): boolean {
   let prefix = m1.split('_');
   prefix[prefix.length - 1] = '';
-  return m2.startsWith(prefix.join('_'));
+  return m2.startsWith(prefix.join('_')) &&
+    (m1.endsWith('_explore') || m1.endsWith('_combat')) &&
+    (m2.endsWith('_explore') || m2.endsWith('_combat'));
 }
 
 const FADE_OUT_CHANGE = 500/MUSIC_VOLUME;
