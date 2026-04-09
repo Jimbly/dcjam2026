@@ -801,7 +801,7 @@ function drawFreeze(is_player: boolean, x: number, y: number, value: number): nu
     x, y, w, h,
     text: '',
     tooltip: (is_player ? 'Freeze reduces your maximum hand size.' : 'Stun causes a monster to skip its turn.') +
-      '\nFreeze is reduced by 1 each turn.',
+      `\n${is_player ? 'Freeze' : 'Stun'} is reduced by 1 each turn.\nDoes not stack.`,
   });
   x += w;
   return x + 1;
@@ -1343,7 +1343,7 @@ const CARD_TOOLTIP_POS = [
   [12, 12], // shop
   [125, 140], // shop left pool
 ];
-const CARD_TOOLTIP_H = 96;
+const CARD_TOOLTIP_H = 100;
 export function cardTooltip(pos: number, card: Card): void {
   let x = CARD_TOOLTIP_POS[pos][0];
   let y = CARD_TOOLTIP_POS[pos][1];
@@ -1402,7 +1402,7 @@ export function cardTooltip(pos: number, card: Card): void {
             'Poison does non-physical damage each turn and then decrements.';
           break;
         case 'freeze':
-          line = `Adjacent target skips ${value} ${plural(value, 'turn')}.`;
+          line = `Adjacent target skips ${value} ${plural(value, 'turn')} (does not stack).`;
           break;
         case 'push':
           line = 'Push adjacent target away from you.';
@@ -1973,8 +1973,11 @@ function playCard(
     } else if (key === 'freeze') {
       if (target_ent) {
         let target_data = target_ent.data;
-        target_data.freeze = (target_data.freeze || 0) + value;
-        addFloater(target_ent.id, `${value}[img=stun]`, undefined, true);
+        let dvalue = value - (target_data.freeze || 0);
+        target_data.freeze = max((target_data.freeze || 0), value);
+        if (dvalue > 0) {
+          addFloater(target_ent.id, `${dvalue}[img=stun]`, undefined, true);
+        }
       }
     } else if (key === 'push' || key === 'pull') {
       if (ranged_target && !ranged_target.is_boss) {

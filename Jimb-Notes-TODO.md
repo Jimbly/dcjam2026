@@ -1,7 +1,6 @@
 TODO - The Adventures of Rasa and the Chromatic Dragons
 ====
 
-don't stack daze (note in tooltip)
 merge music.ts changes; howler dep bump (back to glov-js); playSound; dim_music (move that logic into tickMusic instead?)
 add "vacate upon door passage" as an engine feature
 
