@@ -205,6 +205,7 @@ import {
   renderSet3DOffset,
   renderSetScreenShake,
   renderViewportShear,
+  renderViewportShearCentering,
 } from './crawler_render';
 import {
   crawlerEntInFront,
@@ -3449,6 +3450,7 @@ export function play(dt: number): void {
     });
   } else {
     renderViewportShear(-0.2); // Game preference
+    renderViewportShearCentering(0.4); // Game preference
   }
 
   renderSet3DOffset(calcAttackCameraOffs());
