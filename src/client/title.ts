@@ -356,6 +356,7 @@ function title(dt: number): void {
     y: side_y,
     text: 'Credits',
   })) {
+    queueTransition(false);
     creditsGo();
   }
 
