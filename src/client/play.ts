@@ -388,17 +388,12 @@ function combatMoveBlock(): boolean {
   return me.data.combat_phase === 'redraw' || me.data.combat_phase === 'reshuffle';
 }
 
-let skip_step = 0;
-export function skipOneStep(): void {
-  skip_step = 1;
-}
-
 let cur_reason: TurnBasedStepReason;
 function aiStep(reason: TurnBasedStepReason): void {
   // playSound('button_click');
   let game_state = crawlerGameState();
   cur_reason = reason;
-  if (!buildModeActive() && !skip_step) {
+  if (!buildModeActive()) {
     let script_api = crawlerScriptAPI();
     script_api.is_visited = true; // Always visited for AI
     let payload: AIStepPayload = {
@@ -420,8 +415,6 @@ function aiStep(reason: TurnBasedStepReason): void {
       myEnt().tickOnMove();
     }
     combat_state.countdown = 0;
-  } else {
-    skip_step = 0;
   }
 }
 const MSG_STEP_DELAY = 400;
