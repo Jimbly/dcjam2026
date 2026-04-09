@@ -130,6 +130,7 @@ import {
   aiStepFloor,
   AIStepPayload,
   aiTraitsClientStartup,
+  enemyVacate,
   entitiesAdjacentTo,
 } from './ai';
 import { blend } from './blend';
@@ -153,6 +154,7 @@ import {
   crawlerCommWant,
 } from './crawler_comm';
 import {
+  controllerAllowOverlapViaDoorToVacate,
   controllerOnBumpEntity,
   CrawlerController,
   crawlerControllerTouchHotzonesAuto,
@@ -814,63 +816,6 @@ export function healMode(): boolean {
   return me.data.heal_mode;
 }
 
-export function enemyVacate(ent_id: EntityID): void {
-  let { entities } = entityManager();
-
-  let blocked: TSMap<true> = {};
-  let { floor_id } = crawlerGameState();
-  let level = crawlerGameState().level!;
-  for (let ent_id_str in entities) {
-    let other = entities[ent_id_str]!;
-    if (other.data.floor === floor_id) {
-      let pos = other.data.pos;
-      blocked[`${pos[0]},${pos[1]}`] = true;
-    }
-  }
-
-  let preferred_dir = myEnt().data.pos[2];
-  let ent = entities[ent_id]!;
-  let done: TSMap<true> = {};
-  let script_api = crawlerScriptAPI();
-  let todo: JSVec2[] = [];
-  function search(pos: JSVec2): void {
-    let key = `${pos[0]},${pos[1]}`;
-    if (done[key]) {
-      return;
-    }
-    done[key] = true;
-
-    for (let ii = 0; ii < 4; ++ii) {
-      let dir = dirMod(ii + preferred_dir);
-      if (!level.wallsBlock(pos, dir, script_api)) {
-        let nx = pos[0] + DX[dir];
-        let ny = pos[1] + DY[dir];
-        let nkey = `${nx},${ny}`;
-        if (!blocked[nkey]) {
-          // move here
-          todo.length = 0;
-          ent.applyAIUpdate('ai_move', {
-            pos: [nx, ny, ent.data.pos[2]],
-            last_pos: pos,
-          }, undefined, aiIgnoreErrors);
-          return;
-        } else {
-          // search here
-          if (!done[nkey]) {
-            todo.push([nx, ny]);
-          }
-        }
-      }
-    }
-  }
-  let { pos } = ent.data;
-  todo.push(pos as unknown as JSVec2);
-  while (todo.length) {
-    let next = todo.shift()!;
-    search(next);
-  }
-}
-
 const ENEMY_HP_BAR_W = render_width / 4;
 const ENEMY_HP_BAR_X = VIEWPORT_X0 + (render_width - ENEMY_HP_BAR_W)/2;
 const ENEMY_HP_BAR_Y = VIEWPORT_Y0 + 8;
@@ -1065,7 +1010,7 @@ function doHealthbars(): void {
       }
     }
 
-    if (!ent.isAlive() || ent.id === ent_in_front || !ent.data.alert || ent.is_boss) {
+    if (!ent.isAlive() || ent === ent_in_front || !ent.data.alert || ent.is_boss) {
       return false;
     }
     if (entManhattanDistance(ent, my_pos) <= MONSTER_MAX_RANGE) {
@@ -1099,13 +1044,9 @@ function doEngagedEnemy(): void {
   ) {
     return;
   }
-  let entities = entityManager().entities;
-  let ent_in_front = crawlerEntInFront();
+  let ent_in_front = crawlerEntInFront<Entity>();
   if (ent_in_front && myEnt().isAlive()) {
-    let target_ent = entities[ent_in_front]!;
-    if (target_ent) {
-      drawEnemyStats(target_ent);
-    }
+    drawEnemyStats(ent_in_front);
   }
 }
 
@@ -2128,12 +2069,7 @@ function doHand(): void {
     });
   }
 
-  let entities = entityManager().entities;
-  let ent_in_front = crawlerEntInFront();
-  let target_ent: Entity | null = null;
-  if (ent_in_front) {
-    target_ent = entities[ent_in_front]!;
-  }
+  let target_ent = crawlerEntInFront<Entity>();
   let ranged_target = findRangedTarget();
 
   if (!target_ent || !target_ent.isEnemy() || heal_mode && target_ent.is_boss) {
@@ -2664,11 +2600,9 @@ function moveBlockDead(): boolean {
   return true;
 }
 
-function bumpEntityCallback(ent_id: EntityID): void {
+function bumpEntityCallback(target_ent: Entity): void {
   let me = myEnt();
   let { data } = me;
-  let all_entities = entityManager().entities;
-  let target_ent = all_entities[ent_id]!;
   if (target_ent && me.isAlive()) {
     //addFloater(ent_id, 'POW!', '');
     attackSurgeAdd(target_ent.data.pos[0] - me.data.pos[0], target_ent.data.pos[1] - me.data.pos[1], 0.1);
@@ -3580,7 +3514,7 @@ function onPlayerMove(old_pos: Vec2, new_pos: Vec2): void {
           }, undefined, aiIgnoreErrors);
         });
       } else if (ents.length) {
-        enemyVacate(ents[0].id);
+        enemyVacate(ents[0]);
       }
     }
   }
@@ -3760,10 +3694,8 @@ cmd_parse.register({
     if (!damage || !isFinite(damage)) {
       damage = 1;
     }
-    let entities = entityManager().entities;
-    let ent_in_front = crawlerEntInFront();
-    if (ent_in_front) {
-      let target_ent = entities[ent_in_front]!;
+    let target_ent = crawlerEntInFront<Entity>();
+    if (target_ent) {
       applyDamage(target_ent, damage, false);
     }
     resp_func();
@@ -4045,6 +3977,7 @@ export function playStartup(): void {
   };
 
   controllerOnBumpEntity(bumpEntityCallback);
+  controllerAllowOverlapViaDoorToVacate(true);
 
   renderAppStartup();
   dialogStartup({

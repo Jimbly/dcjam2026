@@ -26,7 +26,7 @@ import {
   uiHandlingNav,
   uiTextHeight,
 } from 'glov/client/ui';
-import { EntityID, NetErrorCallback, VoidFunc } from 'glov/common/types';
+import { NetErrorCallback, VoidFunc } from 'glov/common/types';
 import {
   clamp,
   easeIn,
@@ -84,6 +84,7 @@ import {
   WEST,
 } from '../common/crawler_state';
 import { pathFind } from '../common/pathfind';
+import { enemyVacate } from './ai';
 import { buildModeActive } from './crawler_build_mode';
 import {
   crawlerEntitiesAt,
@@ -100,7 +101,7 @@ import {
 } from './crawler_render';
 import { CrawlerScriptAPIClient } from './crawler_script_api_client';
 import { crawlerOnScreenButton } from './crawler_ui';
-import { enemyVacate, skipOneStep } from './play';
+import { skipOneStep } from './play';
 import { statusPush } from './status';
 
 const { PI, abs, cos, floor, max, min, random, round, sin } = Math;
@@ -111,8 +112,6 @@ const FAST_TRAVEL_STEP_MIN_TIME = 200; // affects instant-step-ish controllers
 const KEY_REPEAT_TIME_ROT = 500;
 const KEY_REPEAT_TIME_MOVE_DELAY = 500;
 const KEY_REPEAT_TIME_MOVE_RATE = 200;
-
-const ALLOW_OVERLAP_VIA_DOOR = true; // DCJAM
 
 const FORCE_FACE_TIME = ROT_TIME;
 
@@ -166,9 +165,18 @@ interface PlayerController {
   clearDoubleTime?(): void;
 }
 
-let on_bump_entity: (ent_id: EntityID) => void;
-export function controllerOnBumpEntity(cb: (ent_id: EntityID) => void): void {
-  on_bump_entity = cb;
+type Entity = EntityCrawlerClient;
+
+let on_bump_entity: (ent: Entity) => void;
+export function controllerOnBumpEntity<T extends Entity>(cb: (ent: T) => void): void {
+  on_bump_entity = cb as (ent: Entity) => void;
+}
+
+let allow_overlap_via_door = false;
+
+// Requires ai/enemyVacate to be functional (may need online support)
+export function controllerAllowOverlapViaDoorToVacate(allow: boolean): void {
+  allow_overlap_via_door = allow;
 }
 
 type StartMoveData = {
@@ -218,11 +226,11 @@ function startMove(
     // cur.double_time = 0;
   }
   // check destination
-  let blocked_ent_id;
+  let blocked_ent;
   let bumped_entity = false;
   if (!bumped_something && !build_mode) {
-    blocked_ent_id = entityBlocks(game_state.floor_id, new_pos, true);
-    if (blocked_ent_id) {
+    blocked_ent = entityBlocks(game_state.floor_id, new_pos, true);
+    if (blocked_ent) {
       bumped_something = true;
       bumped_entity = true;
     }
@@ -232,7 +240,7 @@ function startMove(
     let is_facing_ent = dir === new_rot;
     if (blocked_vis) {
       // Can't see through this wall, and there's a monster on the other side!
-      if (ALLOW_OVERLAP_VIA_DOOR) {
+      if (allow_overlap_via_door) {
         bumped_something = bumped_entity = false;
       } else {
         script_api.status('move_blocked', 'The door won\'t budge.');
@@ -240,7 +248,7 @@ function startMove(
     } else if (!is_facing_ent) {
       script_api.status('move_blocked', 'Something blocks your way.');
     } else {
-      on_bump_entity?.(blocked_ent_id!);
+      on_bump_entity?.(blocked_ent!);
     }
   }
   return {
@@ -1411,7 +1419,7 @@ export class CrawlerController {
     this.path_to = [target_x, target_y];
   }
 
-  getEntInFront(include_non_blockers: boolean): EntityID | null {
+  getEntInFront(include_non_blockers: boolean): Entity | null {
     if (this.player_controller.isMoving() && false) {
       return null;
     }
@@ -1430,7 +1438,7 @@ export class CrawlerController {
         if (!ent_list.length) {
           return null;
         }
-        return ent_list[0].id;
+        return ent_list[0];
       } else {
         return entityBlocks(game_state.floor_id, temp_pos, false) || null;
       }
@@ -2299,15 +2307,15 @@ export class CrawlerController {
         this.is_repeating = false;
       }
 
-      let blocked_ent_id;
+      let blocked_ent;
       if (!no_move &&
         !this.player_controller.isMoving() && !build_mode &&
-        (blocked_ent_id = entityBlocks(game_state.floor_id, last_dest_pos, true)) &&
+        (blocked_ent = entityBlocks(game_state.floor_id, last_dest_pos, true)) &&
         !v2same(last_dest_pos, prev_pos)
       ) {
-        if (ALLOW_OVERLAP_VIA_DOOR) {
-          // We're standing over a blocking entity!  Move theme somewhere else!
-          enemyVacate(blocked_ent_id);
+        if (allow_overlap_via_door) {
+          // We're standing over a blocking entity!  Move them somewhere else!
+          enemyVacate(blocked_ent);
         } else {
           // We're standing over a blocking entity!  Move to where we were before
           this.player_controller.startMove(dirFromMove(last_dest_pos, prev_pos));
