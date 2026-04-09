@@ -139,7 +139,7 @@ import {
 } from './crawler_script_api_client';
 import { dialogReset } from './dialog_system';
 import { entityManager } from './entity_game_client';
-import { healMode, tickPlayerDOTs } from './play';
+import { healMode, tickPlayerDOTs } from './play'; // DCJAM
 
 const { PI, max, floor, round } = Math;
 
@@ -812,7 +812,7 @@ function crawlerTurnBasedMoveStart(pos: Vec2): void {
   if (turn_based_allowed?.() !== false) {
     executeStep();
   }
-  tickPlayerDOTs();
+  tickPlayerDOTs(); // DCJAM
   need_turn_based_step = true;
   turn_based_step_reason = 'move';
   turn_based_step_countdown = 0; // fire as soon as we're done animating
@@ -831,7 +831,7 @@ function crawlerRepeatHasher(pos: ROVec2): string | null {
   let ents = entitiesAdjacentTo(game_state, entityManager(), game_state.floor_id, pos, crawlerScriptAPI());
   ents = ents.filter(function (ent) {
     if (ent.isEnemy() && ent.isAlive()) {
-      if (ent.data.recovered && healMode()) {
+      if (ent.data.recovered && healMode()) { // DCJAM
         return false;
       }
       return true;

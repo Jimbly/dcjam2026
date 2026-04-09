@@ -50,7 +50,7 @@ import { buildModeActive } from './crawler_build_mode';
 import { crawlerMyEnt } from './crawler_entity_client';
 import { crawlerScriptAPI } from './crawler_play';
 import { FONT_HEIGHT } from './globals';
-import { isCombat } from './play';
+import { isCombat } from './play'; // DCJAM
 
 const { ceil, min, round } = Math;
 

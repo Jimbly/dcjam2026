@@ -229,7 +229,7 @@ crawlerScriptRegisterEvent({
       api.status('move', '"move" event requires a single direction parameter 0-3 or NSEW');
       return;
     }
-    if (do_face) { // DCJAM - doesn't work without hack
+    if (do_face) {
       api.turnTo(rot);
     }
     api.forceMove(rot);

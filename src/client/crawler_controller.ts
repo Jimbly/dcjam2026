@@ -472,11 +472,15 @@ class CrawlerControllerQueued implements PlayerController {
     this.move_offs = offs;
   }
 
-  cancelAllMoves(except_rotate: boolean/*TODO*/): void {
+  cancelAllMoves(except_rotate: boolean): void {
     while (this.interp_queue.length > 1) {
       this.interp_queue.pop();
     }
-    this.impulse_queue = [];
+    if (except_rotate) {
+      this.impulse_queue = this.impulse_queue.filter((elem) => elem.action_type === ACTION_ROT);
+    } else {
+      this.impulse_queue = [];
+    }
   }
   cancelQueuedMoves(): void {
     this.impulse_queue = [];
@@ -1655,7 +1659,7 @@ export class CrawlerController {
   }
 
   forceMove(dir: DirType): void {
-    this.player_controller.cancelAllMoves?.(true); // DCJAM
+    this.player_controller.cancelAllMoves?.(true);
     this.player_controller.startMove(dir);
   }
 

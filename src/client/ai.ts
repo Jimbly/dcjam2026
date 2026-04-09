@@ -81,6 +81,7 @@ export function entitiesAdjacentTo<T extends Entity>(
   return ret;
 }
 
+
 export type WanderOpts = Record<never, never>;
 export type WanderState = {
   home_pos: JSVec3;

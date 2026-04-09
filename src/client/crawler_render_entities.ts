@@ -666,7 +666,7 @@ export function crawlerRenderEntities(ent_set: SplitSet): void {
         ) {
           let { x, y, w, h } = crawlerRenderViewportGet();
           let float = easeOut(elapsed / (FLOATER_TIME + FLOATER_FADE), 2) * 20;
-          let text_height = uiTextHeight() * 2;
+          let text_height = uiTextHeight();
           markdownAuto({
             font,
             font_style: style_floater,

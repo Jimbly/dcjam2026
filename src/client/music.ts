@@ -14,7 +14,7 @@ import {
 import type { TSMap } from 'glov/common/types';
 import { uiActionCurrent } from './uiaction';
 
-const MUSIC_VOLUME = 0.3;
+const MUSIC_VOLUME = 0.3; // DCJAM
 let last_music_ref: GlovSoundSetUp | null;
 let last_music_name: string | null = null;
 let last_music_fading_out = false;
