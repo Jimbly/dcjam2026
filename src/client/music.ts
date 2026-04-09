@@ -1,8 +1,18 @@
 import assert from 'assert';
-import { isInBackground, onEnterBackground } from 'glov/client/engine';
+import {
+  isInBackground,
+  onEnterBackground,
+} from 'glov/client/engine';
 import * as settings from 'glov/client/settings';
-import { GlovSoundSetUp, soundLoad, soundPlay, soundResumed } from 'glov/client/sound';
+import {
+  GlovSoundSetUp,
+  soundLoad,
+  soundMusicOverrideVolume,
+  soundPlay,
+  soundResumed
+} from 'glov/client/sound';
 import type { TSMap } from 'glov/common/types';
+import { uiActionCurrent } from './uiaction';
 
 const MUSIC_VOLUME = 0.3;
 let last_music_ref: GlovSoundSetUp | null;
@@ -47,6 +57,9 @@ export function tickMusic(music_name: string | null, override_volume?: number): 
   if (!soundResumed()) {
     return;
   }
+
+  soundMusicOverrideVolume(uiActionCurrent()?.dim_music ? 0.3 : 1);
+
   if (playing_music_name !== music_name) {
     let cross = false;
     let cross_loc = 0;

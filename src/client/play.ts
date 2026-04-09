@@ -45,7 +45,6 @@ import {
   settingsSet,
 } from 'glov/client/settings';
 import { shaderCreate } from 'glov/client/shaders';
-import { soundMusicOverrideVolume } from 'glov/client/sound';
 import {
   spot,
   SPOT_DEFAULT_BUTTON,
@@ -3490,7 +3489,6 @@ export function play(dt: number): void {
     }
     bgm_track = music;
     tickMusic((game_state.level?.props.music as string) || music); // || 'default_music'
-    soundMusicOverrideVolume(uiActionCurrent()?.dim_music ? 0.3 : 1);
   }
   crawlerPlayTopOfFrame(overlay_menu_up, false);
 
