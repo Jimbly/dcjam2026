@@ -977,7 +977,8 @@ function doHealthbars(): void {
   let my_pos = my_ent.getData<JSVec3>('pos')!;
   let { heal_mode } = my_ent.data;
   let entity_manager = entityManager();
-  let ent_in_front = crawlerController().controllerIsAnimating(INFRONT_ANIMATING_THRESHOLD) ? -1 : crawlerEntInFront();
+  let ent_in_front = crawlerController().controllerIsAnimating(INFRONT_ANIMATING_THRESHOLD) ?
+    null : crawlerEntInFront();
   let ents = entity_manager.entitiesFind((ent) => {
     if (ent.data.floor !== floor_id || !(ent.isEnemy() || ent.isPlayer())) {
       return false;
@@ -3898,7 +3899,11 @@ export function playStartup(): void {
     name: 'EntityClient',
     Ctor: EntityClient,
   });
-  crawlerRenderEntitiesStartup(font);
+  crawlerRenderEntitiesStartup({
+    font,
+    include_non_blockers_in_front: true,
+    disable_internal_floaters: true,
+  });
   crawlerRenderViewportSet({
     x: VIEWPORT_X0,
     y: VIEWPORT_Y0,
