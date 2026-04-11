@@ -61,7 +61,6 @@ import {
   button,
   buttonLastSpotRet,
   ButtonStateString,
-  buttonText,
   drawBox,
   drawRect,
   drawRect2,
@@ -71,8 +70,6 @@ import {
   panel,
   playUISound,
   suppressNewDOMElemWarnings,
-  uiButtonHeight,
-  uiButtonWidth,
   uiGetFont,
   uiTextHeight,
 } from 'glov/client/ui';
@@ -214,10 +211,17 @@ import {
 } from './crawler_render_entities';
 import { crawlerScriptAPIDummyServer } from './crawler_script_api_client';
 import { crawlerOnScreenButton } from './crawler_ui';
-import { dialogNameRender, keyClear, keyGet, keySet, myElement, playVO, voOff, voReset } from './dialog_data';
+import {
+  dialogNameRender,
+  keyClear,
+  keyGet,
+  keySet,
+  myElement,
+  voOff,
+  voReset,
+} from './dialog_data';
 import {
   dialog,
-  dialogActive,
   dialogFlag,
   dialogMoveLocked,
   dialogPush,
@@ -275,6 +279,7 @@ import {
 } from './styles';
 import { setScore } from './title';
 import { uiActionClear, uiActionCurrent, uiActionTick } from './uiaction';
+import { deadOpen } from './uiaction_dead';
 import { pauseMenuActive, pauseMenuOpen } from './uiaction_pause_menu';
 import { pickChestOptions, shopOpen } from './uiaction_shop';
 
@@ -377,7 +382,7 @@ type CombatState = {
 };
 let combat_state: CombatState;
 
-function combatStateReset(): void {
+export function combatStateReset(): void {
   combat_state = {
     countdown: 0,
     selected_card: -1,
@@ -2510,103 +2515,6 @@ export function attackPlayer(source: Entity, target: Entity, attack: EnemyMove, 
   }
 }
 
-function moveBlockDead(): boolean {
-  controller.setFadeOverride(0.75);
-
-  if (autoResetSkippedFrames('moveBlockDead')) {
-    autosave();
-    playSound('player_death');
-  }
-
-  const BORDER_PAD = 32;
-  let y = VIEWPORT_Y0;
-  let w = render_width - BORDER_PAD * 2;
-  let x = VIEWPORT_X0 + BORDER_PAD;
-  let h = render_height;
-  let z = Z.UI + 20;
-
-  if (!dialogActive()) {
-    dialog('monologue', playVO('RASA_UPON_DEATH'));
-  }
-
-  y += floor(h/2) - 100;
-  let y0 = y;
-  y += markdownAuto({
-    font_style: style_label,
-    x: x + floor(w/8),
-    w: ceil(w*3/4),
-    y, z,
-    align: ALIGN.HCENTER | ALIGN.HWRAP,
-    line_height: 10,
-    text: 'Your deck has been exhausted, and you have been defeated.' +
-      '\n\nYou can restart (keeping any earned cards and resources) at the' +
-      ' beginning of the floor or the dungeon.' +
-      '\n\nNote that you will earn a [img=black-skull scale=1.3] Black Skull, impacting your' +
-      ' final score, indicating a non-perfect run.',
-  }).h;
-  y += 8;
-
-  let me = myEnt();
-
-  let this_floor = me.data.floor;
-  function respawn(floor_id: number): void {
-    for (let check_floor_id = floor_id; check_floor_id <= this_floor; ++check_floor_id) {
-      keySet(`respawn_floor_${check_floor_id}`);
-    }
-
-    if (floor_id > 20) {
-      keySet('needs_shop');
-      if (!(me.data.gold > 3 || me.data.respect > 3)) {
-        keySet('shop_decksize');
-      }
-    }
-    me.data.deaths = (me.data.deaths || 0) + 1;
-    me.data.stats.hp = me.data.stats.hp_max;
-    me.resetDeck();
-    playSound('reset_deck');
-    combatStateReset();
-    controller.goToFloor(floor_id, 'stairs_in', 'respawn');
-  }
-
-  let dungeon_start = this_floor - (this_floor % 10);
-
-  if (buttonText({
-    x: x + floor(w/2 - uiButtonWidth() - 4/2), y, z,
-    text: 'Retry Floor',
-  })) {
-    respawn(this_floor);
-  }
-
-  if (buttonText({
-    x: x + floor(w/2 + 4/2), y, z,
-    disabled: this_floor === dungeon_start,
-    text: 'Retry Dungeon',
-  })) {
-    respawn(dungeon_start);
-  }
-  y += uiButtonHeight() + 4;
-
-  let button_w = uiButtonWidth() * 2 + 4;
-  if (buttonText({
-    x: x + floor(w/2 - button_w/2), y, z,
-    w: button_w,
-    text: 'Exit to Title (new game)',
-  })) {
-    urlhash.go('');
-  }
-  y += uiButtonHeight() + 4;
-
-  panel({
-    x: x + floor(w/10),
-    y: y0 - 16,
-    w: ceil(w * 4/5),
-    h: y - y0 + 16 * 2,
-    z: Z.UI + 18,
-  });
-
-  return true;
-}
-
 function bumpEntityCallback(target_ent: Entity): void {
   let me = myEnt();
   let { data } = me;
@@ -2929,8 +2837,11 @@ function playCrawl(): void {
   }
 
   const is_dead = !myEnt().isAlive();
-  if (!controller.hasMoveBlocker() && is_dead) {
-    controller.setMoveBlocker(moveBlockDead);
+  // if (!controller.hasMoveBlocker() && is_dead) {
+  //   controller.setMoveBlocker(moveBlockDead);
+  // }
+  if (!uiActionCurrent() && is_dead) {
+    deadOpen();
   }
 
   let down = {

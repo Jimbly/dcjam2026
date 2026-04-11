@@ -1039,7 +1039,7 @@ ShopAction.prototype.name = 'Shop';
 ShopAction.prototype.is_overlay_menu = true;
 ShopAction.prototype.is_fullscreen_ui = false;
 ShopAction.prototype.needs_decks = false;
-ShopAction.prototype.dim_music = true;
+ShopAction.prototype.dim_music = 0.7;
 
 export function shopOpen(): void {
   pool_selected = null;

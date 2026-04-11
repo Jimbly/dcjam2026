@@ -1,8 +1,6 @@
 TODO - The Adventures of Rasa and the Chromatic Dragons
 ====
 
-mute music when at respawn dialog (change to UIAction?)
-
 Additional card abilities (not implemented)
 ==============
 "heal" by moving from discard to draw
