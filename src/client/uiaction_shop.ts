@@ -51,6 +51,33 @@ import {
 
 const { floor } = Math;
 
+function weightedOdds(options: CardID[]): CardID[] {
+  const me = myEnt();
+  const { data } = me;
+  let { deck } = data;
+  let owned: Partial<Record<CardID, number>> = {};
+  for (let uid in deck) {
+    let card = deck[uid]!;
+    owned[card.card_id] = (owned[card.card_id] || 0) + 1;
+  }
+  let opts2: CardID[] = [];
+  for (let ii = 0; ii < options.length; ++ii) {
+    let card_id = options[ii];
+    let odds = 8;
+    if (owned[card_id]) {
+      if (owned[card_id] > 1) {
+        odds = 1;
+      } else {
+        odds = 3;
+      }
+    }
+    for (let jj = 0; jj < odds; ++jj) {
+      opts2.push(card_id);
+    }
+  }
+  return opts2;
+}
+
 function pickCardShopOptions(): void {
   const me = myEnt();
   const { data } = me;
@@ -59,15 +86,23 @@ function pickCardShopOptions(): void {
   options = options.filter(function (card_id) {
     return CARDS[card_id].cost > 0;
   });
+  let opt_count= options.length;
+  options = weightedOdds(options);
   data.shop_options = [];
+  let done: Partial<Record<CardID, true>> = {};
   while (data.shop_options.length < 4) {
     let idx = randInt(options.length);
     let card_id = options[idx];
     ridx(options, idx);
+    if (done[card_id]) {
+      continue;
+    }
+    done[card_id] = true;
+    --opt_count;
     if (
       CARDS[card_id].cost > gold &&
       randInt(4) &&
-      options.length > 4
+      opt_count > 4
     ) {
       continue;
     }
@@ -91,11 +126,15 @@ export function pickChestOptions(): void {
     }
     return true;
   });
+  opts = weightedOdds(opts);
   data.shop_options = [];
-  for (let ii = 0; ii < 2; ++ii) {
+  while (data.shop_options.length < 2) {
     let idx = randInt(opts.length);
-    data.shop_options.push(opts[idx]);
+    let card_id = opts[idx];
     ridx(opts, idx);
+    if (!data.shop_options.includes(card_id)) {
+      data.shop_options.push(card_id);
+    }
   }
   data.shop_state = {
     gold: 2 + randInt(4) + myEnt().floorElementNumber(),

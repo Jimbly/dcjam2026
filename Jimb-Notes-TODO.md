@@ -1,7 +1,6 @@
 TODO - The Adventures of Rasa and the Chromatic Dragons
 ====
 
-reduce odds of getting the same cards
 mute music when at respawn dialog (change to UIAction?)
 
 Additional card abilities (not implemented)
