@@ -2,6 +2,7 @@
 open_move: false
 open_vis: true
 sound_id: footstep_water
+code: blocker
 visuals:
 - pass: bg
   type: simple_floor

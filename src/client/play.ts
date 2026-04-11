@@ -2011,7 +2011,19 @@ export function findRangedTargetForEnemy(enemy: Entity): Entity | null {
   let { level, floor_id } = game_state;
   assert(level);
   if (level.simpleVisCheck(pos, enemy_pos, crawlerScriptAPI(),
-    allow_block_move ? 'visBlockNormal' : 'visBlockNoObstacles')
+    function (x: number, y: number, dir: DirType, script_api): boolean {
+      if (allow_block_move) {
+        if (!level.visBlockNormal(x, y, dir, script_api)) {
+          let target_cell = level.getCell(x + DX[dir], y + DY[dir]);
+          if (target_cell && target_cell.desc.swapped.code !== 'blocker') {
+            return false;
+          }
+        }
+        return true;
+      } else {
+        return level.visBlockNoObstacles(x, y, dir, script_api);
+      }
+    })
   ) {
     let walk = enemy_pos.slice(0) as JSVec2;
     while (walk[0] !== pos[0] || walk[1] !== pos[1]) {
