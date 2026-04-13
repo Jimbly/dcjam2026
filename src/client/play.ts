@@ -25,12 +25,16 @@ import {
   fontStyle,
   fontStyleColored,
 } from 'glov/client/font';
-import * as input from 'glov/client/input';
 import {
+  eatAllInput,
+  inputClick,
+  inputPadMode,
+  inputTouchMode,
   keyDown,
   keyDownEdge,
   KEYS,
   keyUpEdge,
+  mousePos,
   PAD,
   padButtonDownEdge,
   padButtonUpEdge,
@@ -2196,7 +2200,8 @@ function doHand(): void {
       disabled_focusable: true,
       sound_button: null,
       focus_steal: steal_focus && combat_state.selected_card === ii,
-      sticky_focus: combat_state.selected_card === ii,
+      sticky_focus: combat_state.selected_card === ii || inputTouchMode(),
+      touch_focuses: true,
     });
     let target_y = rect.y;
     let do_discard = false;
@@ -2826,7 +2831,7 @@ const MOVE_BUTTONS_Y0 = 179;
 
 
 function useNoText(): boolean {
-  return input.inputTouchMode() || input.inputPadMode() || settings.turn_toggle;
+  return inputTouchMode() || inputPadMode() || settings.turn_toggle;
 }
 
 function playCrawl(): void {
@@ -2883,7 +2888,7 @@ function playCrawl(): void {
   let cutscene_alpha = blend('cutscenealpha', is_cutscene ? 1 : 0, 500);
   if (is_cutscene) {
     cutscene_alpha = 1;
-    input.eatAllInput();
+    eatAllInput();
   }
   if (cutscene_alpha) {
     let c = palette[PAL_BORDER];
@@ -3042,7 +3047,7 @@ function playCrawl(): void {
     }
     // Do modal UIs here
   } else {
-    if (input.click({ button: 2 })) {
+    if (inputClick({ button: 2 })) {
       mapViewToggle();
     }
   }
@@ -3365,7 +3370,7 @@ export function play(dt: number): void {
 
   profilerStopStart('render');
   if (0) {
-    let shear = clamp(input.mousePos()[0]/game_width* 2 - 1, -1, 1);
+    let shear = clamp(mousePos()[0]/game_width* 2 - 1, -1, 1);
     renderViewportShear(shear);
     font.draw({
       x: 100, y: 100,

@@ -3,7 +3,7 @@ import { autoResetSkippedFrames } from 'glov/client/auto_reset';
 import { autoAtlas } from 'glov/client/autoatlas';
 import { MODE_DEVELOPMENT } from 'glov/client/client_config';
 import { ALIGN, fontStyleAlpha } from 'glov/client/font';
-import { keyDownEdge, KEYS } from 'glov/client/input';
+import { inputTouchMode, keyDownEdge, KEYS } from 'glov/client/input';
 import { markdownAuto } from 'glov/client/markdown';
 import { scrollAreaCreate } from 'glov/client/scroll_area';
 import { spot, SPOT_DEFAULT_BUTTON, SPOT_DEFAULT_LABEL } from 'glov/client/spot';
@@ -402,6 +402,8 @@ class ShopAction extends UIAction {
         if (spot({
           def: SPOT_DEFAULT_LABEL,
           ...card_rect,
+          sticky_focus: inputTouchMode(),
+          touch_focuses: true,
         }).focused) {
           cardTooltip(0, card1);
         }
@@ -590,6 +592,8 @@ class ShopAction extends UIAction {
             def: SPOT_DEFAULT_BUTTON,
             hotkey: KEYS['1'] + hotkey,
             sound_button: 'reward_choice',
+            sticky_focus: inputTouchMode(),
+            touch_focuses: true,
           });
           let card = {
             card_id,
@@ -720,7 +724,9 @@ class ShopAction extends UIAction {
             disabled,
             def: SPOT_DEFAULT_BUTTON,
             hotkey: KEYS['1'] + ii,
-            sound_button: 'purchase'
+            sound_button: 'purchase',
+            sticky_focus: inputTouchMode(),
+            touch_focuses: true,
           });
           let card = {
             card_id,
@@ -831,6 +837,8 @@ class ShopAction extends UIAction {
         if (spot({
           def: SPOT_DEFAULT_LABEL,
           ...card_rect,
+          sticky_focus: inputTouchMode(),
+          touch_focuses: true,
         }).focused) {
           cardTooltip(1, card1);
         }
@@ -880,6 +888,8 @@ class ShopAction extends UIAction {
           if (spot({
             def: SPOT_DEFAULT_LABEL,
             ...card_rect,
+            sticky_focus: inputTouchMode(),
+            touch_focuses: true,
           }).focused) {
             cardTooltip(1, card2);
           }
